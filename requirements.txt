@@ -1,0 +1,38 @@
+# ================================================================
+# BRIDGE-AI Kenya - Python Dependencies (Security Enhanced)
+# ================================================================
+
+# Core Framework
+Flask==2.3.3
+Flask-WTF==1.1.1
+Flask-Login==0.6.2
+Werkzeug==2.3.7
+Jinja2==3.1.2
+
+# Forms & Validation
+WTForms==3.0.1
+email-validator==2.0.0
+
+# Environment
+python-dotenv==1.0.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# File Uploads
+Flask-Uploads==0.2.1
+python-magic==0.4.27  # ✅ For MIME type validation
+
+# Email
+Flask-Mail==0.9.1
+
+# Production Server
+gunicorn==21.2.0
+
+# Security
+flask-limiter==3.5.1  # ✅ Rate limiting
+bleach==6.1.0  # ✅ HTML sanitization
+itsdangerous==2.1.2
+
+# Utility
+requests==2.31.0

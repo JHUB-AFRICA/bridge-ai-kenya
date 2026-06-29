@@ -1,0 +1,914 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ADMIN REPLICATION TOOLKIT MANAGEMENT         -->
+<!-- ================================================================ -->
+<!-- Complete CRUD for:                                              -->
+<!-- - Replication Resources (Downloads)                            -->
+<!-- - Localisation Templates                                        -->
+<!-- - Kenya Lessons (View only)                                    -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Replication Toolkit - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📦 Manage <span class="highlight">Replication Toolkit</span>{% endblock %}
+
+{% block page_subtitle %}Manage resources, templates, and lessons for the Replication Toolkit{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- TAB NAVIGATION                                              -->
+<!-- ============================================================ -->
+<div class="tab-nav">
+    <button class="tab-btn active" data-tab="resources" onclick="switchTab('resources')">
+        📥 Resources
+        <span class="tab-count" id="count-resources">0</span>
+    </button>
+    <button class="tab-btn" data-tab="templates" onclick="switchTab('templates')">
+        📝 Templates
+        <span class="tab-count" id="count-templates">0</span>
+    </button>
+    <button class="tab-btn" data-tab="lessons" onclick="switchTab('lessons')">
+        📖 Lessons
+        <span class="tab-count" id="count-lessons">0</span>
+    </button>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB CONTENT: RESOURCES (Downloads)                          -->
+<!-- ============================================================ -->
+<div class="tab-content active" id="tab-resources">
+
+    <div class="section-header-content">
+        <div class="section-title">
+            <span class="section-count" id="count-resources-label">0 resources</span>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-primary" onclick="openModal('resource')">
+                ➕ Add Resource
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-search">
+                <input type="text" id="searchResources" placeholder="Search resources..." onkeyup="filterTable('resources')">
+            </div>
+            <div class="table-count" id="resourcesCount">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:20%;">Title</th>
+                    <th style="width:15%;">Type</th>
+                    <th style="width:25%;">Description</th>
+                    <th style="width:12%;">File Size</th>
+                    <th style="width:13%;">Date</th>
+                    <th style="width:15%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="resourcesBody">
+                <tr><td colspan="6" class="table-empty">Loading resources...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB CONTENT: TEMPLATES                                       -->
+<!-- ============================================================ -->
+<div class="tab-content" id="tab-templates">
+
+    <div class="section-header-content">
+        <div class="section-title">
+            <span class="section-count" id="count-templates-label">0 templates</span>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-primary" onclick="openModal('template')">
+                ➕ Add Template
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-search">
+                <input type="text" id="searchTemplates" placeholder="Search templates..." onkeyup="filterTable('templates')">
+            </div>
+            <div class="table-count" id="templatesCount">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:20%;">Title</th>
+                    <th style="width:12%;">Type</th>
+                    <th style="width:25%;">Description</th>
+                    <th style="width:13%;">File Format</th>
+                    <th style="width:15%;">Date</th>
+                    <th style="width:15%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="templatesBody">
+                <tr><td colspan="6" class="table-empty">Loading templates...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB CONTENT: LESSONS (View Only)                            -->
+<!-- ============================================================ -->
+<div class="tab-content" id="tab-lessons">
+
+    <div class="section-header-content">
+        <div class="section-title">
+            <span class="section-count" id="count-lessons-label">0 lessons</span>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-primary" onclick="openModal('lesson')">
+                ➕ Add Lesson
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-search">
+                <input type="text" id="searchLessons" placeholder="Search lessons..." onkeyup="filterTable('lessons')">
+            </div>
+            <div class="table-count" id="lessonsCount">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:20%;">Title</th>
+                    <th style="width:25%;">Description</th>
+                    <th style="width:15%;">Category</th>
+                    <th style="width:15%;">Date</th>
+                    <th style="width:25%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="lessonsBody">
+                <tr><td colspan="5" class="table-empty">Loading lessons...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL - Shared                                               -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="replicationModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" id="modalSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL FORMS TEMPLATES                                        -->
+<!-- ============================================================ -->
+<div style="display:none;">
+
+    <!-- Resource Form -->
+    <div id="resourceFormHtml">
+        <div class="form-group">
+            <label>Resource Title <span class="required">*</span></label>
+            <input type="text" id="resource-title" placeholder="e.g. Replication Playbook">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="resource-slug" placeholder="URL-friendly version (auto-generated)">
+            <small class="help-text">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-group">
+            <label>Description <span class="required">*</span></label>
+            <textarea id="resource-description" rows="2" placeholder="Brief description of the resource"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Resource Type</label>
+                <select id="resource-type">
+                    <option value="playbook">Playbook</option>
+                    <option value="report">Report</option>
+                    <option value="guide">Guide</option>
+                    <option value="specification">Specification</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>File Format</label>
+                <select id="resource-format">
+                    <option value="PDF">PDF</option>
+                    <option value="DOCX">DOCX</option>
+                    <option value="XLSX">XLSX</option>
+                    <option value="PPTX">PPTX</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>File Size (MB)</label>
+                <input type="number" id="resource-size" placeholder="2.4" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+                <label>File Path</label>
+                <input type="text" id="resource-file_path" placeholder="uploads/replication/playbook.pdf">
+                <small class="help-text">Path to the downloadable file</small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="resource-date">
+        </div>
+        <input type="hidden" id="resource-edit-id">
+    </div>
+
+    <!-- Template Form -->
+    <div id="templateFormHtml">
+        <div class="form-group">
+            <label>Template Title <span class="required">*</span></label>
+            <input type="text" id="template-title" placeholder="e.g. Context Analysis Template">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="template-slug" placeholder="URL-friendly version (auto-generated)">
+            <small class="help-text">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-group">
+            <label>Description <span class="required">*</span></label>
+            <textarea id="template-description" rows="2" placeholder="Brief description of the template"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Template Type</label>
+                <select id="template-type">
+                    <option value="context-analysis">Context Analysis</option>
+                    <option value="cultural-adaptation">Cultural Adaptation</option>
+                    <option value="stakeholder-engagement">Stakeholder Engagement</option>
+                    <option value="monitoring-evaluation">Monitoring & Evaluation</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>File Format</label>
+                <select id="template-format">
+                    <option value="PDF">PDF</option>
+                    <option value="DOCX">DOCX</option>
+                    <option value="XLSX">XLSX</option>
+                    <option value="PPTX">PPTX</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>File Size (MB)</label>
+                <input type="number" id="template-size" placeholder="1.5" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+                <label>File Path</label>
+                <input type="text" id="template-file_path" placeholder="uploads/replication/template.docx">
+                <small class="help-text">Path to the downloadable template file</small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="template-date">
+        </div>
+        <input type="hidden" id="template-edit-id">
+    </div>
+
+    <!-- Lesson Form -->
+    <div id="lessonFormHtml">
+        <div class="form-group">
+            <label>Lesson Title <span class="required">*</span></label>
+            <input type="text" id="lesson-title" placeholder="e.g. Farmer Adoption">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="lesson-slug" placeholder="URL-friendly version (auto-generated)">
+            <small class="help-text">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-group">
+            <label>Description <span class="required">*</span></label>
+            <textarea id="lesson-description" rows="2" placeholder="Brief description of the lesson"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Detailed Content</label>
+            <textarea id="lesson-content" rows="3" placeholder="Full content of the lesson"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select id="lesson-category">
+                    <option value="adoption">Farmer Adoption</option>
+                    <option value="connectivity">Connectivity</option>
+                    <option value="ai">AI Adaptation</option>
+                    <option value="community">Community</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Icon</label>
+                <input type="text" id="lesson-icon" placeholder="e.g. 🌱">
+                <small class="help-text">Emoji icon for the lesson</small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Subtext</label>
+            <input type="text" id="lesson-subtext" placeholder="e.g. High engagement with IoT training">
+            <small class="help-text">Short subtitle displayed below the lesson</small>
+        </div>
+        <input type="hidden" id="lesson-edit-id">
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STYLES                                                       -->
+<!-- ============================================================ -->
+<style>
+    /* ================================================================ */
+    /* TAB NAVIGATION                                                  */
+    /* ================================================================ */
+    .tab-nav {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+        background: var(--bg-white);
+        border-radius: var(--radius-md);
+        padding: 4px;
+        border: 1px solid var(--border-light);
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 10px 20px;
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all var(--transition);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .tab-btn:hover {
+        background: var(--bg-light);
+        color: var(--text-body);
+    }
+
+    .tab-btn.active {
+        background: var(--primary-light);
+        color: #ffffff;
+    }
+
+    .tab-btn .tab-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50px;
+        padding: 0 10px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        min-width: 20px;
+        height: 20px;
+    }
+
+    .tab-btn.active .tab-count {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ================================================================ */
+    /* HELP TEXT                                                       */
+    /* ================================================================ */
+    .help-text {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        display: block;
+        margin-top: 2px;
+    }
+
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    @media (max-width: 768px) {
+        .tab-nav {
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .tab-btn {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .modal {
+            max-width: 100%;
+            margin: 10px;
+        }
+
+        .table-container table {
+            font-size: 0.75rem;
+        }
+
+        .table-container table thead th,
+        .table-container table tbody td {
+            padding: 6px 8px;
+        }
+
+        .section-header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tab-btn {
+            font-size: 0.75rem;
+            padding: 8px 14px;
+        }
+
+        .table-container table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let resources = [];
+        let templates = [];
+        let lessons = [];
+
+        const API_URLS = {
+            resources: '/api/replication-resources/',
+            templates: '/api/replication-templates/',
+            lessons: '/api/replication-lessons/'
+        };
+
+        let editingType = null;
+        let editingId = null;
+
+        // ================================================================
+        // TAB SWITCHING
+        // ================================================================
+
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+            loadTabData(tab);
+        };
+
+        function loadTabData(tab) {
+            if (tab === 'resources') loadResources();
+            else if (tab === 'templates') loadTemplates();
+            else if (tab === 'lessons') loadLessons();
+        }
+
+        // ================================================================
+        // LOAD RESOURCES
+        // ================================================================
+
+        function loadResources() {
+            fetch(API_URLS.resources, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => { resources = data || []; renderResources(); })
+                .catch(() => renderResources());
+        }
+
+        function renderResources() {
+            const tbody = document.getElementById('resourcesBody');
+            const filtered = filterItems(resources, 'resources');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No resources found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${escapeHtml(item.title)}</strong></td>
+                        <td><span class="status-badge">${escapeHtml(item.type || 'other')}</span></td>
+                        <td>${escapeHtml(item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : '-')}</td>
+                        <td>${item.size ? item.size + ' MB' : '-'}</td>
+                        <td>${item.date ? formatDate(item.date) : '-'}</td>
+                        <td style="text-align:right;">
+                            <button class="action-icon edit" onclick="openEdit('resource', ${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteItem('resources', ${item.id})" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('count-resources').textContent = resources.length;
+            document.getElementById('count-resources-label').textContent = resources.length + ' resources';
+            document.getElementById('resourcesCount').textContent = filtered.length + ' items';
+        }
+
+        // ================================================================
+        // LOAD TEMPLATES
+        // ================================================================
+
+        function loadTemplates() {
+            fetch(API_URLS.templates, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => { templates = data || []; renderTemplates(); })
+                .catch(() => renderTemplates());
+        }
+
+        function renderTemplates() {
+            const tbody = document.getElementById('templatesBody');
+            const filtered = filterItems(templates, 'templates');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No templates found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${escapeHtml(item.title)}</strong></td>
+                        <td><span class="status-badge">${escapeHtml(item.type || 'other')}</span></td>
+                        <td>${escapeHtml(item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : '-')}</td>
+                        <td>${escapeHtml(item.format || 'PDF')}</td>
+                        <td>${item.date ? formatDate(item.date) : '-'}</td>
+                        <td style="text-align:right;">
+                            <button class="action-icon edit" onclick="openEdit('template', ${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteItem('templates', ${item.id})" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('count-templates').textContent = templates.length;
+            document.getElementById('count-templates-label').textContent = templates.length + ' templates';
+            document.getElementById('templatesCount').textContent = filtered.length + ' items';
+        }
+
+        // ================================================================
+        // LOAD LESSONS
+        // ================================================================
+
+        function loadLessons() {
+            fetch(API_URLS.lessons, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => { lessons = data || []; renderLessons(); })
+                .catch(() => renderLessons());
+        }
+
+        function renderLessons() {
+            const tbody = document.getElementById('lessonsBody');
+            const filtered = filterItems(lessons, 'lessons');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="table-empty">No lessons found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${escapeHtml(item.title)}</strong></td>
+                        <td>${escapeHtml(item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : '-')}</td>
+                        <td><span class="status-badge">${escapeHtml(item.category || 'other')}</span></td>
+                        <td>${item.date ? formatDate(item.date) : '-'}</td>
+                        <td style="text-align:right;">
+                            <button class="action-icon edit" onclick="openEdit('lesson', ${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteItem('lessons', ${item.id})" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('count-lessons').textContent = lessons.length;
+            document.getElementById('count-lessons-label').textContent = lessons.length + ' lessons';
+            document.getElementById('lessonsCount').textContent = filtered.length + ' items';
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function(type) {
+            if (type === 'resources') renderResources();
+            else if (type === 'templates') renderTemplates();
+            else if (type === 'lessons') renderLessons();
+        };
+
+        function filterItems(items, type) {
+            let search = '';
+            if (type === 'resources') {
+                search = document.getElementById('searchResources').value.toLowerCase();
+            } else if (type === 'templates') {
+                search = document.getElementById('searchTemplates').value.toLowerCase();
+            } else if (type === 'lessons') {
+                search = document.getElementById('searchLessons').value.toLowerCase();
+            }
+            return items.filter(i => (i.title || '').toLowerCase().includes(search) ||
+                                    (i.description || '').toLowerCase().includes(search));
+        }
+
+        // ================================================================
+        // MODAL FUNCTIONS
+        // ================================================================
+
+        window.openModal = function(type) {
+            editingType = type;
+            editingId = null;
+            const modal = document.getElementById('replicationModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            const formMap = {
+                resource: { title: 'Add New Resource', html: 'resourceFormHtml' },
+                template: { title: 'Add New Template', html: 'templateFormHtml' },
+                lesson: { title: 'Add New Lesson', html: 'lessonFormHtml' }
+            };
+
+            const config = formMap[type];
+            if (!config) return;
+
+            title.textContent = config.title;
+            body.innerHTML = document.getElementById(config.html).innerHTML;
+            document.getElementById('modalSaveBtn').onclick = () => saveItem(type);
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.openEdit = function(type, id) {
+            editingType = type;
+            editingId = id;
+            const modal = document.getElementById('replicationModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            const dataMap = {
+                resource: {
+                    title: 'Edit Resource',
+                    html: 'resourceFormHtml',
+                    data: resources,
+                    fields: ['title', 'slug', 'description', 'type', 'format', 'size', 'file_path', 'date']
+                },
+                template: {
+                    title: 'Edit Template',
+                    html: 'templateFormHtml',
+                    data: templates,
+                    fields: ['title', 'slug', 'description', 'type', 'format', 'size', 'file_path', 'date']
+                },
+                lesson: {
+                    title: 'Edit Lesson',
+                    html: 'lessonFormHtml',
+                    data: lessons,
+                    fields: ['title', 'slug', 'description', 'content', 'category', 'icon', 'subtext']
+                }
+            };
+
+            const config = dataMap[type];
+            if (!config) return;
+
+            const item = config.data.find(i => i.id === id);
+            if (!item) {
+                showToast('error', 'Item not found');
+                return;
+            }
+
+            title.textContent = config.title;
+            body.innerHTML = document.getElementById(config.html).innerHTML;
+
+            config.fields.forEach(field => {
+                const el = document.getElementById(`${type}-${field}`);
+                if (el) {
+                    const val = item[field.replace('-', '_')] || '';
+                    if (el.type === 'checkbox') {
+                        el.checked = !!val;
+                    } else {
+                        el.value = val;
+                    }
+                }
+            });
+
+            // Fix for date fields
+            if (type !== 'lesson' && item.date) {
+                const dateEl = document.getElementById(`${type}-date`);
+                if (dateEl) dateEl.value = item.date.substring(0, 10);
+            }
+
+            document.getElementById(`${type}-edit-id`).value = id;
+            document.getElementById('modalSaveBtn').onclick = () => saveItem(type);
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('replicationModal').classList.remove('active');
+            document.body.style.overflow = '';
+            editingType = null;
+            editingId = null;
+        };
+
+        // ================================================================
+        // SAVE ITEM
+        // ================================================================
+
+        function saveItem(type) {
+            const isEdit = !!editingId;
+            const data = getFormData(type);
+
+            if (type === 'resource' || type === 'template') {
+                if (!data.title || !data.description || !data.file_path) {
+                    showToast('warning', 'Title, Description, and File Path are required.');
+                    return;
+                }
+            } else if (type === 'lesson') {
+                if (!data.title || !data.description) {
+                    showToast('warning', 'Title and Description are required.');
+                    return;
+                }
+            }
+
+            if (!data.slug) data.slug = slugify(data.title);
+
+            // Convert size to number
+            if (data.size) data.size = parseFloat(data.size);
+
+            const url = isEdit ? `${API_URLS[type + 's']}${editingId}` : API_URLS[type + 's'];
+            const method = isEdit ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': window.getCsrfToken ? window.getCsrfToken() : ''
+                },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', `${type} ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeModal();
+                    loadTabData(type === 'resource' ? 'resources' : type === 'template' ? 'templates' : 'lessons');
+                } else {
+                    showToast('error', result.error || 'Failed to save.');
+                }
+            })
+            .catch(() => showToast('error', 'Network error.'));
+        }
+
+        function getFormData(type) {
+            const prefix = type;
+            const data = {};
+            const fields = document.querySelectorAll(`#${prefix}-title, #${prefix}-slug, #${prefix}-description, #${prefix}-type, #${prefix}-format, #${prefix}-size, #${prefix}-file_path, #${prefix}-date, #${prefix}-content, #${prefix}-category, #${prefix}-icon, #${prefix}-subtext, #${prefix}-edit-id`);
+
+            fields.forEach(el => {
+                if (el) {
+                    const key = el.id.replace(`${prefix}-`, '').replace(/-/g, '_');
+                    const val = el.type === 'number' ? (el.value ? parseFloat(el.value) : null) : el.value;
+                    data[key] = val;
+                }
+            });
+
+            // Clean up
+            Object.keys(data).forEach(k => {
+                if (data[k] === '' || data[k] === null || data[k] === undefined) delete data[k];
+            });
+
+            return data;
+        }
+
+        // ================================================================
+        // DELETE ITEM
+        // ================================================================
+
+        window.deleteItem = function(type, id) {
+            const items = type === 'resources' ? resources : type === 'templates' ? templates : lessons;
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.title}"?`)) return;
+
+            const url = `${API_URLS[type]}${id}/`;
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': window.getCsrfToken ? window.getCsrfToken() : ''
+                }
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Deleted successfully!');
+                    loadTabData(type === 'resources' ? 'resources' : type === 'templates' ? 'templates' : 'lessons');
+                } else {
+                    showToast('error', result.error || 'Failed to delete.');
+                }
+            })
+            .catch(() => showToast('error', 'Network error.'));
+        };
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr.substring(0, 10);
+            }
+        }
+
+        function slugify(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        }
+
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️' };
+            toast.innerHTML = `
+                <span>${icons[type] || 'ℹ️'}</span>
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 5000);
+        }
+
+        // ================================================================
+        // INIT
+        // ================================================================
+
+        // Load initial tab
+        loadResources();
+
+        // Close modal on overlay click
+        document.getElementById('replicationModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        console.log('✅ BRIDGE-AI Kenya Admin Replication Toolkit page initialized');
+
+    })();
+</script>
+{% endblock %}

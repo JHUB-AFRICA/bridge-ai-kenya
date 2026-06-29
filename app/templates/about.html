@@ -1,0 +1,815 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ABOUT PAGE                                     -->
+<!-- ================================================================ -->
+<!-- This page provides the official project overview, explaining    -->
+<!-- GenAI, digital shadows, IoT, and the project's objectives.      -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About BRIDGE-AI - BRIDGE-AI Kenya</title>
+    <meta name="description" content="Learn about BRIDGE-AI - Building ResIlient Development with GEnerative AI in Education & Agriculture, a Horizon Europe project operating across Kenya, Tunisia and Nigeria.">
+    
+    <!-- ============================================================ -->
+    <!-- PAGE-SPECIFIC STYLES                                         -->
+    <!-- ============================================================ -->
+    <style>
+        /* ================================================================ */
+        /* RESET & BASE                                                    */
+        /* ================================================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+            color: #1a2a3a;
+            background: #ffffff;
+            line-height: 1.6;
+            padding-top: 72px;
+        }
+        
+        /* ================================================================ */
+        /* PAGE HERO                                                       */
+        /* ================================================================ */
+        
+        .page-hero {
+            background: linear-gradient(135deg, #0a1a2a 0%, #1a3a5a 100%);
+            padding: 60px 24px 50px;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+        
+        .page-hero p {
+            color: #b0c8d8;
+            font-size: 1.15rem;
+            max-width: 720px;
+            margin: 12px auto 0;
+        }
+        
+        .page-hero .breadcrumb {
+            color: #7a9aaa;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        
+        .page-hero .breadcrumb a {
+            color: #7ab8d4;
+            text-decoration: none;
+        }
+        
+        .page-hero .breadcrumb a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+        
+        /* ================================================================ */
+        /* SECTION COMMON                                                 */
+        /* ================================================================ */
+        
+        .section {
+            padding: 60px 24px;
+        }
+        
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-header .section-tag {
+            display: inline-block;
+            background: #e8f0f6;
+            color: #1a5276;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0a1a2a;
+            letter-spacing: -0.5px;
+        }
+        
+        .section-header p {
+            color: #5a7a8a;
+            font-size: 1.05rem;
+            max-width: 720px;
+            margin: 10px auto 0;
+        }
+        
+        .section-alt {
+            background: #f8fafc;
+        }
+        
+        /* ================================================================ */
+        /* PROJECT OVERVIEW                                                */
+        /* ================================================================ */
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+        
+        .overview-text {
+            font-size: 1.02rem;
+            color: #3a4a5a;
+            line-height: 1.8;
+        }
+        
+        .overview-text p {
+            margin-bottom: 16px;
+        }
+        
+        .overview-text .highlight-box {
+            background: #e8f0f6;
+            border-left: 4px solid #1a5276;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        
+        .overview-text .highlight-box strong {
+            color: #0a1a2a;
+            display: block;
+            font-size: 1.05rem;
+        }
+        
+        .overview-text .highlight-box p {
+            margin: 4px 0 0;
+            font-size: 0.95rem;
+        }
+        
+        .overview-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .stat-box {
+            background: #ffffff;
+            border: 1px solid #eef2f7;
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+        }
+        
+        .stat-box .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a5276;
+            display: block;
+        }
+        
+        .stat-box .stat-label {
+            color: #5a7a8a;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        /* ================================================================ */
+        /* OBJECTIVES                                                      */
+        /* ================================================================ */
+        
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .objective-card {
+            background: #ffffff;
+            border: 1px solid #eef2f7;
+            border-radius: 14px;
+            padding: 28px 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .objective-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            border-color: #d0dce8;
+        }
+        
+        .objective-card .obj-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .objective-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0a1a2a;
+            margin-bottom: 6px;
+        }
+        
+        .objective-card p {
+            color: #5a7a8a;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* ================================================================ */
+        /* COUNTRIES & USE CASES                                           */
+        /* ================================================================ */
+        
+        .countries-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .country-card {
+            background: #ffffff;
+            border: 1px solid #eef2f7;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .country-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        .country-card .flag {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .country-card h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0a1a2a;
+        }
+        
+        .country-card p {
+            color: #5a7a8a;
+            font-size: 0.85rem;
+            margin: 4px 0 0;
+        }
+        
+        .country-card .use-case-tag {
+            display: inline-block;
+            background: #e8f0f6;
+            color: #1a5276;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        
+        /* ================================================================ */
+        /* TECHNOLOGY EXPLAINER                                           */
+        /* ================================================================ */
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .tech-card {
+            background: #ffffff;
+            border: 1px solid #eef2f7;
+            border-radius: 14px;
+            padding: 28px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tech-card .tech-icon {
+            width: 56px;
+            height: 56px;
+            background: #e8f0f6;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+        }
+        
+        .tech-card .tech-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #1a5276;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        .tech-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0a1a2a;
+            margin-bottom: 4px;
+        }
+        
+        .tech-card p {
+            color: #5a7a8a;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* ================================================================ */
+        /* TIMELINE                                                        */
+        /* ================================================================ */
+        
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #d0dce8;
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 32px;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 6px;
+            width: 16px;
+            height: 16px;
+            background: #1a5276;
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 0 3px #1a5276;
+        }
+        
+        .timeline-item .tl-period {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #1a5276;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .timeline-item h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0a1a2a;
+            margin: 2px 0 4px;
+        }
+        
+        .timeline-item p {
+            color: #5a7a8a;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        
+        @media (max-width: 1024px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .objectives-grid,
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .countries-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+            
+            .page-hero {
+                padding: 40px 20px 30px;
+            }
+            
+            .page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .page-hero p {
+                font-size: 1rem;
+            }
+            
+            .section {
+                padding: 40px 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.6rem;
+            }
+            
+            .overview-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .objectives-grid,
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .countries-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .timeline {
+                padding-left: 30px;
+            }
+            
+            .timeline::before {
+                left: 8px;
+            }
+            
+            .timeline-item::before {
+                left: -22px;
+                width: 14px;
+                height: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .countries-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .overview-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER (included)                                               -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+        
+        <!-- ============================================================ -->
+        <!-- PAGE HERO                                                    -->
+        <!-- ============================================================ -->
+        <section class="page-hero">
+            <div class="breadcrumb">
+                <a href="{{ url_for('public.index') }}">Home</a> / About
+            </div>
+            <h1>About BRIDGE-AI</h1>
+            <p>Building ResIlient Development with GEnerative AI in Education &amp; Agriculture</p>
+        </section>
+        
+        <!-- ============================================================ -->
+        <!-- PROJECT OVERVIEW                                             -->
+        <!-- ============================================================ -->
+        <section class="section" id="overview">
+            <div class="section-container">
+                <div class="overview-grid">
+                    <div class="overview-text">
+                        <span class="section-tag" style="display: inline-block; background: #e8f0f6; color: #1a5276; padding: 4px 16px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Project Overview</span>
+                        <h2 style="font-size: 2rem; font-weight: 700; color: #0a1a2a; letter-spacing: -0.5px; margin-bottom: 16px;">BRIDGE-AI</h2>
+                        
+                        <p><strong>BRIDGE-AI - Building ResIlient Development with GEnerative AI in Education &amp; Agriculture</strong> is a Horizon Europe Research and Innovation Action that aims to improve African rural societies by integrating GenAI-based solutions into agricultural optimisation and digital skills acquisition.</p>
+                        
+                        <p>The project operates across <strong>Kenya, Tunisia and Nigeria</strong> and develops use cases in mushroom cultivation, maize production, pasture prediction and pomegranate cultivation.</p>
+                        
+                        <div class="highlight-box">
+                            <strong>🎯 Project Goal</strong>
+                            <p>The project combines GenAI, Earth Observation data, IoT sensor measurements, digital shadows, semantic interoperability and low-bandwidth advisory interfaces. Its goal is to make context-specific agricultural decision support more accessible to farmers, agronomists, SMEs, developers and local innovation ecosystems.</p>
+                        </div>
+                        
+                        <p><strong>JKUAT</strong> is the Kenyan beneficiary and leads <strong>Work Package 5: Capacity Building and Replication</strong>, anchoring the Smart Mushroom case study through the Mushroom Demonstration Farm at the JKUAT Smart Farm Zone in Juja, Kenya.</p>
+                    </div>
+                    
+                    <div>
+                        <div class="overview-stats">
+                            <div class="stat-box">
+                                <span class="stat-number">36</span>
+                                <span class="stat-label">Months Duration</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-number">3</span>
+                                <span class="stat-label">Countries</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-number">8</span>
+                                <span class="stat-label">Partners</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-number">4</span>
+                                <span class="stat-label">Use Cases</span>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-top: 16px; border: 1px solid #eef2f7;">
+                            <p style="font-size: 0.85rem; color: #5a7a8a; margin: 0;">
+                                <strong style="color: #0a1a2a;">Grant Agreement:</strong> No. 101299050<br>
+                                <strong style="color: #0a1a2a;">Programme:</strong> Horizon Europe Research and Innovation Action<br>
+                                <strong style="color: #0a1a2a;">Coordinator:</strong> FUNDACIO EURECAT (EURECAT), Spain<br>
+                                <strong style="color: #0a1a2a;">JKUAT Role:</strong> Beneficiary, WP5 Capacity Building and Replication Lead
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================================ -->
+        <!-- OBJECTIVES                                                   -->
+        <!-- ============================================================ -->
+        <section class="section section-alt" id="objectives">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">Objectives</span>
+                    <h2>What We Aim to Achieve</h2>
+                    <p>BRIDGE-AI works toward six primary objectives across research, capacity building, and replication</p>
+                </div>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <span class="obj-icon">🔬</span>
+                        <h4>1. Technology Demonstration</h4>
+                        <p>Deploy and validate GenAI-enhanced Smart Mushroom system at JKUAT Smart Farm Zone with documented performance data.</p>
+                    </div>
+                    <div class="objective-card">
+                        <span class="obj-icon">🌾</span>
+                        <h4>2. Farmer Empowerment</h4>
+                        <p>Equip 400,000+ farmers across Kenya with smart farming capabilities, starting from Kiambu and Machakos counties.</p>
+                    </div>
+                    <div class="objective-card">
+                        <span class="obj-icon">👩‍🌾</span>
+                        <h4>3. Youth &amp; Women Inclusion</h4>
+                        <p>Actively engage youth and women through targeted training, mentoring, and leadership pathways in agritech.</p>
+                    </div>
+                    <div class="objective-card">
+                        <span class="obj-icon">📚</span>
+                        <h4>4. Knowledge Transfer</h4>
+                        <p>Deliver modular training, bootcamps, SME mentoring, and replication resources for East Africa through WP5.</p>
+                    </div>
+                    <div class="objective-card">
+                        <span class="obj-icon">📈</span>
+                        <h4>5. Research &amp; Evidence</h4>
+                        <p>Document pilot outcomes, lessons learned, and best practices for reporting to Horizon Europe and the public.</p>
+                    </div>
+                    <div class="objective-card">
+                        <span class="obj-icon">🌍</span>
+                        <h4>6. Scalability &amp; Replication</h4>
+                        <p>Develop a replication playbook and toolkit for adoption across Kenya and East Africa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================================ -->
+        <!-- COUNTRIES & USE CASES                                        -->
+        <!-- ============================================================ -->
+        <section class="section" id="countries">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">Countries &amp; Use Cases</span>
+                    <h2>Operating Across Africa</h2>
+                    <p>BRIDGE-AI works in three African countries with four agricultural use cases</p>
+                </div>
+                <div class="countries-grid">
+                    <div class="country-card">
+                        <span class="flag">🇰🇪</span>
+                        <h4>Kenya</h4>
+                        <p>Smart Mushroom Cultivation</p>
+                        <span class="use-case-tag">IoT + GenAI</span>
+                    </div>
+                    <div class="country-card">
+                        <span class="flag">🇹🇳</span>
+                        <h4>Tunisia</h4>
+                        <p>Pomegranate Cultivation</p>
+                        <span class="use-case-tag">Earth Observation</span>
+                    </div>
+                    <div class="country-card">
+                        <span class="flag">🇳🇬</span>
+                        <h4>Nigeria</h4>
+                        <p>Maize Production &amp; Pasture Prediction</p>
+                        <span class="use-case-tag">Digital Shadows</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================================ -->
+        <!-- TECHNOLOGY EXPLAINER                                         -->
+        <!-- ============================================================ -->
+        <section class="section section-alt" id="technology">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">Technology</span>
+                    <h2>How It Works</h2>
+                    <p>BRIDGE-AI combines multiple cutting-edge technologies to deliver practical solutions</p>
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2a8 8 0 00-8 8c0 4 2 7 8 7s8-3 8-7c0-5-4-8-8-10z"/>
+                                <path d="M12 12c-2 0-3-1-3-2s1-2 3-2 3 1 3 2-1 2-3 2z"/>
+                                <path d="M12 14v4"/>
+                                <path d="M10 16h4"/>
+                            </svg>
+                        </div>
+                        <h4>GenAI Predictive Analytics</h4>
+                        <p>AI models predict yields, detect anomalies, and provide decision support for farmers and agronomists.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M2 12L3 10M2 12L3 14M2 12H4M12 2L10 3M12 2L14 3M12 4V2M22 12L21 10M22 12L21 14M22 12H20M12 22L10 21M12 22L14 21M12 20V22"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <h4>IoT Sensing</h4>
+                        <p>Real-time monitoring of temperature, humidity, CO₂, light, and substrate moisture for precision agriculture.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18 17V9"/>
+                                <path d="M13 17V5"/>
+                                <path d="M8 17v-3"/>
+                            </svg>
+                        </div>
+                        <h4>Digital Shadows</h4>
+                        <p>Virtual replicas of grow rooms for "what-if" scenario testing, yield forecasting, and training simulation.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h4>Semantic Interoperability</h4>
+                        <p>Using FIWARE/NGSI-LD standards for seamless data exchange between systems and platforms.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                <path d="M8 10h.01M12 10h.01M16 10h.01"/>
+                            </svg>
+                        </div>
+                        <h4>Low-Bandwidth Advisory</h4>
+                        <p>Voice alerts and SMS-based advisory in local languages (Swahili, French, Arabic) for farmers with limited connectivity.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 6v7m0 0l-2-2m2 2l2-2M4 4v16h16V4H4z"/>
+                                <path d="M8 12h8"/>
+                            </svg>
+                        </div>
+                        <h4>Earth Observation</h4>
+                        <p>Satellite data integration for monitoring crop health, weather patterns, and environmental conditions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ============================================================ -->
+        <!-- TIMELINE                                                      -->
+        <!-- ============================================================ -->
+        <section class="section" id="timeline">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">Timeline</span>
+                    <h2>Project Milestones</h2>
+                    <p>BRIDGE-AI is a 36-month journey from research to replication</p>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="tl-period">M1-M3 (2026)</span>
+                        <h4>Project Launch &amp; Foundation</h4>
+                        <p>Publish foundational pages, local outreach inputs, project overview, pilot profile, and contact page.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="tl-period">M7-M15 (2026-2027)</span>
+                        <h4>Living Lab Setup</h4>
+                        <p>Document Living Lab setup, stakeholder onboarding, and co-design preparation after ethics/legal clearance.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="tl-period">M14-M27 (2027-2028)</span>
+                        <h4>Pilot Implementation</h4>
+                        <p>Publish approved pilot implementation updates, training workshops, field setup, sensor deployment, and user-interface testing.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="tl-period">M19-M36 (2027-2029)</span>
+                        <h4>Training &amp; Capacity Building</h4>
+                        <p>WP5 page becomes active training, bootcamp, SME mentoring, repository, and replication hub.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="tl-period">M28-M36 (2028-2029)</span>
+                        <h4>Replication &amp; Sustainability</h4>
+                        <p>Publish replication toolkit, local lessons, sustainability resources, and final project outcomes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER (included)                                               -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // ================================================================
+            // SMOOTH SCROLL FOR INTERNAL LINKS
+            // ================================================================
+            
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            console.log('✅ BRIDGE-AI Kenya About page initialized');
+            
+        })();
+    </script>
+</body>
+</html>

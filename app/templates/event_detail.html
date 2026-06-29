@@ -1,0 +1,1469 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - EVENT DETAIL PAGE                            -->
+<!-- ================================================================ -->
+<!-- Dynamic event detail page for training events, bootcamps,       -->
+<!-- workshops, and webinars. Professional modern design with        -->
+<!-- enhanced glassmorphism, better hierarchy, and smart styling.   -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ event.title }} - BRIDGE-AI Kenya</title>
+    <meta name="description" content="{{ event.summary or event.title }}">
+    <meta name="robots" content="index, follow">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES & RESET                                           */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --primary-lighter: #2a6a8b;
+            --accent: #1a8a6a;
+            --accent-light: #7ad4b8;
+            --gold: #c8922a;
+            --gold-light: #e8b55a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --bg-lighter: #fafcfe;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.10);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.14);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ================================================================ */
+        /* ANIMATIONS                                                      */
+        /* ================================================================ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(26, 138, 106, 0.25); }
+            50% { box-shadow: 0 0 45px rgba(26, 138, 106, 0.5); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================================================================ */
+        /* BREADCRUMB - Clean & Minimal                                   */
+        /* ================================================================ */
+        .breadcrumb-bar {
+            background: var(--bg-white);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 72px;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .breadcrumb-bar .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-bar .breadcrumb-container .home-icon {
+            color: var(--primary-light);
+            margin-right: 2px;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb-bar .breadcrumb-container .sep {
+            color: var(--text-light);
+            opacity: 0.5;
+        }
+
+        .breadcrumb-bar .breadcrumb-container .current {
+            color: var(--text-body);
+            font-weight: 600;
+        }
+
+        /* ================================================================ */
+        /* HERO SECTION - Refined & Elegant                               */
+        /* ================================================================ */
+        .hero-event {
+            position: relative;
+            min-height: 65vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px 50px;
+            overflow: hidden;
+        }
+
+        .hero-event .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=1600&h=900&fit=crop&crop=center&auto=format');
+            background-size: cover;
+            background-position: center;
+            animation: slowZoom 25s ease-in-out forwards;
+            z-index: 0;
+        }
+
+        .hero-event .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                rgba(8, 26, 40, 0.92) 0%,
+                rgba(15, 43, 61, 0.80) 40%,
+                rgba(26, 74, 107, 0.65) 70%,
+                rgba(26, 138, 106, 0.25) 100%
+            );
+            z-index: 1;
+        }
+
+        .hero-event .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            text-align: center;
+            animation: fadeInUp 0.9s ease forwards;
+        }
+
+        .hero-event .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+        }
+
+        .hero-event .hero-badge .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            display: inline-block;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .hero-event h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .hero-event h1 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-event .hero-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 20px;
+        }
+
+        .hero-event .hero-status.upcoming {
+            background: rgba(40, 167, 69, 0.15);
+            color: #7ad4b8;
+            border: 1px solid rgba(40, 167, 69, 0.12);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .hero-event .hero-status.ongoing {
+            background: rgba(26, 74, 107, 0.15);
+            color: #7ad4b8;
+            border: 1px solid rgba(26, 74, 107, 0.12);
+        }
+
+        .hero-event .hero-status.completed {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-event .hero-status.cancelled {
+            background: rgba(231, 76, 60, 0.12);
+            color: #f5a0a0;
+            border: 1px solid rgba(231, 76, 60, 0.10);
+        }
+
+        .hero-event .hero-status .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .hero-event .hero-status .status-dot.upcoming {
+            background: #28a745;
+        }
+        .hero-event .hero-status .status-dot.ongoing {
+            background: #3498db;
+        }
+        .hero-event .hero-status .status-dot.completed {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .hero-event .hero-status .status-dot.cancelled {
+            background: #e74c3c;
+        }
+
+        .hero-event .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin: 20px 0 28px;
+            padding: 18px 36px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .hero-event .hero-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.9rem;
+        }
+
+        .hero-event .hero-meta .meta-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent-light);
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .hero-event .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .hero-event .hero-actions .btn-register {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 44px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(26, 138, 106, 0.25);
+        }
+
+        .hero-event .hero-actions .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 138, 106, 0.4);
+            gap: 18px;
+        }
+
+        .hero-event .hero-actions .btn-register .arrow {
+            transition: transform 0.3s var(--transition);
+        }
+
+        .hero-event .hero-actions .btn-register:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        .hero-event .hero-actions .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+        }
+
+        .hero-event .hero-actions .btn-back:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+
+        /* ================================================================ */
+        /* SECTION HEADERS - Unified & Elegant                            */
+        /* ================================================================ */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header .section-tag {
+            display: inline-block;
+            background: rgba(26, 74, 107, 0.04);
+            color: var(--primary-light);
+            padding: 4px 18px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .section-header .section-tag.gold {
+            background: rgba(200, 146, 42, 0.06);
+            color: #8a6d1b;
+        }
+
+        .section-header h2 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.8px;
+            line-height: 1.2;
+        }
+
+        .section-header h2 .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 6px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ================================================================ */
+        /* EVENT DETAILS - Glassmorphism Cards                            */
+        /* ================================================================ */
+        .section-details {
+            padding: 70px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .details-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px 24px;
+            transition: all 0.3s var(--transition);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .detail-card .detail-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .detail-card h4 {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .detail-card .detail-value {
+            font-size: 0.95rem;
+            color: var(--text-body);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .detail-card .detail-value .sub {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ================================================================ */
+        /* AGENDA SECTION - Clean & Readable                              */
+        /* ================================================================ */
+        .section-agenda {
+            padding: 70px 24px 60px;
+            background: var(--bg-white);
+        }
+
+        .agenda-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .agenda-content {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 36px 42px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .agenda-content .agenda-text {
+            font-size: 1rem;
+            color: var(--text-body);
+            line-height: 2;
+        }
+
+        .agenda-content .agenda-text .highlight-text {
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        /* ================================================================ */
+        /* SPEAKERS SECTION - Modern Grid                                 */
+        /* ================================================================ */
+        .section-speakers {
+            padding: 70px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .speakers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .speaker-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-md);
+            padding: 28px 20px 24px;
+            text-align: center;
+            transition: all 0.3s var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .speaker-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .speaker-card .speaker-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 16px rgba(26, 74, 107, 0.15);
+        }
+
+        .speaker-card h5 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .speaker-card .speaker-role {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* ================================================================ */
+        /* REGISTRATION SECTION - Call to Action                          */
+        /* ================================================================ */
+        .section-register {
+            padding: 70px 24px 60px;
+            background: linear-gradient(160deg, var(--bg-white) 0%, var(--bg-light) 100%);
+        }
+
+        .register-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-xl);
+            padding: 48px 52px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .register-container .register-icon {
+            font-size: 3.2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .register-container h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .register-container .register-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .register-container .btn-register-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 52px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(26, 138, 106, 0.25);
+        }
+
+        .register-container .btn-register-large:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 44px rgba(26, 138, 106, 0.35);
+            gap: 18px;
+        }
+
+        .register-container .btn-register-large .arrow {
+            transition: transform 0.3s var(--transition);
+        }
+
+        .register-container .btn-register-large:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        .register-container .register-note {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+        .register-container .register-note .privacy-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-container .register-note .privacy-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ================================================================ */
+        /* POST-EVENT EVIDENCE                                             */
+        /* ================================================================ */
+        .section-evidence {
+            padding: 70px 24px 60px;
+            background: var(--bg-white);
+        }
+
+        .evidence-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .evidence-card {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-md);
+            padding: 26px 28px;
+            transition: all 0.3s var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .evidence-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .evidence-card .evidence-icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .evidence-card h5 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .evidence-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        .evidence-card .evidence-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-light);
+            display: block;
+        }
+
+        /* ================================================================ */
+        /* BACK TO TRAINING - Clean CTA                                   */
+        /* ================================================================ */
+        .back-section {
+            padding: 40px 24px 70px;
+            text-align: center;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .back-section .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-light);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s var(--transition);
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-section .back-link:hover {
+            gap: 16px;
+            color: var(--accent);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .back-section .back-link svg {
+            transition: transform 0.3s var(--transition);
+        }
+
+        .back-section .back-link:hover svg {
+            transform: translateX(-4px);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 1024px) {
+            .hero-event h1 {
+                font-size: 2.6rem;
+            }
+
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .evidence-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .breadcrumb-bar {
+                top: 64px;
+                padding: 12px 16px;
+            }
+
+            .hero-event {
+                min-height: 55vh;
+                padding: 50px 20px 40px;
+            }
+
+            .hero-event h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-event .hero-meta {
+                gap: 14px;
+                padding: 14px 20px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-event .hero-meta .meta-item {
+                font-size: 0.85rem;
+            }
+
+            .hero-event .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-event .hero-actions .btn-register,
+            .hero-event .hero-actions .btn-back {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .detail-card {
+                padding: 20px 22px;
+                text-align: left;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .detail-card .detail-icon {
+                margin-bottom: 0;
+                font-size: 1.6rem;
+                flex-shrink: 0;
+            }
+
+            .detail-card h4 {
+                margin-bottom: 2px;
+                font-size: 0.65rem;
+            }
+
+            .detail-card .detail-value {
+                font-size: 0.9rem;
+            }
+
+            .agenda-content {
+                padding: 24px 20px;
+            }
+
+            .agenda-content .agenda-text {
+                font-size: 0.95rem;
+            }
+
+            .register-container {
+                padding: 32px 24px;
+            }
+
+            .register-container h3 {
+                font-size: 1.4rem;
+            }
+
+            .register-container .btn-register-large {
+                width: 100%;
+                justify-content: center;
+                padding: 16px 24px;
+                font-size: 0.9rem;
+            }
+
+            .evidence-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .speakers-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .section-details,
+            .section-agenda,
+            .section-speakers,
+            .section-register,
+            .section-evidence {
+                padding: 50px 16px 40px;
+            }
+
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-header p {
+                font-size: 0.9rem;
+            }
+
+            .back-section {
+                padding: 30px 16px 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-event h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-event .hero-meta {
+                padding: 12px 16px;
+                gap: 10px;
+            }
+
+            .hero-event .hero-meta .meta-item {
+                font-size: 0.8rem;
+            }
+
+            .hero-event .hero-meta .meta-item svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .hero-event .hero-badge {
+                font-size: 0.55rem;
+                padding: 6px 16px;
+            }
+
+            .detail-card {
+                padding: 16px 16px;
+                gap: 12px;
+            }
+
+            .detail-card .detail-value {
+                font-size: 0.85rem;
+            }
+
+            .register-container {
+                padding: 24px 16px;
+            }
+
+            .register-container .register-icon {
+                font-size: 2.6rem;
+            }
+
+            .register-container h3 {
+                font-size: 1.2rem;
+            }
+
+            .register-container .register-desc {
+                font-size: 0.85rem;
+            }
+
+            .evidence-card {
+                padding: 18px 18px;
+            }
+
+            .speaker-card {
+                padding: 18px 14px;
+            }
+
+            .speaker-card .speaker-avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .agenda-content {
+                padding: 18px 16px;
+            }
+
+            .agenda-content .agenda-text {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .hero-event .hero-meta {
+                gap: 20px;
+                padding: 14px 24px;
+            }
+
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ================================================================ */
+        /* REDUCED MOTION                                                  */
+        /* ================================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- BREADCRUMB                                                      -->
+    <!-- ================================================================ -->
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <span class="home-icon">🏠</span>
+            <a href="{{ url_for('public.index') }}">Home</a>
+            <span class="sep">/</span>
+            <a href="{{ url_for('public.training_wp5') }}">Training &amp; WP5</a>
+            <span class="sep">/</span>
+            <a href="{{ url_for('public.training_wp5') }}#bootcamps">Bootcamps</a>
+            <span class="sep">/</span>
+            <span class="current">{{ event.title|truncate(50) }}</span>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- HERO SECTION                                                    -->
+    <!-- ================================================================ -->
+    <section class="hero-event">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <!-- Status Badge -->
+            <div class="hero-status {{ event.status|lower if event.status else 'upcoming' }}">
+                <span class="status-dot {{ event.status|lower if event.status else 'upcoming' }}"></span>
+                {% if event.status == 'upcoming' %}
+                    Upcoming Event
+                {% elif event.status == 'ongoing' %}
+                    Ongoing
+                {% elif event.status == 'completed' %}
+                    Completed
+                {% elif event.status == 'cancelled' %}
+                    Cancelled
+                {% else %}
+                    Upcoming Event
+                {% endif %}
+            </div>
+
+            <!-- Title -->
+            <h1>{{ event.title }}</h1>
+
+            <!-- Meta Information -->
+            <div class="hero-meta">
+                <span class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    {{ event.date if event.date else 'Date TBD' }}
+                </span>
+                <span class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    {{ event.location if event.location else 'Location TBD' }}
+                </span>
+                <span class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    {% if event.audience %}
+                        {{ event.audience|title }}
+                    {% else %}
+                        All Audiences
+                    {% endif %}
+                </span>
+                {% if event.capacity %}
+                <span class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                    Capacity: {{ event.capacity }}
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="hero-actions">
+                {% if event.status == 'upcoming' or event.status == 'ongoing' %}
+                    {% if event.registration_link %}
+                        <a href="{{ event.registration_link }}" target="_blank" class="btn-register">
+                            Register Now
+                            <span class="arrow">→</span>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('public.contact') }}" class="btn-register">
+                            Contact to Register
+                            <span class="arrow">→</span>
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <a href="{{ url_for('public.training_wp5') }}#bootcamps" class="btn-back">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back to Bootcamps
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- EVENT DETAILS                                                   -->
+    <!-- ================================================================ -->
+    <section class="section-details">
+        <div class="details-container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">📋 Event Details</span>
+                <h2>Everything You Need to <span class="gradient-text">Know</span></h2>
+                <p>Complete information about this training event</p>
+            </div>
+
+            <div class="details-grid">
+                <!-- Date & Time -->
+                <div class="detail-card animate-on-scroll">
+                    <span class="detail-icon">📅</span>
+                    <div>
+                        <h4>Date &amp; Time</h4>
+                        <div class="detail-value">
+                            {% if event.date %}
+                                {{ event.date }}
+                            {% else %}
+                                <span class="sub">To be announced</span>
+                            {% endif %}
+                            {% if event.time %}
+                                <br><span class="sub">{{ event.time }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="detail-card animate-on-scroll">
+                    <span class="detail-icon">📍</span>
+                    <div>
+                        <h4>Location</h4>
+                        <div class="detail-value">
+                            {% if event.location %}
+                                {{ event.location }}
+                            {% else %}
+                                <span class="sub">To be announced</span>
+                            {% endif %}
+                            {% if event.venue_details %}
+                                <br><span class="sub">{{ event.venue_details }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audience -->
+                <div class="detail-card animate-on-scroll">
+                    <span class="detail-icon">👥</span>
+                    <div>
+                        <h4>Target Audience</h4>
+                        <div class="detail-value">
+                            {% if event.audience %}
+                                {{ event.audience|title }}
+                            {% else %}
+                                <span class="sub">Open to all</span>
+                            {% endif %}
+                            {% if event.gender_inclusion_note %}
+                                <br><span class="sub">🌍 {{ event.gender_inclusion_note }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacity -->
+                <div class="detail-card animate-on-scroll">
+                    <span class="detail-icon">👤</span>
+                    <div>
+                        <h4>Capacity</h4>
+                        <div class="detail-value">
+                            {% if event.capacity %}
+                                {{ event.capacity }} participants
+                                {% if event.registration_status %}
+                                    <br><span class="sub">Status: {{ event.registration_status }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="sub">Unlimited</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- AGENDA / SCHEDULE                                               -->
+    <!-- ================================================================ -->
+    {% if event.agenda %}
+    <section class="section-agenda">
+        <div class="agenda-container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag gold">📋 Agenda</span>
+                <h2>Event <span class="gradient-text">Schedule</span></h2>
+                <p>Sessions, speakers, practical demonstrations, and learning outcomes</p>
+            </div>
+
+            <div class="agenda-content animate-on-scroll">
+                <div class="agenda-text">
+                    {{ event.agenda|safe|replace('\n', '<br>') }}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ================================================================ -->
+    <!-- SPEAKERS / FACILITATORS                                         -->
+    <!-- ================================================================ -->
+    {% if event.speakers %}
+    <section class="section-speakers">
+        <div class="section-header animate-on-scroll">
+            <span class="section-tag">🎤 Speakers</span>
+            <h2>Meet Our <span class="gradient-text">Facilitators</span></h2>
+            <p>Expert facilitators leading this training session</p>
+        </div>
+
+        <div class="speakers-grid">
+            {% set speakers_list = event.speakers.split(',') if event.speakers else [] %}
+            {% for speaker in speakers_list %}
+            <div class="speaker-card animate-on-scroll">
+                <div class="speaker-avatar">{{ speaker.strip()[0]|upper if speaker.strip() else '?' }}</div>
+                <h5>{{ speaker.strip() }}</h5>
+                <span class="speaker-role">Facilitator</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ================================================================ -->
+    <!-- REGISTRATION SECTION                                            -->
+    <!-- ================================================================ -->
+    {% if event.status == 'upcoming' or event.status == 'ongoing' %}
+    <section class="section-register">
+        <div class="register-container animate-on-scroll">
+            <span class="register-icon">📝</span>
+            <h3>Secure Your Spot</h3>
+            <p class="register-desc">
+                {% if event.capacity %}
+                    Limited spots available ({{ event.capacity }} participants max).<br>
+                {% endif %}
+                Register now to join this training event.
+            </p>
+
+            {% if event.registration_link %}
+                <a href="{{ event.registration_link }}" target="_blank" class="btn-register-large">
+                    Register Now
+                    <span class="arrow">→</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('public.contact') }}" class="btn-register-large">
+                    Contact to Register
+                    <span class="arrow">→</span>
+                </a>
+            {% endif %}
+
+            <p class="register-note">
+                🔒 Your data is protected. See our
+                <a href="{{ url_for('public.privacy_ethics') }}" class="privacy-link">Privacy Policy</a>.
+                <br>
+                <span style="display:inline-block;margin-top:4px;font-size:0.7rem;color:var(--text-light);">
+                    ✓ Privacy notice &bull; ✓ Consent checkbox &bull; ✓ Data minimisation
+                </span>
+            </p>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ================================================================ -->
+    <!-- POST-EVENT EVIDENCE (Completed Events Only)                     -->
+    <!-- ================================================================ -->
+    {% if event.status == 'completed' and (event.post_event_report or event.feedback_summary or event.attendance_total) %}
+    <section class="section-evidence">
+        <div class="evidence-container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag gold">📊 Post-Event Evidence</span>
+                <h2>Event <span class="gradient-text">Report</span></h2>
+                <p>Summary, attendance, feedback, and resources from the completed training</p>
+            </div>
+
+            <div class="evidence-grid">
+                {% if event.post_event_report %}
+                <div class="evidence-card animate-on-scroll">
+                    <span class="evidence-icon">📄</span>
+                    <h5>Event Summary</h5>
+                    <p>{{ event.post_event_report }}</p>
+                </div>
+                {% endif %}
+
+                {% if event.attendance_total %}
+                <div class="evidence-card animate-on-scroll">
+                    <span class="evidence-icon">👥</span>
+                    <h5>Attendance</h5>
+                    <span class="evidence-number">{{ event.attendance_total }}</span>
+                    <p>Total participants attended</p>
+                    {% if event.gender_figures or event.youth_figures %}
+                        <p style="font-size:0.8rem;color:var(--text-light);margin-top:4px;">
+                            {% if event.gender_figures %}♀ {{ event.gender_figures }}{% endif %}
+                            {% if event.youth_figures %} &bull; 🧑 Youth: {{ event.youth_figures }}{% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if event.feedback_summary %}
+                <div class="evidence-card animate-on-scroll">
+                    <span class="evidence-icon">⭐</span>
+                    <h5>Feedback Summary</h5>
+                    <p>{{ event.feedback_summary }}</p>
+                </div>
+                {% endif %}
+
+                {% if event.resources_links %}
+                <div class="evidence-card animate-on-scroll">
+                    <span class="evidence-icon">🔗</span>
+                    <h5>Resources</h5>
+                    <p>
+                        <a href="{{ event.resources_links }}" target="_blank" style="color:var(--primary-light);text-decoration:none;font-weight:500;">
+                            View Resources →
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ================================================================ -->
+    <!-- BACK TO TRAINING                                                -->
+    <!-- ================================================================ -->
+    <section class="back-section">
+        <a href="{{ url_for('public.training_wp5') }}#bootcamps" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Back to All Bootcamps &amp; Training
+        </a>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // SCROLL ANIMATIONS
+            // ================================================================
+
+            function observeElements() {
+                const elements = document.querySelectorAll('.animate-on-scroll:not(.visible)');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+
+                elements.forEach(el => observer.observe(el));
+            }
+
+            // ================================================================
+            // INIT
+            // ================================================================
+
+            observeElements();
+
+            console.log('✅ BRIDGE-AI Kenya Event Detail page initialized');
+            console.log('📋 Event:', '{{ event.title }}');
+
+        })();
+    </script>
+
+</body>
+</html>

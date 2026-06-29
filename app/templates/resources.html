@@ -1,0 +1,650 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - RESOURCES PAGE                                -->
+<!-- ================================================================ -->
+<!-- This page displays all resources from the database.             -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - BRIDGE-AI Kenya</title>
+    <meta name="description" content="Public resources, training materials, reports, videos and approved outputs from BRIDGE-AI Kenya activities.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES                                                   */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --accent: #1a8a6a;
+            --accent-light: #d4edda;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ================================================================ */
+        /* PAGE HERO                                                       */
+        /* ================================================================ */
+        .page-hero {
+            background: linear-gradient(160deg, #061420 0%, #0f2b3d 40%, #1a4a6b 100%);
+            padding: 70px 24px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '📚';
+            position: absolute;
+            font-size: 18rem;
+            opacity: 0.03;
+            right: -5%;
+            bottom: -20%;
+            transform: rotate(-8deg);
+        }
+
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero h1 .highlight {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-hero p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 10px auto 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .page-hero .breadcrumb a:hover {
+            color: #ffffff;
+        }
+
+        .page-hero .breadcrumb .sep {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .page-hero .hero-count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 18px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ================================================================ */
+        /* FILTER SECTION                                                  */
+        /* ================================================================ */
+        .filter-section {
+            background: var(--bg-white);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .filter-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-container .filter-btn {
+            padding: 6px 18px;
+            border: 1px solid var(--border-light);
+            border-radius: 50px;
+            background: var(--bg-white);
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .filter-container .filter-btn:hover {
+            border-color: var(--primary-light);
+            color: var(--text-dark);
+        }
+
+        .filter-container .filter-btn.active {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+        }
+
+        /* ================================================================ */
+        /* RESOURCES GRID                                                  */
+        /* ================================================================ */
+        .resources-section {
+            padding: 40px 24px 60px;
+        }
+
+        .resources-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .resource-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 28px 24px 24px;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .resource-card .resource-icon {
+            font-size: 2.2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .resource-card .resource-type {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--text-muted);
+            padding: 1px 12px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+            align-self: flex-start;
+        }
+
+        .resource-card .resource-type.deliverable {
+            background: #d4e8f5;
+            color: #1a4a6b;
+        }
+
+        .resource-card .resource-type.policy_brief {
+            background: #fef8e7;
+            color: #8a6d1b;
+        }
+
+        .resource-card .resource-type.video {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .resource-card .resource-type.presentation {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .resource-card .resource-type.training_kit {
+            background: #ece4f5;
+            color: #5a3a7a;
+        }
+
+        .resource-card .resource-type.publication {
+            background: #d4e8f5;
+            color: #1a4a6b;
+        }
+
+        .resource-card .resource-type.code_repository {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .resource-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .resource-card .resource-description {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .resource-card .resource-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .resource-card .resource-meta .meta-item {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .resource-card .resource-meta .meta-item .meta-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--border-light);
+            display: inline-block;
+        }
+
+        .resource-card .resource-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .resource-card .resource-actions .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            background: var(--primary-light);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .resource-card .resource-actions .download-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(26, 74, 107, 0.25);
+        }
+
+        .resource-card .resource-actions .external-link {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color var(--transition);
+        }
+
+        .resource-card .resource-actions .external-link:hover {
+            color: var(--primary-light);
+        }
+
+        /* ================================================================ */
+        /* EMPTY STATE                                                     */
+        /* ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border-light);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3.6rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .page-hero {
+                padding: 50px 20px 40px;
+            }
+
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .page-hero p {
+                font-size: 1rem;
+            }
+
+            .filter-section {
+                top: 64px;
+            }
+
+            .filter-container {
+                padding: 0 16px;
+                gap: 8px;
+            }
+
+            .filter-container .filter-btn {
+                font-size: 0.7rem;
+                padding: 4px 14px;
+            }
+
+            .resources-section {
+                padding: 30px 16px 40px;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .resource-card .resource-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .resource-card .resource-actions .download-btn {
+                justify-content: center;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- PAGE HERO                                                    -->
+        <!-- ============================================================ -->
+        <section class="page-hero">
+            <div class="breadcrumb">
+                <a href="{{ url_for('public.index') }}">Home</a>
+                <span class="sep">/</span>
+                <span>Resources</span>
+            </div>
+            <h1>BRIDGE-AI Kenya <span class="highlight">Resources</span></h1>
+            <p>Public resources, training materials, reports, videos and approved outputs from BRIDGE-AI Kenya activities</p>
+            <span class="hero-count">📚 {{ resources|length if resources else 0 }} resources available</span>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- FILTER SECTION                                               -->
+        <!-- ============================================================ -->
+        <section class="filter-section">
+            <div class="filter-container" id="resourceFilters">
+                <button class="filter-btn active" data-filter="all">All Resources</button>
+                <button class="filter-btn" data-filter="deliverable">📄 Deliverables</button>
+                <button class="filter-btn" data-filter="policy_brief">📋 Policy Briefs</button>
+                <button class="filter-btn" data-filter="video">🎬 Videos</button>
+                <button class="filter-btn" data-filter="presentation">📊 Presentations</button>
+                <button class="filter-btn" data-filter="training_kit">📘 Training Kits</button>
+                <button class="filter-btn" data-filter="publication">📖 Publications</button>
+                <button class="filter-btn" data-filter="code_repository">💻 Code</button>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- RESOURCES GRID                                               -->
+        <!-- ============================================================ -->
+        <section class="resources-section">
+            <div class="resources-container">
+
+                {% if resources and resources|length > 0 %}
+                    <div class="resources-grid" id="resourcesGrid">
+                        {% for resource in resources %}
+                        <div class="resource-card" data-type="{{ resource.resource_type or 'other' }}">
+                            <span class="resource-icon">
+                                {% if resource.resource_type == 'deliverable' %}📄
+                                {% elif resource.resource_type == 'policy_brief' %}📋
+                                {% elif resource.resource_type == 'video' %}🎬
+                                {% elif resource.resource_type == 'presentation' %}📊
+                                {% elif resource.resource_type == 'training_kit' %}📘
+                                {% elif resource.resource_type == 'publication' %}📖
+                                {% elif resource.resource_type == 'code_repository' %}💻
+                                {% else %}📎{% endif %}
+                            </span>
+                            <span class="resource-type {{ resource.resource_type or 'other' }}">
+                                {{ resource.resource_type|replace('_', ' ')|title if resource.resource_type else 'Resource' }}
+                            </span>
+                            <h3>{{ resource.title }}</h3>
+                            {% if resource.description %}
+                                <p class="resource-description">{{ resource.description }}</p>
+                            {% endif %}
+                            <div class="resource-meta">
+                                {% if resource.language %}
+                                    <span class="meta-item">🌍 {{ resource.language }}</span>
+                                {% endif %}
+                                {% if resource.version %}
+                                    <span class="meta-item">📌 v{{ resource.version }}</span>
+                                {% endif %}
+                                {% if resource.wp_tag %}
+                                    <span class="meta-item">{{ resource.wp_tag }}</span>
+                                {% endif %}
+                                {% if resource.download_count %}
+                                    <span class="meta-item">⬇️ {{ resource.download_count }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="resource-actions">
+                                {% if resource.file_path %}
+                                    <a href="{{ url_for('static', filename=resource.file_path) }}" class="download-btn" download>
+                                        ⬇️ Download
+                                    </a>
+                                {% elif resource.external_link %}
+                                    <a href="{{ resource.external_link }}" target="_blank" rel="noopener noreferrer" class="external-link">
+                                        🔗 Visit Resource →
+                                    </a>
+                                {% endif %}
+                                {% if resource.license and resource.license != 'All rights reserved' %}
+                                    <span style="font-size: 0.6rem; color: var(--text-light);">{{ resource.license }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span class="empty-icon">📭</span>
+                        <h3>No Resources Available</h3>
+                        <p>Resources will be added here as they become available from BRIDGE-AI Kenya activities.</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // RESOURCE FILTER
+            // ================================================================
+
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const resourceCards = document.querySelectorAll('.resource-card');
+
+            filterButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    const filter = this.getAttribute('data-filter');
+
+                    resourceCards.forEach(function(card) {
+                        const cardType = card.getAttribute('data-type') || 'other';
+
+                        if (filter === 'all' || cardType === filter) {
+                            card.style.display = 'flex';
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(function() {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, 50);
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // ================================================================
+            // SMOOTH SCROLL FOR INTERNAL LINKS
+            // ================================================================
+
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            console.log('✅ BRIDGE-AI Kenya Resources page initialized');
+
+        })();
+    </script>
+</body>
+</html>

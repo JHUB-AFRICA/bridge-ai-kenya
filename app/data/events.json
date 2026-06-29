@@ -1,0 +1,46 @@
+[
+  {
+    "title": "AI in Sustainable Agriculture Webinar",
+    "slug": "ai-sustainable-agriculture-webinar",
+    "date": "2026-07-07",
+    "location": "Microsoft Teams (Online)",
+    "agenda": "Introduction • AI for Sustainable Farming • Machine Learning Case Studies • Interactive Q&A",
+    "audience": "policymakers",
+    "capacity": 10000,
+    "speakers": "Dr. Michael Otieno, Prof. Anne Njeri",
+    "status": "upcoming",
+    "created_at": "2026-06-26T22:23:13.246550",
+    "updated_at": "2026-06-26T22:23:13.246559",
+    "id": 1
+  },
+  {
+    "title": "BRIDGE-AI Digital Agriculture Conference 2026",
+    "slug": "bridge-ai-digital-agriculture-conference-2026",
+    "date": "2026-07-23",
+    "location": "Kenyatta International Convention Centre (KICC), Nairobi",
+    "agenda": "Keynote Addresses • Research Presentations • AI Demonstrations • Startup Showcase • Closing Ceremony",
+    "audience": "public",
+    "capacity": 500,
+    "speakers": "Prof. Esther Maina, Dr. Kevin Ouma, Dr. Peter Ochieng",
+    "status": "completed",
+    "post_event_report": "The conference attracted over 480 participants from universities, government agencies, startups, NGOs, and private sector organizations. Live demonstrations showcased AI-powered farming technologies, precision irrigation systems, and smart mushroom production. Several partnerships were initiated to support collaborative research and technology adoption.",
+    "feedback_summary": "Average participant rating: 4.8/5. Participants praised the practical demonstrations, expert presentations, networking opportunities, and requested more hands-on training sessions in future events.",
+    "created_at": "2026-06-27T04:43:21.275531",
+    "updated_at": "2026-06-27T04:43:21.275541",
+    "id": 2
+  },
+  {
+    "title": "Women in Digital Agriculture Innovation Forum",
+    "slug": "women-digital-agriculture-innovation-forum",
+    "date": "2026-07-09",
+    "location": "Nairobi Innovation Hub",
+    "agenda": "Opening Ceremony • Women Entrepreneurs Panel • AI Solutions Showcase • Funding Opportunities • Networking Session",
+    "audience": "women",
+    "capacity": 150,
+    "speakers": "Dr. Susan Njeri, Ms. Grace Wanjiku",
+    "status": "upcoming",
+    "created_at": "2026-06-27T04:44:44.675931",
+    "updated_at": "2026-06-27T04:44:44.675940",
+    "id": 3
+  }
+]

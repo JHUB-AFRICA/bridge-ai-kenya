@@ -1,0 +1,1314 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - TRAINING & WP5 PAGE                          -->
+<!-- ================================================================ -->
+<!-- Fully aligned with WP5 tasks:                                  -->
+<!-- T5.1 - Training Content Development → /training-and-wp5/materials/ -->
+<!-- T5.2 - Local Training Bootcamps → /training-and-wp5/events/    -->
+<!-- T5.3 - SME Engagement & Mentoring → /training-and-wp5/sme-mentoring/ -->
+<!-- T5.4 - Community & Repositories → /training-and-wp5/community-of-practice/ -->
+<!-- T5.5 - Replication Toolkit → /training-and-wp5/replication-toolkit/ -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training & WP5 - BRIDGE-AI Kenya</title>
+    <meta name="description" content="Capacity building, training bootcamps, SME mentoring, hackathons, and replication toolkit led by JKUAT under BRIDGE-AI WP5.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES & RESET                                           */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --primary-lighter: #2a6a8b;
+            --accent: #1a8a6a;
+            --accent-light: #7ad4b8;
+            --gold: #d4a843;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ================================================================ */
+        /* ANIMATIONS                                                      */
+        /* ================================================================ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(26, 138, 106, 0.25); }
+            50% { box-shadow: 0 0 45px rgba(26, 138, 106, 0.5); }
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================================================================ */
+        /* HERO SECTION                                                    */
+        /* ================================================================ */
+        .hero-wp5 {
+            position: relative;
+            min-height: 75vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 24px 60px;
+            overflow: hidden;
+        }
+
+        .hero-wp5 .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=1600&h=900&fit=crop&crop=center&auto=format');
+            background-size: cover;
+            background-position: center;
+            animation: slowZoom 20s ease-in-out forwards;
+            z-index: 0;
+        }
+
+        .hero-wp5 .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, 
+                rgba(8, 26, 40, 0.88) 0%, 
+                rgba(15, 43, 61, 0.78) 40%, 
+                rgba(26, 74, 107, 0.65) 70%,
+                rgba(26, 138, 106, 0.30) 100%
+            );
+            z-index: 1;
+        }
+
+        .hero-wp5 .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 1;
+        }
+
+        .hero-wp5 .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .hero-wp5 .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 24px;
+        }
+
+        .hero-wp5 .hero-badge .badge-icon {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-light);
+        }
+
+        .hero-wp5 .hero-badge .highlight-badge {
+            color: var(--accent-light);
+        }
+
+        .hero-wp5 h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 18px;
+        }
+
+        .hero-wp5 h1 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-wp5 .hero-subtitle {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 700px;
+            margin: 0 auto 32px;
+            line-height: 1.8;
+        }
+
+        .hero-wp5 .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-wp5 .hero-actions .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .hero-wp5 .hero-actions .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 138, 106, 0.35);
+            gap: 16px;
+        }
+
+        .hero-wp5 .hero-actions .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .hero-wp5 .hero-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .hero-wp5 .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            padding: 24px 40px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .hero-wp5 .hero-stats .stat-item {
+            text-align: center;
+        }
+
+        .hero-wp5 .hero-stats .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hero-wp5 .hero-stats .stat-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* ================================================================ */
+        /* SECTION HEADERS                                                 */
+        /* ================================================================ */
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .section-header .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(26, 74, 107, 0.06);
+            color: var(--primary-light);
+            padding: 5px 20px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .section-header .section-tag svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .section-header .timeline-badge {
+            display: inline-block;
+            background: rgba(26, 74, 107, 0.04);
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 50px;
+            margin-top: 4px;
+        }
+
+        .section-header h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .section-header h2 .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin: 6px auto 0;
+        }
+
+        /* ================================================================ */
+        /* T5.1 - TRAINING CONTENT DEVELOPMENT                            */
+        /* ================================================================ */
+        .section-modules {
+            padding: 80px 24px 60px;
+            background: var(--bg-white);
+            position: relative;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .module-tile {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 32px 24px 28px;
+            text-align: center;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-tile:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .module-tile .module-icon {
+            width: 52px;
+            height: 52px;
+            color: var(--primary-light);
+            display: inline-block;
+            margin-bottom: 14px;
+        }
+
+        .module-tile h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .module-tile .module-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .module-tile .module-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .module-tile .module-link .arrow {
+            transition: transform var(--transition);
+        }
+
+        .module-tile .module-link:hover {
+            gap: 12px;
+            color: var(--accent);
+        }
+
+        .module-tile .module-link:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* T5.2 - BOOTCAMP PLACEHOLDER                                     */
+        /* ================================================================ */
+        .section-bootcamps {
+            padding: 80px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .bootcamp-placeholder {
+            text-align: center;
+            padding: 70px 40px;
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.4s var(--transition);
+        }
+
+        .bootcamp-placeholder:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.80);
+        }
+
+        .bootcamp-placeholder .placeholder-icon {
+            font-size: 4.5rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .bootcamp-placeholder h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .bootcamp-placeholder p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+
+        .bootcamp-placeholder .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 38px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(26, 74, 107, 0.15);
+        }
+
+        .bootcamp-placeholder .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(26, 74, 107, 0.25);
+            gap: 16px;
+        }
+
+        .bootcamp-placeholder .btn-primary .arrow {
+            transition: transform 0.3s var(--transition);
+        }
+
+        .bootcamp-placeholder .btn-primary:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* T5.3 - SME ENGAGEMENT & MENTORING                              */
+        /* ================================================================ */
+        .section-sme {
+            padding: 80px 24px 60px;
+            background: var(--bg-white);
+            position: relative;
+        }
+
+        .sme-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .sme-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-xl);
+            padding: 36px 32px;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sme-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .sme-card .card-icon {
+            width: 44px;
+            height: 44px;
+            color: var(--accent);
+            display: inline-block;
+            margin-bottom: 14px;
+        }
+
+        .sme-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .sme-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .sme-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .sme-card ul li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-body);
+            padding: 4px 0;
+        }
+
+        .sme-card ul li .check-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .sme-card .btn-sme {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .sme-card .btn-sme:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(26, 138, 106, 0.3);
+            gap: 14px;
+        }
+
+        .sme-card .btn-sme .arrow {
+            transition: transform var(--transition);
+        }
+
+        .sme-card .btn-sme:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* T5.4 - COMMUNITY & REPOSITORIES                                */
+        /* ================================================================ */
+        .section-repo {
+            padding: 80px 24px 60px;
+            background: var(--primary-dark);
+            color: #ffffff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-repo::before {
+            content: '⌨️';
+            position: absolute;
+            font-size: 20rem;
+            opacity: 0.03;
+            right: -5%;
+            bottom: -10%;
+        }
+
+        .section-repo .repo-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-repo h2 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .section-repo h2 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-repo p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 6px auto 30px;
+        }
+
+        .repo-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .repo-links .repo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .repo-links .repo-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .repo-links .repo-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ================================================================ */
+        /* T5.5 - REPLICATION TOOLKIT                                     */
+        /* ================================================================ */
+        .section-replication {
+            padding: 80px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .replication-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .replication-item {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            text-align: center;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .replication-item:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .replication-item .rep-icon {
+            width: 44px;
+            height: 44px;
+            color: var(--primary-light);
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .replication-item h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .replication-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .replication-item .rep-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .replication-item .rep-link .arrow {
+            transition: transform var(--transition);
+        }
+
+        .replication-item .rep-link:hover {
+            gap: 12px;
+        }
+
+        .replication-item .rep-link:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 1024px) {
+            .hero-wp5 h1 { font-size: 2.8rem; }
+            .sme-container { grid-template-columns: 1fr; gap: 24px; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 64px; }
+            .hero-wp5 { min-height: 60vh; padding: 60px 20px 40px; }
+            .hero-wp5 h1 { font-size: 2.2rem; }
+            .hero-wp5 .hero-subtitle { font-size: 1rem; }
+            .hero-wp5 .hero-stats { gap: 20px; padding: 16px 20px; flex-wrap: wrap; }
+            .hero-wp5 .hero-stats .stat-number { font-size: 1.4rem; }
+            .section-header h2 { font-size: 2rem; }
+            .modules-grid { grid-template-columns: 1fr 1fr; }
+            .replication-grid { grid-template-columns: 1fr 1fr; }
+            .section-modules, .section-bootcamps, .section-sme, .section-replication, .section-repo {
+                padding: 50px 16px 40px;
+            }
+            .bootcamp-placeholder { padding: 40px 24px; }
+            .bootcamp-placeholder .placeholder-icon { font-size: 3.5rem; }
+            .bootcamp-placeholder h3 { font-size: 1.3rem; }
+            .bootcamp-placeholder p { font-size: 0.95rem; }
+            .bootcamp-placeholder .btn-primary { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-wp5 h1 { font-size: 1.8rem; }
+            .hero-wp5 .hero-stats { flex-direction: column; gap: 12px; align-items: center; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .replication-grid { grid-template-columns: 1fr; }
+            .sme-card { padding: 24px 18px; }
+            .repo-links { flex-direction: column; align-items: center; }
+            .repo-links .repo-btn { width: 100%; justify-content: center; }
+            .hero-wp5 .hero-actions { flex-direction: column; align-items: center; }
+            .hero-wp5 .hero-actions .btn-primary,
+            .hero-wp5 .hero-actions .btn-secondary { width: 100%; justify-content: center; }
+            .bootcamp-placeholder { padding: 30px 16px; }
+            .bootcamp-placeholder .placeholder-icon { font-size: 2.8rem; }
+            .bootcamp-placeholder h3 { font-size: 1.1rem; }
+            .bootcamp-placeholder p { font-size: 0.85rem; }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-light); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- HERO SECTION - WP5 Overview                                  -->
+        <!-- ============================================================ -->
+        <section class="hero-wp5" id="top">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-pattern"></div>
+
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    JKUAT Leads <span class="highlight-badge">Work Package 5</span>
+                </div>
+                <h1>
+                    Capacity Building &amp;<br>
+                    <span class="gradient-text">Replication</span>
+                </h1>
+                <p class="hero-subtitle">
+                    JKUAT leads WP5, focusing on helping African SMEs, developers, universities and end-users
+                    use, adapt and scale GenAI solutions for agriculture through modular training,
+                    bootcamps, SME mentoring, open repositories and replication playbooks.
+                </p>
+                <div class="hero-actions">
+                    <a href="#resources" class="btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Explore Training
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="#sme" class="btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        SME Mentoring
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-upcoming">0</span>
+                        <span class="stat-label">Upcoming Events</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-completed">0</span>
+                        <span class="stat-label">Completed Trainings</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Training Modules</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Replication Tools</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- T5.1 - TRAINING CONTENT DEVELOPMENT                          -->
+        <!-- ============================================================ -->
+        <section class="section-modules" id="resources">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    T5.1
+                </span>
+                <h2>Training <span class="gradient-text">Content Development</span></h2>
+                <p>Modular training kits, video tutorials, downloadable guides, and repository links.</p>
+                <span class="timeline-badge">📅 Timeline: M19-M32</span>
+            </div>
+
+            <div class="modules-grid">
+                <div class="module-tile animate-on-scroll">
+                    <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <h4>GenAI for Agriculture</h4>
+                    <p class="module-desc">Foundational module on Generative AI applications in farming.</p>
+                    <a href="{{ url_for('public.training_materials') }}#modules" class="module-link">
+                        View Resource <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="module-tile animate-on-scroll">
+                    <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    <h4>Smart Mushroom Farming</h4>
+                    <p class="module-desc">IoT sensors, AI monitoring, and climate control techniques.</p>
+                    <a href="{{ url_for('public.training_materials') }}#modules" class="module-link">
+                        View Resource <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="module-tile animate-on-scroll">
+                    <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    <h4>IoT &amp; Sensor Integration</h4>
+                    <p class="module-desc">Deploying and managing IoT sensors for agricultural data.</p>
+                    <a href="{{ url_for('public.training_materials') }}#modules" class="module-link">
+                        View Resource <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="module-tile animate-on-scroll">
+                    <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 20V10"/>
+                        <path d="M12 20V4"/>
+                        <path d="M6 20v-6"/>
+                        <path d="M2 20h20"/>
+                    </svg>
+                    <h4>Data Analytics &amp; Dashboards</h4>
+                    <p class="module-desc">Visualizing agricultural data with low-bandwidth dashboards.</p>
+                    <a href="{{ url_for('public.training_materials') }}#modules" class="module-link">
+                        View Resource <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="module-tile animate-on-scroll">
+                    <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <h4>SME Mentoring Guide</h4>
+                    <p class="module-desc">Supporting agri-SMEs in adopting digital agriculture solutions.</p>
+                    <a href="{{ url_for('public.training_materials') }}#modules" class="module-link">
+                        View Resource <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- T5.2 - LOCAL TRAINING BOOTCAMPS                              -->
+        <!-- ============================================================ -->
+        <section class="section-bootcamps">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    T5.2
+                </span>
+                <h2>Local Training <span class="gradient-text">Bootcamps</span></h2>
+                <p>Discover upcoming bootcamps, workshops, and training events at JKUAT's Smart Farm Zone</p>
+                <span class="timeline-badge">📅 Timeline: M24-M36</span>
+            </div>
+
+            <div class="bootcamp-placeholder animate-on-scroll">
+                <div class="placeholder-icon">🎓</div>
+                <h3>Explore Our Training Events</h3>
+                <p>View all upcoming bootcamps, workshops, and training sessions hosted by JKUAT</p>
+                <a href="{{ url_for('public.training_events') }}" class="btn-primary">
+                    View All Events
+                    <span class="arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- T5.3 - SME ENGAGEMENT & MENTORING                           -->
+        <!-- ============================================================ -->
+        <section class="section-sme" id="sme">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    T5.3
+                </span>
+                <h2>SME Engagement &amp; <span class="gradient-text">Mentoring</span></h2>
+                <p>Supporting agri-SMEs, startups, and innovators through mentoring and hackathons.</p>
+                <span class="timeline-badge">📅 Timeline: M26-M36</span>
+            </div>
+
+            <div class="sme-container">
+                <div class="sme-card animate-on-scroll">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <h3>SME Mentoring</h3>
+                    <p>
+                        JKUAT provides technical and business mentoring for agricultural SMEs,
+                        helping them adopt and scale GenAI-enabled solutions for farming.
+                    </p>
+                    <ul>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            One-on-one technical mentorship
+                        </li>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Access to pilot facilities
+                        </li>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Business development support
+                        </li>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Connection to BRIDGE-AI network
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('public.sme_mentoring') }}#register" class="btn-sme">
+                        Express Interest <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="sme-card animate-on-scroll">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2z"/>
+                        <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2z"/>
+                    </svg>
+                    <h3>Hackathons &amp; Challenges</h3>
+                    <p>
+                        Join our innovation challenges to develop solutions for real agricultural
+                        problems using GenAI, IoT, and digital agriculture technologies.
+                    </p>
+                    <ul>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Smart Mushroom Challenge
+                        </li>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            AI for Agriculture Hackathon
+                        </li>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Youth Agri-Innovation Prize
+                        </li>
+                        <li>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Women in Agritech Program
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('public.sme_mentoring') }}#challenges" class="btn-sme">
+                        View Challenges <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- T5.4 - COMMUNITY MAINTENANCE & REPOSITORIES                 -->
+        <!-- ============================================================ -->
+        <section class="section-repo" id="community">
+            <div class="repo-container animate-on-scroll">
+                <span class="section-tag" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);padding:5px 20px;border-radius:50px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    T5.4
+                </span>
+                <h2>Community &amp; <span class="gradient-text">Repositories</span></h2>
+                <p>Access open-source code, APIs, contribution guidelines, and join the community of practice.</p>
+                <span class="timeline-badge" style="display:inline-block;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-size:0.6rem;font-weight:600;padding:2px 12px;border-radius:50px;margin-bottom:24px;">📅 Timeline: M26-M36</span>
+                <div class="repo-links">
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.15 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.62.24 2.85.12 3.15.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="3" y1="15" x2="21" y2="15"/>
+                            <line x1="9" y1="21" x2="9" y2="9"/>
+                        </svg>
+                        FIWARE
+                    </a>
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        Contribution Guide
+                    </a>
+                    <!-- ✅ UPDATED: Links to Community of Practice page -->
+                    <a href="{{ url_for('public.community_of_practice') }}" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Community of Practice
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- T5.5 - REPLICATION TOOLKIT & LOCALISATION PLAYBOOK          -->
+        <!-- ============================================================ -->
+        <section class="section-replication" id="replication">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4v16h16"/>
+                        <polyline points="20 10 20 4 14 4"/>
+                        <line x1="8" y1="16" x2="16" y2="8"/>
+                    </svg>
+                    T5.5
+                </span>
+                <h2>Replication Toolkit &amp; <span class="gradient-text">Localisation Playbook</span></h2>
+                <p>Scaling impact across East Africa with Kenya lessons, localisation templates, and adoption pathways.</p>
+                <span class="timeline-badge">📅 Timeline: M28-M36</span>
+            </div>
+
+            <div class="replication-grid">
+                <div class="replication-item animate-on-scroll">
+                    <svg class="rep-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    <h4>Kenya Lessons Learned</h4>
+                    <p>Insights and best practices from the Smart Mushroom pilot.</p>
+                    <!-- ✅ UPDATED: Links to Replication Toolkit page -->
+                    <a href="{{ url_for('public.replication_toolkit') }}#downloads" class="rep-link">
+                        Download <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="replication-item animate-on-scroll">
+                    <svg class="rep-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <h4>Localisation Templates</h4>
+                    <p>Templates for adapting solutions to local contexts.</p>
+                    <a href="{{ url_for('public.replication_toolkit') }}#templates" class="rep-link">
+                        Download <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="replication-item animate-on-scroll">
+                    <svg class="rep-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9-4-18-3 9H2"/>
+                    </svg>
+                    <h4>Adoption Pathway</h4>
+                    <p>Step-by-step guide for scaling agritech solutions.</p>
+                    <a href="{{ url_for('public.replication_toolkit') }}#adoption" class="rep-link">
+                        Download <span class="arrow">→</span>
+                    </a>
+                </div>
+                <div class="replication-item animate-on-scroll">
+                    <svg class="rep-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                    <h4>Replication Playbook</h4>
+                    <p>Complete toolkit for replicating the Smart Mushroom model.</p>
+                    <a href="{{ url_for('public.replication_toolkit') }}#downloads" class="rep-link">
+                        Download <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // LOAD EVENTS FOR HERO STATS
+            // ================================================================
+
+            function loadEventStats() {
+                fetch('/api/events/', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const events = data || [];
+                    const upcoming = events.filter(e => e.status === 'upcoming' || e.status === 'ongoing');
+                    const completed = events.filter(e => e.status === 'completed');
+
+                    document.getElementById('stat-upcoming').textContent = upcoming.length;
+                    document.getElementById('stat-completed').textContent = completed.length;
+                })
+                .catch(error => {
+                    console.error('❌ Error loading event stats:', error);
+                });
+            }
+
+            // ================================================================
+            // SCROLL ANIMATIONS
+            // ================================================================
+
+            function observeElements() {
+                const elements = document.querySelectorAll('.animate-on-scroll:not(.visible)');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+
+                elements.forEach(el => observer.observe(el));
+            }
+
+            // ================================================================
+            // INIT
+            // ================================================================
+
+            loadEventStats();
+            observeElements();
+
+            console.log('✅ BRIDGE-AI Kenya Training & WP5 page initialized');
+
+        })();
+    </script>
+
+</body>
+</html>

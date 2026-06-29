@@ -1,0 +1,954 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ADMIN COMMUNITY MANAGEMENT                   -->
+<!-- ================================================================ -->
+<!-- Complete CRUD for:                                              -->
+<!-- - Repositories (GitHub, FIWARE, etc.)                          -->
+<!-- - Community Events (Meetups, Workshops, etc.)                  -->
+<!-- - Community Join Submissions (View only)                       -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Community - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}🌐 Manage <span class="highlight">Community</span>{% endblock %}
+
+{% block page_subtitle %}Manage repositories, community events, and view join submissions{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- TAB NAVIGATION                                              -->
+<!-- ============================================================ -->
+<div class="tab-nav">
+    <button class="tab-btn active" data-tab="repositories" onclick="switchTab('repositories')">
+        📦 Repositories
+        <span class="tab-count" id="count-repositories">0</span>
+    </button>
+    <button class="tab-btn" data-tab="events" onclick="switchTab('events')">
+        📅 Events
+        <span class="tab-count" id="count-events">0</span>
+    </button>
+    <button class="tab-btn" data-tab="submissions" onclick="switchTab('submissions')">
+        📩 Join Requests
+        <span class="tab-count" id="count-submissions">0</span>
+    </button>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB CONTENT: REPOSITORIES                                   -->
+<!-- ============================================================ -->
+<div class="tab-content active" id="tab-repositories">
+
+    <div class="section-header-content">
+        <div class="section-title">
+            <span class="section-count" id="count-repositories-label">0 repositories</span>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-primary" onclick="openModal('repository')">
+                ➕ Add Repository
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-search">
+                <input type="text" id="searchRepos" placeholder="Search repositories..." onkeyup="filterTable('repositories')">
+            </div>
+            <div class="table-count" id="reposCount">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:20%;">Name</th>
+                    <th style="width:15%;">Language</th>
+                    <th style="width:25%;">Description</th>
+                    <th style="width:10%;">Stars</th>
+                    <th style="width:10%;">Forks</th>
+                    <th style="width:10%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="reposBody">
+                <tr><td colspan="6" class="table-empty">Loading repositories...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB CONTENT: EVENTS                                         -->
+<!-- ============================================================ -->
+<div class="tab-content" id="tab-events">
+
+    <div class="section-header-content">
+        <div class="section-title">
+            <span class="section-count" id="count-events-label">0 events</span>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-primary" onclick="openModal('event')">
+                ➕ Add Event
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-search">
+                <input type="text" id="searchEvents" placeholder="Search events..." onkeyup="filterTable('events')">
+                <select id="filterEventType" onchange="filterTable('events')">
+                    <option value="">All Types</option>
+                    <option value="meetup">Meetup</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="online">Online</option>
+                </select>
+            </div>
+            <div class="table-count" id="eventsCount">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:25%;">Title</th>
+                    <th style="width:12%;">Date</th>
+                    <th style="width:12%;">Type</th>
+                    <th style="width:20%;">Description</th>
+                    <th style="width:11%;">Status</th>
+                    <th style="width:10%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="eventsBody">
+                <tr><td colspan="6" class="table-empty">Loading events...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB CONTENT: SUBMISSIONS (View Only)                        -->
+<!-- ============================================================ -->
+<div class="tab-content" id="tab-submissions">
+
+    <div class="section-header-content">
+        <div class="section-title">
+            <span class="section-count" id="count-submissions-label">0 submissions</span>
+        </div>
+        <div class="section-actions">
+            <button class="btn btn-outline" onclick="exportSubmissions()">📥 Export CSV</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAllSubmissions()">🗑️ Clear All</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-search">
+                <input type="text" id="searchSubmissions" placeholder="Search submissions..." onkeyup="filterTable('submissions')">
+                <select id="filterSubmissionRole" onchange="filterTable('submissions')">
+                    <option value="">All Roles</option>
+                    <option value="developer">Developer</option>
+                    <option value="researcher">Researcher</option>
+                    <option value="sme">SME / Entrepreneur</option>
+                    <option value="student">Student</option>
+                    <option value="farmer">Farmer</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="table-count" id="submissionsCount">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:15%;">Name</th>
+                    <th style="width:15%;">Email</th>
+                    <th style="width:10%;">Role</th>
+                    <th style="width:12%;">Interest</th>
+                    <th style="width:10%;">GitHub</th>
+                    <th style="width:13%;">Submitted</th>
+                    <th style="width:10%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="submissionsBody">
+                <tr><td colspan="7" class="table-empty">Loading submissions...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL - Shared                                               -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="communityModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" id="modalSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL FORMS TEMPLATES                                        -->
+<!-- ============================================================ -->
+<div style="display:none;">
+
+    <!-- Repository Form -->
+    <div id="repoFormHtml">
+        <div class="form-group">
+            <label>Repository Name <span class="required">*</span></label>
+            <input type="text" id="repo-name" placeholder="e.g. bridge-ai/core">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="repo-slug" placeholder="URL-friendly version (auto-generated)">
+            <small class="help-text">Leave blank to auto-generate from name</small>
+        </div>
+        <div class="form-group">
+            <label>Description <span class="required">*</span></label>
+            <textarea id="repo-description" rows="2" placeholder="Brief description of the repository"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Language / Tech Stack</label>
+                <input type="text" id="repo-language" placeholder="e.g. Python 3.11+">
+            </div>
+            <div class="form-group">
+                <label>License</label>
+                <input type="text" id="repo-license" placeholder="e.g. MIT License">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Stars</label>
+                <input type="number" id="repo-stars" placeholder="0" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label>Forks</label>
+                <input type="number" id="repo-forks" placeholder="0" min="0" value="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Repository URL <span class="required">*</span></label>
+            <input type="url" id="repo-url" placeholder="https://github.com/...">
+        </div>
+        <input type="hidden" id="repo-edit-id">
+    </div>
+
+    <!-- Event Form -->
+    <div id="eventFormHtml">
+        <div class="form-group">
+            <label>Event Title <span class="required">*</span></label>
+            <input type="text" id="event-title" placeholder="e.g. BRIDGE-AI Developer Meetup">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="event-slug" placeholder="URL-friendly version (auto-generated)">
+            <small class="help-text">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date <span class="required">*</span></label>
+                <input type="date" id="event-date">
+            </div>
+            <div class="form-group">
+                <label>Type <span class="required">*</span></label>
+                <select id="event-type">
+                    <option value="meetup">Meetup</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="online">Online</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description <span class="required">*</span></label>
+            <textarea id="event-description" rows="2" placeholder="Brief description of the event"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="event-status">
+                <option value="upcoming">Upcoming</option>
+                <option value="past">Past</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+        <input type="hidden" id="event-edit-id">
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STYLES                                                       -->
+<!-- ============================================================ -->
+<style>
+    /* ================================================================ */
+    /* TAB NAVIGATION                                                  */
+    /* ================================================================ */
+    .tab-nav {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+        background: var(--bg-white);
+        border-radius: var(--radius-md);
+        padding: 4px;
+        border: 1px solid var(--border-light);
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 10px 20px;
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all var(--transition);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .tab-btn:hover {
+        background: var(--bg-light);
+        color: var(--text-body);
+    }
+
+    .tab-btn.active {
+        background: var(--primary-light);
+        color: #ffffff;
+    }
+
+    .tab-btn .tab-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50px;
+        padding: 0 10px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        min-width: 20px;
+        height: 20px;
+    }
+
+    .tab-btn.active .tab-count {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ================================================================ */
+    /* HELP TEXT                                                       */
+    /* ================================================================ */
+    .help-text {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        display: block;
+        margin-top: 2px;
+    }
+
+    /* ================================================================ */
+    /* STATUS BADGE                                                    */
+    /* ================================================================ */
+    .status-badge.upcoming {
+        background: var(--success-light);
+        color: #155724;
+    }
+    .status-badge.past {
+        background: var(--bg-light);
+        color: var(--text-muted);
+    }
+    .status-badge.cancelled {
+        background: var(--error-light);
+        color: #721c24;
+    }
+
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    @media (max-width: 768px) {
+        .tab-nav {
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .tab-btn {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .modal {
+            max-width: 100%;
+            margin: 10px;
+        }
+
+        .table-container table {
+            font-size: 0.75rem;
+        }
+
+        .table-container table thead th,
+        .table-container table tbody td {
+            padding: 6px 8px;
+        }
+
+        .section-header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tab-btn {
+            font-size: 0.75rem;
+            padding: 8px 14px;
+        }
+
+        .table-container table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let repositories = [];
+        let events = [];
+        let submissions = [];
+
+        const API_URLS = {
+            repositories: '/api/repositories/',
+            events: '/api/community-events/',
+            submissions: '/api/community-submissions/'
+        };
+
+        let editingType = null;
+        let editingId = null;
+
+        // ================================================================
+        // TAB SWITCHING
+        // ================================================================
+
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+            loadTabData(tab);
+        };
+
+        function loadTabData(tab) {
+            if (tab === 'repositories') loadRepositories();
+            else if (tab === 'events') loadEvents();
+            else if (tab === 'submissions') loadSubmissions();
+        }
+
+        // ================================================================
+        // LOAD REPOSITORIES
+        // ================================================================
+
+        function loadRepositories() {
+            fetch(API_URLS.repositories, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => { repositories = data || []; renderRepositories(); })
+                .catch(() => renderRepositories());
+        }
+
+        function renderRepositories() {
+            const tbody = document.getElementById('reposBody');
+            const filtered = filterItems(repositories, 'repositories');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No repositories found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${escapeHtml(item.name || item.title)}</strong></td>
+                        <td>${escapeHtml(item.language || '-')}</td>
+                        <td>${escapeHtml(item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : '-')}</td>
+                        <td>${item.stars || 0}</td>
+                        <td>${item.forks || 0}</td>
+                        <td style="text-align:right;">
+                            <button class="action-icon edit" onclick="openEdit('repository', ${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteItem('repositories', ${item.id})" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('count-repositories').textContent = repositories.length;
+            document.getElementById('count-repositories-label').textContent = repositories.length + ' repositories';
+            document.getElementById('reposCount').textContent = filtered.length + ' items';
+        }
+
+        // ================================================================
+        // LOAD EVENTS
+        // ================================================================
+
+        function loadEvents() {
+            fetch(API_URLS.events, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => { events = data || []; renderEvents(); })
+                .catch(() => renderEvents());
+        }
+
+        function renderEvents() {
+            const tbody = document.getElementById('eventsBody');
+            const filtered = filterItems(events, 'events');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No events found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${escapeHtml(item.title)}</strong></td>
+                        <td>${item.date ? formatDate(item.date) : '-'}</td>
+                        <td><span class="status-badge">${escapeHtml(item.type || 'meetup')}</span></td>
+                        <td>${escapeHtml(item.description ? item.description.substring(0, 50) + (item.description.length > 50 ? '...' : '') : '-')}</td>
+                        <td><span class="status-badge ${item.status || 'upcoming'}">${escapeHtml(item.status || 'upcoming')}</span></td>
+                        <td style="text-align:right;">
+                            <button class="action-icon edit" onclick="openEdit('event', ${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteItem('events', ${item.id})" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('count-events').textContent = events.length;
+            document.getElementById('count-events-label').textContent = events.length + ' events';
+            document.getElementById('eventsCount').textContent = filtered.length + ' items';
+        }
+
+        // ================================================================
+        // LOAD SUBMISSIONS
+        // ================================================================
+
+        function loadSubmissions() {
+            fetch(API_URLS.submissions, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => { submissions = data || []; renderSubmissions(); })
+                .catch(() => renderSubmissions());
+        }
+
+        function renderSubmissions() {
+            const tbody = document.getElementById('submissionsBody');
+            const filtered = filterItems(submissions, 'submissions');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No submissions found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${escapeHtml(item.name)}</strong></td>
+                        <td>${escapeHtml(item.email)}</td>
+                        <td><span class="status-badge">${escapeHtml(item.role || '-')}</span></td>
+                        <td>${escapeHtml(item.interest || '-')}</td>
+                        <td>${item.github ? escapeHtml(item.github) : '-'}</td>
+                        <td>${item.submitted_at ? formatDate(item.submitted_at) : '-'}</td>
+                        <td style="text-align:right;">
+                            <button class="action-icon" onclick="viewSubmission(${item.id})" title="View">👁️</button>
+                            <button class="action-icon delete" onclick="deleteItem('submissions', ${item.id})" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('count-submissions').textContent = submissions.length;
+            document.getElementById('count-submissions-label').textContent = submissions.length + ' submissions';
+            document.getElementById('submissionsCount').textContent = filtered.length + ' items';
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function(type) {
+            if (type === 'repositories') renderRepositories();
+            else if (type === 'events') renderEvents();
+            else if (type === 'submissions') renderSubmissions();
+        };
+
+        function filterItems(items, type) {
+            let search = '';
+            let typeFilter = '';
+
+            if (type === 'repositories') {
+                search = document.getElementById('searchRepos').value.toLowerCase();
+                return items.filter(i => (i.name || i.title || '').toLowerCase().includes(search));
+            } else if (type === 'events') {
+                search = document.getElementById('searchEvents').value.toLowerCase();
+                typeFilter = document.getElementById('filterEventType').value;
+                return items.filter(i => {
+                    const matchSearch = (i.title || '').toLowerCase().includes(search);
+                    const matchType = !typeFilter || i.type === typeFilter;
+                    return matchSearch && matchType;
+                });
+            } else if (type === 'submissions') {
+                search = document.getElementById('searchSubmissions').value.toLowerCase();
+                const roleFilter = document.getElementById('filterSubmissionRole').value;
+                return items.filter(i => {
+                    const matchSearch = (i.name || i.email || '').toLowerCase().includes(search);
+                    const matchRole = !roleFilter || i.role === roleFilter;
+                    return matchSearch && matchRole;
+                });
+            }
+            return items;
+        }
+
+        // ================================================================
+        // VIEW SUBMISSION DETAIL
+        // ================================================================
+
+        window.viewSubmission = function(id) {
+            const item = submissions.find(s => s.id === id);
+            if (!item) return;
+
+            const msg = `
+                📩 Community Join Request
+
+                Name: ${item.name}
+                Email: ${item.email}
+                Role: ${item.role || 'Not specified'}
+                Interest: ${item.interest || 'Not specified'}
+                GitHub: ${item.github || 'Not provided'}
+                Message: ${item.message || 'No message provided'}
+                Submitted: ${formatDate(item.submitted_at)}
+            `;
+            alert(msg);
+        };
+
+        // ================================================================
+        // MODAL FUNCTIONS
+        // ================================================================
+
+        window.openModal = function(type) {
+            editingType = type;
+            editingId = null;
+            const modal = document.getElementById('communityModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            const formMap = {
+                repository: { title: 'Add New Repository', html: 'repoFormHtml' },
+                event: { title: 'Add New Event', html: 'eventFormHtml' }
+            };
+
+            const config = formMap[type];
+            if (!config) return;
+
+            title.textContent = config.title;
+            body.innerHTML = document.getElementById(config.html).innerHTML;
+            document.getElementById('modalSaveBtn').onclick = () => saveItem(type);
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.openEdit = function(type, id) {
+            editingType = type;
+            editingId = id;
+            const modal = document.getElementById('communityModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            const dataMap = {
+                repository: {
+                    title: 'Edit Repository',
+                    html: 'repoFormHtml',
+                    data: repositories,
+                    fields: ['name', 'slug', 'description', 'language', 'license', 'stars', 'forks', 'url']
+                },
+                event: {
+                    title: 'Edit Event',
+                    html: 'eventFormHtml',
+                    data: events,
+                    fields: ['title', 'slug', 'date', 'type', 'description', 'status']
+                }
+            };
+
+            const config = dataMap[type];
+            if (!config) return;
+
+            const item = config.data.find(i => i.id === id);
+            if (!item) {
+                showToast('error', 'Item not found');
+                return;
+            }
+
+            title.textContent = config.title;
+            body.innerHTML = document.getElementById(config.html).innerHTML;
+
+            config.fields.forEach(field => {
+                const el = document.getElementById(`${type}-${field}`);
+                if (el) {
+                    const val = item[field.replace('-', '_')] || '';
+                    if (el.type === 'checkbox') {
+                        el.checked = !!val;
+                    } else {
+                        el.value = val;
+                    }
+                }
+            });
+
+            // Fix for event date field
+            if (type === 'event' && item.date) {
+                const dateEl = document.getElementById('event-date');
+                if (dateEl) dateEl.value = item.date.substring(0, 10);
+            }
+
+            document.getElementById(`${type}-edit-id`).value = id;
+            document.getElementById('modalSaveBtn').onclick = () => saveItem(type);
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('communityModal').classList.remove('active');
+            document.body.style.overflow = '';
+            editingType = null;
+            editingId = null;
+        };
+
+        // ================================================================
+        // SAVE ITEM
+        // ================================================================
+
+        function saveItem(type) {
+            const isEdit = !!editingId;
+            const data = getFormData(type);
+
+            if (type === 'repository') {
+                if (!data.name || !data.description || !data.url) {
+                    showToast('warning', 'Name, Description, and URL are required.');
+                    return;
+                }
+            } else if (type === 'event') {
+                if (!data.title || !data.date || !data.type || !data.description) {
+                    showToast('warning', 'Title, Date, Type, and Description are required.');
+                    return;
+                }
+            }
+
+            if (!data.slug) data.slug = slugify(data.name || data.title);
+
+            const url = isEdit ? `${API_URLS[type + 's']}${editingId}` : API_URLS[type + 's'];
+            const method = isEdit ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': window.getCsrfToken ? window.getCsrfToken() : ''
+                },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', `${type} ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeModal();
+                    loadTabData(type === 'repository' ? 'repositories' : 'events');
+                } else {
+                    showToast('error', result.error || 'Failed to save.');
+                }
+            })
+            .catch(() => showToast('error', 'Network error.'));
+        }
+
+        function getFormData(type) {
+            const prefix = type;
+            const data = {};
+            const fields = document.querySelectorAll(`#${prefix}-name, #${prefix}-title, #${prefix}-slug, #${prefix}-description, #${prefix}-language, #${prefix}-license, #${prefix}-stars, #${prefix}-forks, #${prefix}-url, #${prefix}-date, #${prefix}-type, #${prefix}-status, #${prefix}-edit-id`);
+
+            fields.forEach(el => {
+                if (el) {
+                    const key = el.id.replace(`${prefix}-`, '').replace(/-/g, '_');
+                    const val = el.type === 'number' ? (el.value ? parseInt(el.value) : null) : el.value;
+                    data[key] = val;
+                }
+            });
+
+            // Clean up
+            Object.keys(data).forEach(k => {
+                if (data[k] === '' || data[k] === null || data[k] === undefined) delete data[k];
+            });
+
+            return data;
+        }
+
+        // ================================================================
+        // DELETE ITEM
+        // ================================================================
+
+        window.deleteItem = function(type, id) {
+            const items = type === 'repositories' ? repositories : type === 'events' ? events : submissions;
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            const name = item.name || item.title || 'this item';
+            if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+
+            const url = `${API_URLS[type]}${id}/`;
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': window.getCsrfToken ? window.getCsrfToken() : ''
+                }
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Deleted successfully!');
+                    loadTabData(type === 'repositories' ? 'repositories' : type === 'events' ? 'events' : 'submissions');
+                } else {
+                    showToast('error', result.error || 'Failed to delete.');
+                }
+            })
+            .catch(() => showToast('error', 'Network error.'));
+        };
+
+        // ================================================================
+        // EXPORT SUBMISSIONS
+        // ================================================================
+
+        window.exportSubmissions = function() {
+            if (submissions.length === 0) {
+                showToast('warning', 'No submissions to export.');
+                return;
+            }
+
+            let csv = 'Name,Email,Role,Interest,GitHub,Message,Submitted\n';
+            submissions.forEach(s => {
+                csv += `"${s.name || ''}","${s.email || ''}","${s.role || ''}","${s.interest || ''}","${s.github || ''}","${(s.message || '').replace(/"/g, '""')}","${s.submitted_at || ''}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `community_submissions_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('success', 'CSV exported successfully!');
+        };
+
+        // ================================================================
+        // CLEAR ALL SUBMISSIONS
+        // ================================================================
+
+        window.clearAllSubmissions = function() {
+            if (!confirm('⚠️ Are you sure you want to delete ALL submissions? This cannot be undone.')) return;
+
+            fetch('/api/community-submissions/clear/', {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': window.getCsrfToken ? window.getCsrfToken() : ''
+                }
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'All submissions cleared!');
+                    loadSubmissions();
+                } else {
+                    showToast('error', result.error || 'Failed to clear.');
+                }
+            })
+            .catch(() => showToast('error', 'Network error.'));
+        };
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr.substring(0, 10);
+            }
+        }
+
+        function slugify(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        }
+
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️' };
+            toast.innerHTML = `
+                <span>${icons[type] || 'ℹ️'}</span>
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 5000);
+        }
+
+        // ================================================================
+        // INIT
+        // ================================================================
+
+        // Load initial tab
+        loadRepositories();
+
+        // Close modal on overlay click
+        document.getElementById('communityModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        console.log('✅ BRIDGE-AI Kenya Admin Community page initialized');
+
+    })();
+</script>
+{% endblock %}

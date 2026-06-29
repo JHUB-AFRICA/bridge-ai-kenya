@@ -1,0 +1,36 @@
+[
+  {
+    "title": "AI-Powered Smart Mushroom Farming Training for Youth",
+    "slug": "ai-powered-smart-mushroom-farming-training-youth",
+    "body": "BRIDGE-AI Kenya successfully conducted a two-day Smart Mushroom Farming Training at JKUAT Smart Farm. Participants learned how artificial intelligence, IoT sensors, and automated climate control can improve mushroom production. The training included practical demonstrations on remote monitoring, disease detection, humidity regulation, and data-driven farm management. More than 60 young innovators, students, and local farmers attended the event. Participants also received mentorship on agribusiness opportunities and digital agriculture careers.",
+    "date": "2026-06-27",
+    "created_at": "2026-06-26T21:12:38.917330",
+    "updated_at": "2026-06-26T21:49:07.608643",
+    "evidence_status": "published",
+    "summary": "A two-day practical training introducing youth to AI-enabled mushroom farming, sensor monitoring, and climate control technologies.",
+    "location": "JKUAT Smart Farm, Juja, Kenya",
+    "wp_tag": "WP3",
+    "activity_type": "resource",
+    "audience": "public",
+    "author": "Dr. Jane Mwangi",
+    "featured_image": "uploads/activities/20260626_211238_mushroom.jpg",
+    "id": 2
+  },
+  {
+    "title": "Smart Irrigation Field Demonstration",
+    "slug": "smart-irrigation-field-demonstration",
+    "body": "Farmers participated in a live demonstration showcasing automated irrigation controlled through soil moisture sensors and weather forecasting models. The system reduced water usage by approximately 35% while maintaining crop productivity. Participants interacted with the monitoring dashboard and learned how to configure alerts for remote farm management.",
+    "date": "2026-07-11",
+    "created_at": "2026-06-26T21:29:33.410388",
+    "updated_at": "2026-06-26T21:29:33.410401",
+    "evidence_status": "published",
+    "summary": "Demonstration of AI-powered irrigation systems for climate-smart farming.",
+    "location": "Machakos Demonstration Farm",
+    "wp_tag": "WP4",
+    "activity_type": "media",
+    "audience": "public",
+    "author": "Dr. Jane Mwangi",
+    "featured_image": "uploads/activities/20260626_212933_hero-main.jpg",
+    "id": 3
+  }
+]

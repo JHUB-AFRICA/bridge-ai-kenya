@@ -1,0 +1,665 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - MANAGE GALLERY ALBUMS                         -->
+<!-- ================================================================ -->
+<!-- Full CRUD for Gallery Album content type.                       -->
+<!-- Fields: title, date, location, description, consent_confirmed, -->
+<!-- photographer_credit, is_published, images[].                   -->
+<!-- Uses JSON file storage - no database required.                -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Gallery - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}🖼️ Manage <span class="highlight">Gallery Albums</span>{% endblock %}
+
+{% block page_subtitle %}Create, edit, and delete photo albums and manage album images{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-gallery">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ Add Album
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search albums..." onkeyup="filterTable()">
+            <select id="filterPublished" onchange="filterTable()">
+                <option value="">All Albums</option>
+                <option value="true">Published</option>
+                <option value="false">Unpublished</option>
+            </select>
+            <select id="filterConsent" onchange="filterTable()">
+                <option value="">All Consent</option>
+                <option value="true">Consent Confirmed</option>
+                <option value="false">Consent Pending</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:20%;">Album Title</th>
+                <th style="width:12%;">Date</th>
+                <th style="width:15%;">Location</th>
+                <th style="width:8%;">Images</th>
+                <th style="width:10%;">Consent</th>
+                <th style="width:10%;">Published</th>
+                <th style="width:15%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No albums found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Album" to create your first gallery album.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- HIDDEN FORM TEMPLATES FOR MODAL                              -->
+<!-- ============================================================ -->
+<div style="display:none;">
+    <!-- Create Form Template -->
+    <div id="createFormTemplate">
+        <div class="form-group">
+            <label>Album Title <span class="required">*</span></label>
+            <input type="text" id="form-title" placeholder="e.g. Smart Mushroom Pilot Launch">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="form-date">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="form-location" placeholder="e.g. JKUAT Smart Farm Zone">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="form-description" rows="2" placeholder="Brief description of the album and event"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Photographer Credit</label>
+            <input type="text" id="form-photographer-credit" placeholder="e.g. Photo by JHUB Africa">
+        </div>
+        <div class="form-group">
+            <label>Images</label>
+            <textarea id="form-images" rows="3" placeholder='[{"caption":"Smart mushroom container","image_path":"gallery/album1/img1.jpg","alt_text":"Smart container at JKUAT"},{"caption":"Farmers training","image_path":"gallery/album1/img2.jpg","alt_text":"Farmers at IoT training"}]'></textarea>
+            <small style="color:var(--text-light);font-size:0.7rem;">JSON array of image objects with caption, image_path, and alt_text fields</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="form-is-published" checked> Published
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="form-consent-confirmed"> Consent Confirmed
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form Template -->
+    <div id="editFormTemplate">
+        <div class="form-group">
+            <label>Album Title <span class="required">*</span></label>
+            <input type="text" id="edit-form-title" placeholder="e.g. Smart Mushroom Pilot Launch">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="edit-form-date">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="edit-form-location" placeholder="e.g. JKUAT Smart Farm Zone">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="edit-form-description" rows="2" placeholder="Brief description of the album and event"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Photographer Credit</label>
+            <input type="text" id="edit-form-photographer-credit" placeholder="e.g. Photo by JHUB Africa">
+        </div>
+        <div class="form-group">
+            <label>Images</label>
+            <textarea id="edit-form-images" rows="3" placeholder='[{"caption":"Smart mushroom container","image_path":"gallery/album1/img1.jpg","alt_text":"Smart container at JKUAT"},{"caption":"Farmers training","image_path":"gallery/album1/img2.jpg","alt_text":"Farmers at IoT training"}]'></textarea>
+            <small style="color:var(--text-light);font-size:0.7rem;">JSON array of image objects with caption, image_path, and alt_text fields</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="edit-form-is-published"> Published
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="edit-form-consent-confirmed"> Consent Confirmed
+                </label>
+            </div>
+        </div>
+        <!-- Hidden ID field -->
+        <input type="hidden" id="edit-form-id">
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MANAGE IMAGES MODAL (Nested)                                -->
+<!-- ============================================================ -->
+<div style="display:none;">
+    <div id="manageImagesTemplate">
+        <div id="imagesList" style="margin-bottom:16px;">
+            <!-- Images will be rendered here -->
+        </div>
+        <div style="padding-top:16px;border-top:1px solid var(--border-light);">
+            <h4 style="font-size:0.9rem;margin-bottom:12px;">➕ Add New Image</h4>
+            <div class="form-group">
+                <label>Caption <span class="required">*</span></label>
+                <input type="text" id="image-caption" placeholder="Image caption">
+            </div>
+            <div class="form-group">
+                <label>Image Path <span class="required">*</span></label>
+                <input type="text" id="image-path" placeholder="gallery/album1/new-image.jpg">
+                <small style="color:var(--text-light);font-size:0.7rem;">Path to the image file</small>
+            </div>
+            <div class="form-group">
+                <label>Alt Text</label>
+                <input type="text" id="image-alt" placeholder="Descriptive alt text for accessibility">
+            </div>
+            <button class="btn btn-success" onclick="addImageToAlbum()">➕ Add Image</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let albums = [];
+        let editingId = null;
+        let viewingAlbumId = null;
+        let currentAlbumImages = [];
+        let nextImageId = 1;
+        const API_URL = '/api/gallery/';
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+
+        function loadAlbums() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    albums = data || [];
+                    renderTable(albums);
+                    updateCounts(albums.length);
+                })
+                .catch(error => {
+                    console.error('Error loading albums:', error);
+                    showToast('error', 'Failed to load albums');
+                });
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            <span class="empty-icon">📭</span>
+                            <h4>No albums found</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Album" to create your first gallery album.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                    <td>${item.date ? formatDate(item.date) : '-'}</td>
+                    <td>${escapeHtml(item.location || '-')}</td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${(item.images || []).length}</span></td>
+                    <td>${item.consent_confirmed ? '✅ Yes' : '❌ No'}</td>
+                    <td>${item.is_published ? '✅ Yes' : '❌ No'}</td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon" onclick="openManageImages(${item.id})" title="Manage Images" style="font-size:1rem;">🖼️</button>
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteAlbum(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateCounts(data.length);
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const publishedFilter = document.getElementById('filterPublished').value;
+            const consentFilter = document.getElementById('filterConsent').value;
+
+            let filtered = albums;
+
+            if (search) {
+                filtered = filtered.filter(item => {
+                    const searchable = [
+                        item.title,
+                        item.location,
+                        item.description,
+                        item.photographer_credit
+                    ].join(' ').toLowerCase();
+                    return searchable.includes(search);
+                });
+            }
+
+            if (publishedFilter) {
+                const isPublished = publishedFilter === 'true';
+                filtered = filtered.filter(item => item.is_published === isPublished);
+            }
+
+            if (consentFilter) {
+                const hasConsent = consentFilter === 'true';
+                filtered = filtered.filter(item => item.consent_confirmed === hasConsent);
+            }
+
+            renderTable(filtered);
+        };
+
+        // ================================================================
+        // CREATE MODAL
+        // ================================================================
+
+        window.openCreateModal = function() {
+            editingId = null;
+            const formHtml = document.getElementById('createFormTemplate').innerHTML;
+            openModal('Add New Gallery Album', formHtml, saveAlbum);
+        };
+
+        // ================================================================
+        // EDIT MODAL
+        // ================================================================
+
+        window.openEditModal = function(id) {
+            const item = albums.find(a => a.id === id);
+            if (!item) {
+                showToast('error', 'Album not found');
+                return;
+            }
+
+            editingId = id;
+            const formHtml = document.getElementById('editFormTemplate').innerHTML;
+            openModal('Edit Gallery Album', formHtml, saveAlbum);
+
+            // Populate form fields
+            setTimeout(() => {
+                document.getElementById('edit-form-id').value = item.id;
+                document.getElementById('edit-form-title').value = item.title || '';
+                document.getElementById('edit-form-date').value = item.date || '';
+                document.getElementById('edit-form-location').value = item.location || '';
+                document.getElementById('edit-form-description').value = item.description || '';
+                document.getElementById('edit-form-photographer-credit').value = item.photographer_credit || '';
+                document.getElementById('edit-form-is-published').checked = item.is_published || false;
+                document.getElementById('edit-form-consent-confirmed').checked = item.consent_confirmed || false;
+                document.getElementById('edit-form-images').value = JSON.stringify(item.images || [], null, 2);
+            }, 100);
+        };
+
+        // ================================================================
+        // SAVE ALBUM
+        // ================================================================
+
+        window.saveAlbum = function() {
+            const isEdit = !!editingId;
+
+            // Get form values based on mode
+            let data;
+            if (isEdit) {
+                data = {
+                    id: parseInt(document.getElementById('edit-form-id').value),
+                    title: document.getElementById('edit-form-title').value.trim(),
+                    date: document.getElementById('edit-form-date').value,
+                    location: document.getElementById('edit-form-location').value.trim(),
+                    description: document.getElementById('edit-form-description').value.trim(),
+                    photographer_credit: document.getElementById('edit-form-photographer-credit').value.trim(),
+                    is_published: document.getElementById('edit-form-is-published').checked,
+                    consent_confirmed: document.getElementById('edit-form-consent-confirmed').checked,
+                    images: parseImagesField(document.getElementById('edit-form-images').value)
+                };
+            } else {
+                data = {
+                    title: document.getElementById('form-title').value.trim(),
+                    date: document.getElementById('form-date').value,
+                    location: document.getElementById('form-location').value.trim(),
+                    description: document.getElementById('form-description').value.trim(),
+                    photographer_credit: document.getElementById('form-photographer-credit').value.trim(),
+                    is_published: document.getElementById('form-is-published').checked,
+                    consent_confirmed: document.getElementById('form-consent-confirmed').checked,
+                    images: parseImagesField(document.getElementById('form-images').value)
+                };
+            }
+
+            // Validate required fields
+            if (!data.title) {
+                showToast('warning', 'Album title is required');
+                return;
+            }
+
+            const url = isEdit ? `${API_URL}${editingId}/` : API_URL;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', `Album ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeModal();
+                    loadAlbums();
+                } else {
+                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} album`);
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // DELETE ALBUM
+        // ================================================================
+
+        window.deleteAlbum = function(id) {
+            const item = albums.find(a => a.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.title}" and all its images? This action cannot be undone.`)) {
+                return;
+            }
+
+            fetch(`${API_URL}${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Album deleted successfully!');
+                    loadAlbums();
+                } else {
+                    showToast('error', result.error || 'Failed to delete album');
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // MANAGE IMAGES - Open modal to manage album images
+        // ================================================================
+
+        window.openManageImages = function(albumId) {
+            const album = albums.find(a => a.id === albumId);
+            if (!album) {
+                showToast('error', 'Album not found');
+                return;
+            }
+
+            viewingAlbumId = albumId;
+            currentAlbumImages = album.images || [];
+            nextImageId = Math.max(0, ...currentAlbumImages.map(i => i.id || 0)) + 1;
+
+            const title = `🖼️ Manage Images - ${album.title}`;
+            const formHtml = document.getElementById('manageImagesTemplate').innerHTML;
+            openModal(title, formHtml, function() {
+                // Save button does nothing - images are saved via add/delete
+                showToast('info', 'Images are saved automatically when added or deleted');
+            });
+
+            // Update save button text
+            document.querySelector('#modalSaveBtn').textContent = '✅ Done';
+
+            // Override save function to just close
+            const originalSave = window.saveAlbum;
+            document.getElementById('modalSaveBtn').onclick = function() {
+                closeModal();
+            };
+
+            renderImagesList();
+        };
+
+        // ================================================================
+        // RENDER IMAGES LIST
+        // ================================================================
+
+        function renderImagesList() {
+            const container = document.getElementById('imagesList');
+            
+            if (!currentAlbumImages || currentAlbumImages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center;padding:30px 0;color:var(--text-light);">
+                        <span style="font-size:2rem;display:block;margin-bottom:8px;">🖼️</span>
+                        <p>No images in this album yet.</p>
+                        <p style="font-size:0.8rem;">Add images using the form below.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentAlbumImages.map((img, index) => `
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg-light);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border-light);">
+                    <span style="font-weight:600;color:var(--text-muted);min-width:30px;">#${index + 1}</span>
+                    <div style="flex:1;">
+                        <div style="font-weight:600;font-size:0.85rem;">${escapeHtml(img.caption || 'Untitled')}</div>
+                        <div style="font-size:0.7rem;color:var(--text-light);">${escapeHtml(img.image_path || 'No path')}</div>
+                    </div>
+                    <div style="font-size:0.7rem;color:var(--text-light);min-width:80px;">
+                        ${img.alt_text ? '📝 Alt: ' + escapeHtml(img.alt_text.substring(0, 20)) + (img.alt_text.length > 20 ? '...' : '') : 'No alt text'}
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteImage(${index})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        // ================================================================
+        // ADD IMAGE TO ALBUM
+        // ================================================================
+
+        window.addImageToAlbum = function() {
+            const caption = document.getElementById('image-caption').value.trim();
+            const imagePath = document.getElementById('image-path').value.trim();
+            const altText = document.getElementById('image-alt').value.trim();
+
+            if (!caption) {
+                showToast('warning', 'Image caption is required');
+                return;
+            }
+            if (!imagePath) {
+                showToast('warning', 'Image path is required');
+                return;
+            }
+
+            const newImage = {
+                id: nextImageId++,
+                caption: caption,
+                image_path: imagePath,
+                alt_text: altText || caption,
+                display_order: currentAlbumImages.length
+            };
+
+            currentAlbumImages.push(newImage);
+
+            // Update the album in the database
+            updateAlbumImages();
+
+            // Clear form fields
+            document.getElementById('image-caption').value = '';
+            document.getElementById('image-path').value = '';
+            document.getElementById('image-alt').value = '';
+
+            // Re-render list
+            renderImagesList();
+
+            showToast('success', 'Image added successfully!');
+        };
+
+        // ================================================================
+        // DELETE IMAGE FROM ALBUM
+        // ================================================================
+
+        window.deleteImage = function(index) {
+            const image = currentAlbumImages[index];
+            if (!image) return;
+
+            if (!confirm(`Are you sure you want to delete "${image.caption}"?`)) {
+                return;
+            }
+
+            currentAlbumImages.splice(index, 1);
+            updateAlbumImages();
+            renderImagesList();
+            showToast('success', 'Image deleted successfully!');
+        };
+
+        // ================================================================
+        // UPDATE ALBUM IMAGES IN DATABASE
+        // ================================================================
+
+        function updateAlbumImages() {
+            const album = albums.find(a => a.id === viewingAlbumId);
+            if (!album) return;
+
+            // Update local album data
+            album.images = currentAlbumImages;
+
+            // Update via API
+            fetch(`${API_URL}${viewingAlbumId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    ...album,
+                    updated_at: new Date().toISOString()
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (!result.success) {
+                    showToast('error', 'Failed to update album images');
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        }
+
+        // ================================================================
+        // PARSE IMAGES FIELD
+        // ================================================================
+
+        function parseImagesField(value) {
+            if (!value) return [];
+            try {
+                const parsed = JSON.parse(value);
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+                return [];
+            } catch {
+                return [];
+            }
+        }
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr.substring(0, 10);
+            }
+        }
+
+        function updateCounts(count) {
+            const countEl = document.getElementById('count-gallery');
+            const tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = `${count} items`;
+            if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // INITIALIZE
+        // ================================================================
+
+        loadAlbums();
+
+        console.log('✅ BRIDGE-AI Kenya Manage Gallery Albums page initialized');
+
+    })();
+</script>
+{% endblock %}

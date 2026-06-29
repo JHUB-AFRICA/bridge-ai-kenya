@@ -1,0 +1,916 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ACTIVITIES PAGE                               -->
+<!-- ================================================================ -->
+<!-- This page displays all activities from the JSON file with       -->
+<!-- filtering capabilities by Work Package, Audience, and Year.    -->
+<!-- Filters are dynamically populated from the activity data.      -->
+<!-- Fallback image uses a reliable placeholder when no image exists.-->
+<!-- Modern, premium styling with smooth interactions.              -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activities - BRIDGE-AI Kenya</title>
+    <meta name="description" content="News, events, field updates and training activities from BRIDGE-AI implementation at JKUAT.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES                                                   */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --primary-lighter: #2a6a8b;
+            --accent: #1a8a6a;
+            --accent-light: #d4edda;
+            --gold: #d4a843;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --bg-lighter: #fafcfe;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ================================================================ */
+        /* PAGE HERO                                                       */
+        /* ================================================================ */
+        .page-hero {
+            background: linear-gradient(160deg, #061420 0%, #0f2b3d 40%, #1a4a6b 100%);
+            padding: 70px 24px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '📰';
+            position: absolute;
+            font-size: 18rem;
+            opacity: 0.03;
+            right: -5%;
+            bottom: -20%;
+            transform: rotate(-8deg);
+        }
+
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero h1 .highlight {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-hero p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 10px auto 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .page-hero .breadcrumb a:hover {
+            color: #ffffff;
+        }
+
+        .page-hero .breadcrumb .sep {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .page-hero .hero-count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 18px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ================================================================ */
+        /* FILTER SECTION - MODERN & PREMIUM                               */
+        /* ================================================================ */
+        .filter-section {
+            background: var(--bg-white);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.92);
+            transition: box-shadow 0.3s var(--transition);
+        }
+
+        .filter-section.scrolled {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .filter-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group .filter-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            flex-shrink: 0;
+            padding: 4px 12px 4px 0;
+        }
+
+        /* ✅ MODERN DROPDOWN STYLES */
+        .filter-group select {
+            padding: 9px 40px 9px 18px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-body);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: all 0.3s var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a4a6b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            min-width: 160px;
+            max-width: 220px;
+            width: auto;
+            font-family: inherit;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-group select:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(26, 74, 107, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .filter-group select option {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            background: var(--bg-white);
+            color: var(--text-body);
+        }
+
+        /* ✅ DYNAMIC FILTER OPTIONS - Styling for dynamically populated options */
+        .filter-group select option[value=""] {
+            color: var(--text-muted);
+        }
+
+        /* ✅ MODERN CLEAR BUTTON */
+        .filter-group .filter-clear {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-light);
+            border: 1.5px solid var(--border-light);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            flex-shrink: 0;
+            font-family: inherit;
+        }
+
+        .filter-group .filter-clear:hover {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(26, 74, 107, 0.15);
+        }
+
+        .filter-group .filter-clear .clear-icon {
+            font-size: 0.8rem;
+            transition: transform 0.3s var(--transition);
+        }
+
+        .filter-group .filter-clear:hover .clear-icon {
+            transform: rotate(90deg);
+        }
+
+        /* ✅ Filter active state indicator */
+        .filter-group select.has-value {
+            border-color: var(--primary-light);
+            background-color: #f5f9fc;
+        }
+
+        /* ================================================================ */
+        /* ACTIVITIES GRID                                                 */
+        /* ================================================================ */
+        .activities-section {
+            padding: 40px 24px 60px;
+        }
+
+        .activities-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .activity-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.4s var(--transition);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .activity-card .activity-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--bg-light), #e8f0f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .activity-card .activity-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s var(--transition);
+        }
+
+        .activity-card:hover .activity-image img {
+            transform: scale(1.03);
+        }
+
+        /* ✅ FALLBACK IMAGE - Reliable online placeholder */
+        .activity-card .activity-image .fallback-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #e8f0f6, #d4dce6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--text-light);
+        }
+
+        .activity-card .activity-image .image-placeholder {
+            font-size: 3rem;
+            color: var(--text-light);
+        }
+
+        .activity-card .activity-image .image-tag {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .activity-card .activity-body {
+            padding: 24px 24px 0;
+            flex: 1;
+        }
+
+        .activity-card .activity-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .activity-card .activity-meta .meta-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .activity-card .activity-meta .meta-tag {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--primary-light);
+            padding: 2px 12px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .activity-card .activity-meta .meta-tag.wp {
+            background: #d4e8f5;
+            color: #1a4a6b;
+        }
+
+        .activity-card .activity-meta .meta-tag.audience {
+            background: #ece4f5;
+            color: #5a3a7a;
+        }
+
+        .activity-card .activity-meta .meta-tag.type {
+            background: #e6f0e6;
+            color: #1a6a4a;
+        }
+
+        .activity-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .activity-card h3 a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .activity-card h3 a:hover {
+            color: var(--primary-light);
+        }
+
+        .activity-card .activity-summary {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .activity-card .activity-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px 20px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 16px;
+        }
+
+        .activity-card .activity-footer .activity-location {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .activity-card .activity-footer .activity-readmore {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all var(--transition);
+        }
+
+        .activity-card .activity-footer .activity-readmore:hover {
+            color: var(--accent);
+            gap: 10px;
+        }
+
+        .activity-card .activity-footer .activity-readmore .arrow {
+            transition: transform var(--transition);
+        }
+
+        .activity-card .activity-footer .activity-readmore:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* EMPTY STATE                                                     */
+        /* ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border-light);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* ================================================================ */
+        /* PAGINATION                                                      */
+        /* ================================================================ */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 14px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-body);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .pagination a:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-light);
+        }
+
+        .pagination .active {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+        }
+
+        .pagination .disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 1024px) {
+            .activities-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .page-hero {
+                padding: 50px 20px 40px;
+            }
+
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .page-hero p {
+                font-size: 1rem;
+            }
+
+            .filter-section {
+                top: 64px;
+            }
+
+            .filter-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 0 16px;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .filter-group select {
+                min-width: 140px;
+                flex: 1;
+                max-width: 100%;
+            }
+
+            .activities-section {
+                padding: 30px 16px 40px;
+            }
+
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-card .activity-image {
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-group {
+                flex-direction: column;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .filter-group select {
+                width: 100%;
+                min-width: unset;
+                max-width: 100%;
+            }
+
+            .filter-group .filter-label {
+                width: 100%;
+            }
+
+            .filter-group .filter-clear {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .activity-card .activity-body {
+                padding: 18px 16px 0;
+            }
+
+            .activity-card .activity-footer {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+                padding: 12px 16px 16px;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- PAGE HERO                                                    -->
+        <!-- ============================================================ -->
+        <section class="page-hero">
+            <div class="breadcrumb">
+                <a href="{{ url_for('public.index') }}">Home</a>
+                <span class="sep">/</span>
+                <span>Activities</span>
+            </div>
+            <h1>BRIDGE-AI Kenya <span class="highlight">Activities</span></h1>
+            <p>News, events, field updates and training activities from BRIDGE-AI implementation at JKUAT</p>
+            <span class="hero-count">📊 {{ activities|length if activities else 0 }} activities</span>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- FILTER SECTION - DYNAMIC OPTIONS FROM DATA                   -->
+        <!-- ============================================================ -->
+        <section class="filter-section" id="filters">
+            <div class="filter-container">
+                <div class="filter-group">
+                    <span class="filter-label">🔍 Filter by:</span>
+
+                    <!-- ✅ DYNAMIC Work Packages from data -->
+                    <select id="filterWp" onchange="applyFilters()">
+                        <option value="">All Work Packages</option>
+                        {% for wp in wp_options %}
+                            <option value="{{ wp }}" {% if current_wp == wp %}selected{% endif %}>{{ wp }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- ✅ DYNAMIC Audiences from data -->
+                    <select id="filterAudience" onchange="applyFilters()">
+                        <option value="">All Audiences</option>
+                        {% for aud in audience_options %}
+                            <option value="{{ aud }}" {% if current_audience == aud %}selected{% endif %}>{{ aud|title }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- ✅ DYNAMIC Years from data -->
+                    <select id="filterYear" onchange="applyFilters()">
+                        <option value="">All Years</option>
+                        {% for year in year_options %}
+                            <option value="{{ year }}" {% if current_year == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <!-- ✅ Clear Filters - returns to no filtered state (shows all) -->
+                    <a href="{{ url_for('public.activities') }}" class="filter-clear">
+                        <span class="clear-icon">✕</span> Clear Filters
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ACTIVITIES GRID                                              -->
+        <!-- ============================================================ -->
+        <section class="activities-section">
+            <div class="activities-container">
+
+                {% if activities and activities|length > 0 %}
+                    <div class="activities-grid">
+                        {% for activity in activities %}
+                        <article class="activity-card">
+                            <div class="activity-image">
+
+                                {% if activity.featured_image %}
+                                    <!-- ✅ Local image from JSON path -->
+                                    <img src="{{ url_for('static', filename=activity.featured_image) }}" alt="{{ activity.title }}" loading="lazy">
+                                {% else %}
+                                    <!-- ✅ RELIABLE FALLBACK - Unsplash mushroom image -->
+                                    <img src="https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=600&h=400&fit=crop&crop=center&auto=format"
+                                         alt="{{ activity.title }}"
+                                         class="fallback-image"
+                                         loading="lazy">
+                                {% endif %}
+
+                                {% if activity.wp_tag %}
+                                    <span class="image-tag">{{ activity.wp_tag }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="activity-body">
+                                <div class="activity-meta">
+                                    <span class="meta-date">📅 {{ activity.date[:10] if activity.date else 'Date TBD' }}</span>
+                                    {% if activity.wp_tag %}
+                                        <span class="meta-tag wp">{{ activity.wp_tag }}</span>
+                                    {% endif %}
+                                    {% if activity.audience %}
+                                        <span class="meta-tag audience">{{ activity.audience|title }}</span>
+                                    {% endif %}
+                                    {% if activity.activity_type %}
+                                        <span class="meta-tag type">{{ activity.activity_type|replace('_', ' ')|title }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <h3>
+                                    <a href="{{ url_for('public.activity_detail', slug=activity.slug) if activity.slug else '#' }}">
+                                        {{ activity.title }}
+                                    </a>
+                                </h3>
+
+                                {% if activity.summary %}
+                                    <p class="activity-summary">{{ activity.summary }}</p>
+                                {% elif activity.body %}
+                                    <p class="activity-summary">{{ activity.body|striptags|truncate(120) }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="activity-footer">
+                                {% if activity.location %}
+                                    <span class="activity-location">📍 {{ activity.location }}</span>
+                                {% endif %}
+                                <a href="{{ url_for('public.activity_detail', slug=activity.slug) if activity.slug else '#' }}" class="activity-readmore">
+                                    Read More
+                                    <span class="arrow">→</span>
+                                </a>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span class="empty-icon">📭</span>
+                        <h3>No Activities Found</h3>
+                        <p>There are no activities matching your filters. Try clearing the filters or check back later.</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // FILTER FUNCTIONALITY - Uses select values directly
+            // ================================================================
+
+            window.applyFilters = function() {
+                const wp = document.getElementById('filterWp')?.value || '';
+                const audience = document.getElementById('filterAudience')?.value || '';
+                const year = document.getElementById('filterYear')?.value || '';
+
+                // Build URL with parameters
+                let url = "{{ url_for('public.activities') }}";
+                const params = [];
+
+                if (wp) params.push('wp=' + encodeURIComponent(wp));
+                if (audience) params.push('audience=' + encodeURIComponent(audience));
+                if (year) params.push('year=' + encodeURIComponent(year));
+
+                if (params.length > 0) {
+                    url += '?' + params.join('&');
+                }
+
+                window.location.href = url;
+            };
+
+            // ================================================================
+            // STICKY FILTER SECTION - Add shadow on scroll
+            // ================================================================
+
+            const filterSection = document.querySelector('.filter-section');
+            if (filterSection) {
+                const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
+
+                window.addEventListener('scroll', function() {
+                    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+                    if (currentScroll > headerHeight + 20) {
+                        filterSection.classList.add('scrolled');
+                    } else {
+                        filterSection.classList.remove('scrolled');
+                    }
+                }, { passive: true });
+            }
+
+            // ================================================================
+            // KEYBOARD SUPPORT - Enter to apply filter
+            // ================================================================
+
+            document.querySelectorAll('.filter-group select').forEach(function(select) {
+                select.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        window.applyFilters();
+                    }
+                });
+            });
+
+            // ================================================================
+            // ACTIVE FILTER INDICATOR - Add class when filter has value
+            // ================================================================
+
+            document.querySelectorAll('.filter-group select').forEach(function(select) {
+                // Check initial state
+                if (select.value) {
+                    select.classList.add('has-value');
+                }
+
+                select.addEventListener('change', function() {
+                    if (this.value) {
+                        this.classList.add('has-value');
+                    } else {
+                        this.classList.remove('has-value');
+                    }
+                });
+            });
+
+            console.log('✅ BRIDGE-AI Kenya Activities page initialized');
+            
+
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "Smart Mushroom Innovation Challenge",
+    "slug": "smart-mushroom-challenge",
+    "description": "Develop AI-based solutions for mushroom farming challenges including climate control, disease detection, and yield optimization.",
+    "status": "open",
+    "deadline": "2026-08-30",
+    "prize": "KSh 500,000",
+    "eligibility": "SMEs, startups, university students, and researchers",
+    "created_at": "2026-06-27",
+    "updated_at": "2026-06-27"
+  }
+]

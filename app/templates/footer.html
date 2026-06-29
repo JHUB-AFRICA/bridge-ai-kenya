@@ -1,0 +1,760 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA — ULTIMATE PREMIUM FOOTER                      -->
+<!-- ================================================================ -->
+<!-- Design: Clean, premium, glass-morphism with brand accents      -->
+<!-- Inspired by: Apple, Stripe, Awwwards winners                   -->
+<!-- Fully responsive · Accessibility first · Micro-interactions   -->
+<!-- ================================================================ -->
+
+<footer class="footer-premium" role="contentinfo">
+    <!-- Premium background with subtle gradient -->
+    <div class="footer-bg"></div>
+    
+    <div class="footer-container">
+        
+        <!-- ============================================================ -->
+        <!-- TOP SECTION: BRAND + EU FUNDING                              -->
+        <!-- ============================================================ -->
+        <div class="footer-top">
+            
+            <!-- Left: Brand Logos -->
+            <div class="footer-brand">
+                <div class="footer-brand-logos">
+                    <img src="{{ url_for('static', filename='images/logos/jhub_logo.svg') }}" 
+                         alt="JHUB Africa" 
+                         class="footer-brand-logo"
+                         id="footerJhub"
+                         loading="lazy">
+                    <span class="footer-brand-divider"></span>
+                    <img src="{{ url_for('static', filename='images/logos/bridge_ai_logo.svg') }}" 
+                         alt="BRIDGE-AI Kenya" 
+                         class="footer-brand-logo footer-brand-logo-bridge"
+                         id="footerBridge"
+                         loading="lazy">
+                </div>
+                <p class="footer-brand-tagline">AI for African Agriculture</p>
+            </div>
+            
+            <!-- Right: EU Funding -->
+            <div class="footer-eu">
+                <div class="footer-eu-badge">
+                    <img src="{{ url_for('static', filename='images/logos/eu_emblem.svg') }}" 
+                         alt="European Union" 
+                         class="footer-eu-emblem"
+                         id="footerEu"
+                         loading="lazy">
+                    <span class="footer-eu-label">Horizon Europe</span>
+                </div>
+                <div class="footer-eu-text">
+                    <p class="footer-eu-statement">
+                        {{ EU_FUNDING_STATEMENT or 'This project has received funding from the European Union\'s Horizon Europe research and innovation programme under grant agreement No. 101299050.' }}
+                    </p>
+                    <p class="footer-eu-disclaimer">
+                        {{ EU_DISCLAIMER or 'Funded by the European Union. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Health and Digital Executive Agency. Neither the European Union nor the granting authority can be held responsible for them.' }}
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- MIDDLE SECTION: QUICK LINKS GRID                             -->
+        <!-- ============================================================ -->
+        <div class="footer-middle">
+            
+            <!-- Column 1: Project -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">
+                    <span class="footer-col-icon">🚀</span>
+                    Project
+                </h4>
+                <ul class="footer-col-links">
+                    <li><a href="{{ url_for('public.about') }}">About BRIDGE-AI</a></li>
+                    <li><a href="{{ url_for('public.jkuat_role') }}">JKUAT Role</a></li>
+                    <li><a href="{{ url_for('public.partners') }}">Partners</a></li>
+                    <li><a href="{{ url_for('public.privacy_ethics') }}">Privacy &amp; Ethics</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 2: Activities -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">
+                    <span class="footer-col-icon">📋</span>
+                    Activities
+                </h4>
+                <ul class="footer-col-links">
+                    <li><a href="{{ url_for('public.smart_mushrooms') }}">Smart Mushrooms</a></li>
+                    <li><a href="{{ url_for('public.training_wp5') }}">Training &amp; WP5</a></li>
+                    <li><a href="{{ url_for('public.activities') }}">News &amp; Updates</a></li>
+                    <li><a href="{{ url_for('public.gallery') }}">Gallery</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 3: Resources -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">
+                    <span class="footer-col-icon">📚</span>
+                    Resources
+                </h4>
+                <ul class="footer-col-links">
+                    <li><a href="{{ url_for('public.resources') }}#deliverables">Deliverables</a></li>
+                    <li><a href="{{ url_for('public.resources') }}#training-kits">Training Materials</a></li>
+                    <li><a href="{{ url_for('public.resources') }}#policy-briefs">Policy Briefs</a></li>
+                    <li><a href="{{ url_for('public.resources') }}#publications">Publications</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 4: Connect -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">
+                    <span class="footer-col-icon">📬</span>
+                    Connect
+                </h4>
+                <ul class="footer-col-links">
+                    <li><a href="{{ url_for('public.contact') }}">Contact Us</a></li>
+                    <li>
+                        <a href="https://www.linkedin.com/company/bridge-ai" target="_blank" rel="noopener noreferrer">
+                            <svg class="footer-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect x="2" y="9" width="4" height="12"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            LinkedIn
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.youtube.com/@bridge-ai" target="_blank" rel="noopener noreferrer">
+                            <svg class="footer-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+                            </svg>
+                            YouTube
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/bridge_ai" target="_blank" rel="noopener noreferrer">
+                            <svg class="footer-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4l11.733 16h4.267l-11.733 -16z"/>
+                                <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/>
+                            </svg>
+                            X / Twitter
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- BOTTOM SECTION: COPYRIGHT + CREDITS                         -->
+        <!-- ============================================================ -->
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                &copy; <span id="footerYear">2026</span> BRIDGE-AI Kenya 
+                <span class="footer-bottom-sep">•</span> 
+                JKUAT - Jomo Kenyatta University of Agriculture and Technology
+            </p>
+            <div class="footer-bottom-right">
+                <span class="footer-bottom-badge">Horizon Europe</span>
+                <span class="footer-bottom-sep">•</span>
+                <p class="footer-credit">
+                    Built with <span class="footer-heart">❤</span> by JHUB Africa
+                </p>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+
+<!-- ================================================================ -->
+<!-- PREMIUM FOOTER STYLES                                            -->
+<!-- ================================================================ -->
+
+<style>
+    /* ================================================================ */
+    /* CSS VARIABLES                                                   */
+    /* ================================================================ */
+    :root {
+        --footer-bg-start: #f8fafc;
+        --footer-bg-end: #ffffff;
+        --footer-text: #1a2a3a;
+        --footer-text-muted: #5a6a7a;
+        --footer-text-light: #8a9aaa;
+        --footer-border: #e4eaf0;
+        --footer-primary: #0b4d3b;
+        --footer-primary-light: #1a7a5e;
+        --footer-gold: #c8922a;
+        --footer-shadow: 0 -4px 40px rgba(0, 0, 0, 0.02);
+        --footer-radius: 14px;
+        --footer-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    
+    /* ================================================================ */
+    /* FOOTER SHELL                                                    */
+    /* ================================================================ */
+    
+    .footer-premium {
+        position: relative;
+        background: var(--footer-bg-start);
+        padding: 60px 24px 20px;
+        margin-top: 80px;
+        border-top: 1px solid var(--footer-border);
+        overflow: hidden;
+    }
+    
+    .footer-bg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%);
+        z-index: 0;
+    }
+    
+    .footer-bg::before {
+        content: '';
+        position: absolute;
+        top: -200px;
+        right: -200px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(11, 77, 59, 0.03) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    
+    .footer-bg::after {
+        content: '';
+        position: absolute;
+        bottom: -100px;
+        left: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(200, 146, 42, 0.02) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    
+    .footer-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* ================================================================ */
+    /* TOP SECTION                                                     */
+    /* ================================================================ */
+    
+    .footer-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 40px;
+        padding-bottom: 36px;
+        border-bottom: 1px solid var(--footer-border);
+        flex-wrap: wrap;
+    }
+    
+    /* --- Brand --- */
+    .footer-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .footer-brand-logos {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    
+    .footer-brand-logo {
+        height: 36px;
+        width: auto;
+        opacity: 0.9;
+        transition: opacity 0.3s ease;
+    }
+    
+    .footer-brand-logo:hover {
+        opacity: 1;
+    }
+    
+    .footer-brand-logo-bridge {
+        height: 40px;
+    }
+    
+    .footer-brand-divider {
+        width: 1.5px;
+        height: 30px;
+        background: var(--footer-border);
+    }
+    
+    .footer-brand-tagline {
+        font-size: 0.8rem;
+        color: var(--footer-text-light);
+        letter-spacing: 0.3px;
+        margin: 0;
+        padding-left: 2px;
+    }
+    
+    /* --- EU Funding --- */
+    .footer-eu {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        max-width: 600px;
+        flex: 1;
+    }
+    
+    .footer-eu-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        padding-top: 2px;
+    }
+    
+    .footer-eu-emblem {
+        height: 44px;
+        width: auto;
+        display: block;
+    }
+    
+    .footer-eu-label {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: var(--footer-text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+    
+    .footer-eu-text {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .footer-eu-statement {
+        font-size: 0.82rem;
+        color: var(--footer-text);
+        font-weight: 500;
+        margin: 0 0 4px 0;
+        line-height: 1.5;
+    }
+    
+    .footer-eu-disclaimer {
+        font-size: 0.7rem;
+        color: var(--footer-text-light);
+        margin: 0;
+        line-height: 1.6;
+    }
+    
+    /* ================================================================ */
+    /* MIDDLE SECTION — LINK GRID                                      */
+    /* ================================================================ */
+    
+    .footer-middle {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 40px;
+        padding: 44px 0 40px;
+        border-bottom: 1px solid var(--footer-border);
+    }
+    
+    .footer-col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .footer-col-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--footer-text);
+        margin: 0 0 12px 0;
+        letter-spacing: 0.2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .footer-col-icon {
+        font-size: 0.9rem;
+        opacity: 0.6;
+    }
+    
+    .footer-col-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--footer-border);
+        margin-left: 8px;
+        max-width: 40px;
+    }
+    
+    .footer-col-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .footer-col-links li {
+        margin: 0;
+    }
+    
+    .footer-col-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--footer-text-muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.25s var(--footer-ease);
+        padding: 4px 0;
+        position: relative;
+    }
+    
+    .footer-col-links a::before {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 0;
+        width: 0;
+        height: 1.5px;
+        background: var(--footer-primary);
+        transition: width 0.3s var(--footer-ease);
+    }
+    
+    .footer-col-links a:hover {
+        color: var(--footer-primary);
+        transform: translateX(4px);
+    }
+    
+    .footer-col-links a:hover::before {
+        width: 100%;
+    }
+    
+    .footer-social-icon {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+        transition: opacity 0.25s ease;
+        flex-shrink: 0;
+    }
+    
+    .footer-col-links a:hover .footer-social-icon {
+        opacity: 1;
+    }
+    
+    /* ================================================================ */
+    /* BOTTOM SECTION                                                  */
+    /* ================================================================ */
+    
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .footer-copyright {
+        font-size: 0.78rem;
+        color: var(--footer-text-light);
+        margin: 0;
+    }
+    
+    .footer-bottom-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .footer-bottom-badge {
+        font-size: 0.55rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--footer-primary);
+        background: rgba(11, 77, 59, 0.06);
+        padding: 2px 10px;
+        border-radius: 50px;
+        border: 1px solid rgba(11, 77, 59, 0.08);
+    }
+    
+    .footer-bottom-sep {
+        color: var(--footer-border);
+        font-size: 0.8rem;
+    }
+    
+    .footer-credit {
+        font-size: 0.78rem;
+        color: var(--footer-text-light);
+        margin: 0;
+    }
+    
+    .footer-heart {
+        color: #c0392b;
+        display: inline-block;
+        animation: heartBeat 2s ease-in-out infinite;
+    }
+    
+    @keyframes heartBeat {
+        0%, 100% { transform: scale(1); }
+        14% { transform: scale(1.25); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.15); }
+        70% { transform: scale(1); }
+    }
+    
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    
+    @media (max-width: 1024px) {
+        .footer-top {
+            flex-direction: column;
+            gap: 28px;
+        }
+        
+        .footer-eu {
+            max-width: 100%;
+        }
+        
+        .footer-middle {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .footer-premium {
+            padding: 40px 20px 16px;
+            margin-top: 60px;
+        }
+        
+        .footer-brand-logos {
+            gap: 12px;
+        }
+        
+        .footer-brand-logo {
+            height: 28px;
+        }
+        
+        .footer-brand-logo-bridge {
+            height: 32px;
+        }
+        
+        .footer-brand-divider {
+            height: 24px;
+        }
+        
+        .footer-eu {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .footer-eu-badge {
+            flex-direction: row;
+            gap: 10px;
+        }
+        
+        .footer-eu-emblem {
+            height: 36px;
+        }
+        
+        .footer-eu-statement {
+            font-size: 0.78rem;
+        }
+        
+        .footer-eu-disclaimer {
+            font-size: 0.66rem;
+        }
+        
+        .footer-middle {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 32px 0 28px;
+        }
+        
+        .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+            gap: 8px;
+        }
+        
+        .footer-bottom-right {
+            justify-content: center;
+        }
+        
+        .footer-copyright {
+            font-size: 0.7rem;
+        }
+        
+        .footer-credit {
+            font-size: 0.7rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .footer-middle {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .footer-col-title {
+            font-size: 0.8rem;
+        }
+        
+        .footer-col-links a {
+            font-size: 0.8rem;
+        }
+        
+        .footer-eu-statement {
+            font-size: 0.72rem;
+        }
+        
+        .footer-eu-disclaimer {
+            font-size: 0.6rem;
+        }
+        
+        .footer-brand-tagline {
+            font-size: 0.7rem;
+        }
+        
+        .footer-bottom-badge {
+            font-size: 0.5rem;
+        }
+    }
+    
+    /* ================================================================ */
+    /* ACCESSIBILITY                                                   */
+    /* ================================================================ */
+    
+    @media (prefers-reduced-motion: reduce) {
+        .footer-heart {
+            animation: none !important;
+        }
+        
+        .footer-col-links a::before {
+            transition: none !important;
+        }
+        
+        .footer-col-links a:hover {
+            transform: none !important;
+        }
+    }
+    
+    .footer-col-links a:focus-visible {
+        outline: 2px solid var(--footer-primary);
+        outline-offset: 3px;
+        border-radius: 2px;
+    }
+    
+    @media (prefers-contrast: high) {
+        .footer-premium {
+            border-top: 2px solid var(--footer-primary);
+        }
+        
+        .footer-col-title::after {
+            background: var(--footer-primary);
+        }
+        
+        .footer-col-links a::before {
+            background: var(--footer-primary);
+        }
+    }
+    
+    @media (prefers-reduced-transparency: reduce) {
+        .footer-bg::before,
+        .footer-bg::after {
+            display: none;
+        }
+    }
+</style>
+
+<!-- ================================================================ -->
+<!-- PREMIUM FOOTER JAVASCRIPT                                        -->
+<!-- ================================================================ -->
+
+<script>
+(function() {
+    'use strict';
+    
+    // ─── LOGO FALLBACK ─────────────────────────────────────────────
+    const footerImages = [
+        document.getElementById('footerJhub'),
+        document.getElementById('footerBridge'),
+        document.getElementById('footerEu')
+    ];
+    
+    footerImages.forEach(function(img) {
+        if (img) {
+            img.addEventListener('error', function() {
+                var base = this.src.replace(/\.[^.]+$/, '');
+                var png = base + '.png';
+                if (this.src !== png) {
+                    this.src = png;
+                }
+            });
+        }
+    });
+    
+    // ─── DYNAMIC YEAR ──────────────────────────────────────────────
+    var yearSpan = document.getElementById('footerYear');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+    
+    // ─── SMOOTH SCROLL ─────────────────────────────────────────────
+    document.querySelectorAll('.footer-col-links a[href^="#"]').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            var targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            var target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                var headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
+                var targetPos = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                
+                window.scrollTo({
+                    top: targetPos,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // ─── SCROLL REVEAL ─────────────────────────────────────────────
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -20px 0px'
+    });
+    
+    document.querySelectorAll('.footer-col, .footer-eu, .footer-brand').forEach(function(el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+        observer.observe(el);
+    });
+    
+    console.log('✅ Ultimate Premium Footer initialized');
+    
+})();
+</script>
+
+<!-- ================================================================ -->
+<!-- FOOTER END                                                       -->
+<!-- ================================================================ -->

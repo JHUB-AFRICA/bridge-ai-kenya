@@ -1,0 +1,2042 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA — ULTIMATE COMPLETE HOMEPAGE                   -->
+<!-- ================================================================ -->
+<!-- Complete homepage with dynamic hero images from /hero folder   -->
+<!-- Perfect alignment between text and images                      -->
+<!-- Stats badge sits cleanly BELOW the image (no overlap)         -->
+<!-- Fully responsive · Premium design · All sections included     -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRIDGE-AI Kenya — AI for African Agriculture</title>
+    <meta name="description" content="BRIDGE-AI Kenya at JHUB Africa: GenAI, IoT and digital skills for climate-smart mushroom farming and rural innovation in Kenya.">
+
+    <style>
+        /* ================================================================ */
+        /* IMPORTS & VARIABLES                                             */
+        /* ================================================================ */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --primary: #0b4d3b;
+            --primary-light: #1a7a5e;
+            --primary-lighter: #2ba580;
+            --primary-dark: #072f23;
+            --gold: #c8922a;
+            --gold-light: #e8b55a;
+            --text-dark: #0a1a2a;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --bg-lighter: #fafcfe;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.07);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ================================================================ */
+        /* HERO — PERFECTLY ALIGNED TEXT & IMAGE                          */
+        /* ================================================================ */
+        .hero {
+            padding: 60px 0 60px;
+            background: var(--bg-white);
+            position: relative;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: stretch;
+            min-height: 520px;
+        }
+
+        /* --- Left Content --- */
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px 0;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(11, 77, 59, 0.06);
+            color: var(--primary);
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: 1px solid rgba(11, 77, 59, 0.06);
+            width: fit-content;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .hero h1 {
+            font-size: 3.6rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.08;
+            letter-spacing: -1.5px;
+        }
+
+        .hero h1 .highlight {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero h1 .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+            opacity: 0.15;
+            border-radius: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        .hero-description {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            max-width: 480px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 50px;
+            transition: all 0.3s var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(11, 77, 59, 0.2);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: transparent;
+            color: var(--text-body);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 50px;
+            border: 1.5px solid var(--border-light);
+            transition: all 0.3s var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        /* --- Right Image — Perfectly Aligned --- */
+        .hero-image {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hero-image-wrapper {
+            width: 100%;
+            min-height: 400px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-light);
+            box-shadow: var(--shadow-lg);
+            flex: 1;
+        }
+
+        .hero-slider {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: scale(1.05);
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-slide .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 28px 24px;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+        }
+
+        .hero-slide .slide-overlay .slide-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            padding: 2px 12px;
+            border-radius: 50px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .hero-slide .slide-overlay .slide-title {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .hero-slide .slide-overlay .slide-desc {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* --- Slide Indicators --- */
+        .slide-indicators {
+            position: absolute;
+            bottom: 16px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .slide-indicators .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.4s var(--transition);
+            border: none;
+            padding: 0;
+        }
+
+        .slide-indicators .indicator:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(1.2);
+        }
+
+        .slide-indicators .indicator.active {
+            background: #ffffff;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* --- Slide Navigation Arrows --- */
+        .slide-arrows {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .slide-arrows button {
+            pointer-events: auto;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .slide-arrows button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+
+        .slide-arrows button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ================================================================ */
+        /* STATS BADGE - BELOW IMAGE (CLEAN, NON-OVERLAPPING)              */
+        /* ================================================================ */
+
+        .hero-stats-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: 14px 28px;
+            margin-top: 16px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: all 0.3s var(--transition);
+        }
+
+        .hero-stats-badge:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(11, 77, 59, 0.08);
+        }
+
+        .hero-stats-badge .badge-item {
+            text-align: center;
+        }
+
+        .hero-stats-badge .badge-item .badge-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .hero-stats-badge .badge-item .badge-number .badge-suffix {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        .hero-stats-badge .badge-item .badge-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .hero-stats-badge .badge-divider {
+            width: 1px;
+            height: 30px;
+            background: var(--border-light);
+        }
+
+        /* --- Stats below hero --- */
+        .hero-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: block;
+        }
+
+        .hero-stat .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* ================================================================ */
+        /* SECTION COMMON                                                  */
+        /* ================================================================ */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: rgba(11, 77, 59, 0.06);
+            color: var(--primary);
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(11, 77, 59, 0.06);
+        }
+
+        .section-tag.gold {
+            background: rgba(200, 146, 42, 0.08);
+            color: #8a6d1b;
+            border-color: rgba(200, 146, 42, 0.08);
+        }
+
+        .section-header h2 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.8px;
+            line-height: 1.12;
+        }
+
+        .section-header h2 .highlight {
+            color: var(--primary);
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-top: 12px;
+        }
+
+        .section-alt {
+            background: var(--bg-light);
+        }
+
+        /* ================================================================ */
+        /* FEATURE CARDS                                                   */
+        /* ================================================================ */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px 36px;
+            border: 1px solid var(--border-light);
+            transition: all 0.4s var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--gold));
+            opacity: 0;
+            transition: opacity 0.4s var(--transition);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(11, 77, 59, 0.08);
+        }
+
+        .feature-card .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(11, 77, 59, 0.06);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            transition: all 0.3s var(--transition);
+            font-size: 1.6rem;
+        }
+
+        .feature-card:hover .feature-icon {
+            background: rgba(11, 77, 59, 0.12);
+            transform: scale(1.05);
+        }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .feature-card .feature-number {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+
+        /* ================================================================ */
+        /* DOING CARDS                                                     */
+        /* ================================================================ */
+        .doing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .doing-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: 32px 28px;
+            border: 1px solid var(--border-light);
+            transition: all 0.4s var(--transition);
+            position: relative;
+        }
+
+        .doing-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(11, 77, 59, 0.08);
+        }
+
+        .doing-card .doing-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .doing-card .doing-tag {
+            display: inline-block;
+            background: rgba(11, 77, 59, 0.06);
+            color: var(--primary);
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 10px;
+            border-radius: 50px;
+            margin-bottom: 6px;
+        }
+
+        .doing-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .doing-card p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ================================================================ */
+        /* COUNTERS                                                        */
+        /* ================================================================ */
+        .counters-section {
+            background: var(--bg-white);
+            padding: 60px 0;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .counters-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 30px;
+            text-align: center;
+        }
+
+        .counter-item .counter-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: block;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .counter-item .counter-number .counter-suffix {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        .counter-item .counter-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* ================================================================ */
+        /* ACTIVITIES & EVENTS                                             */
+        /* ================================================================ */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 50px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 18px;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border-light);
+            align-items: flex-start;
+            transition: all 0.3s var(--transition);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            padding-left: 6px;
+        }
+
+        .activity-item .activity-img {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: var(--bg-light);
+        }
+
+        .activity-item .activity-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .activity-item .activity-img .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            background: var(--bg-light);
+        }
+
+        .activity-item .activity-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 2px;
+        }
+
+        .activity-item .activity-meta .date {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .activity-item .activity-meta .tag {
+            display: inline-block;
+            background: rgba(11, 77, 59, 0.06);
+            color: var(--primary);
+            padding: 1px 10px;
+            border-radius: 50px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .activity-item h4 {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .activity-item p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            transition: all 0.3s var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .event-item:hover {
+            background: var(--bg-white);
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transform: translateX(4px);
+        }
+
+        .event-item .event-date {
+            text-align: center;
+            background: var(--primary);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            min-width: 50px;
+            flex-shrink: 0;
+        }
+
+        .event-item .event-date .day {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1.1;
+        }
+
+        .event-item .event-date .month {
+            font-size: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+        }
+
+        .event-item .event-info {
+            flex: 1;
+        }
+
+        .event-item .event-info h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .event-item .event-info p {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin: 0;
+        }
+
+        .event-item .event-status {
+            font-size: 0.55rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 12px;
+            border-radius: 50px;
+            background: var(--primary-light);
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .event-item .event-status.soon {
+            background: var(--gold);
+        }
+
+        .view-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+        }
+
+        .view-all:hover {
+            gap: 10px;
+            color: var(--primary-dark);
+        }
+
+        /* ================================================================ */
+        /* EU BLOCK                                                        */
+        /* ================================================================ */
+        .eu-block {
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            padding: 32px 40px;
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            border: 1px solid var(--border-light);
+        }
+
+        .eu-block .eu-icon {
+            height: 48px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .eu-block .eu-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .eu-block .eu-text strong {
+            color: var(--text-dark);
+        }
+
+        .eu-block .eu-text .disclaimer {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+
+        @media (max-width: 1200px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                min-height: auto;
+            }
+
+            .hero-content {
+                padding: 0;
+            }
+
+            .hero h1 {
+                font-size: 2.6rem;
+            }
+
+            .hero-image-wrapper {
+                min-height: 350px;
+            }
+
+            .hero-slider {
+                min-height: 350px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .doing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .counters-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .section-header h2 {
+                font-size: 2.2rem;
+            }
+
+            .hero-stats-badge {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .hero {
+                padding: 40px 0 40px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-image-wrapper {
+                min-height: 280px;
+            }
+
+            .hero-slider {
+                min-height: 280px;
+            }
+
+            .slide-arrows button {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+
+            .hero-stats-badge {
+                gap: 16px;
+                padding: 12px 18px;
+                flex-wrap: wrap;
+            }
+
+            .hero-stats-badge .badge-item .badge-number {
+                font-size: 1.2rem;
+            }
+
+            .hero-stats-badge .badge-item .badge-label {
+                font-size: 0.6rem;
+            }
+
+            .hero-stats-badge .badge-divider {
+                display: none;
+            }
+
+            .hero-stats {
+                gap: 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .section {
+                padding: 50px 0;
+            }
+
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .doing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .counters-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .counter-item .counter-number {
+                font-size: 2.2rem;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .activity-item .activity-img {
+                width: 100%;
+                height: 140px;
+            }
+
+            .event-item {
+                flex-wrap: wrap;
+            }
+
+            .event-item .event-status {
+                width: 100%;
+                text-align: center;
+            }
+
+            .eu-block {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 24px 20px;
+            }
+
+            .eu-block .eu-icon {
+                height: 40px;
+            }
+
+            .hero-slide .slide-overlay {
+                padding: 20px 18px 16px;
+            }
+
+            .hero-slide .slide-overlay .slide-title {
+                font-size: 0.85rem;
+            }
+
+            .hero-slide .slide-overlay .slide-desc {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-description {
+                font-size: 0.85rem;
+            }
+
+            .counters-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .counter-item .counter-number {
+                font-size: 1.8rem;
+            }
+
+            .feature-card {
+                padding: 28px 20px;
+            }
+
+            .doing-card {
+                padding: 24px 20px;
+            }
+
+            .hero-image-wrapper {
+                min-height: 220px;
+            }
+
+            .hero-slider {
+                min-height: 220px;
+            }
+
+            .slide-indicators {
+                bottom: 10px;
+                right: 12px;
+            }
+
+            .slide-indicators .indicator {
+                width: 6px;
+                height: 6px;
+            }
+
+            .slide-indicators .indicator.active {
+                width: 18px;
+            }
+
+            .hero-stats-badge {
+                gap: 12px;
+                padding: 10px 14px;
+                max-width: 100%;
+            }
+
+            .hero-stats-badge .badge-item .badge-number {
+                font-size: 1rem;
+            }
+
+            .hero-stats-badge .badge-item .badge-number .badge-suffix {
+                font-size: 0.8rem;
+            }
+
+            .hero-stats-badge .badge-item .badge-label {
+                font-size: 0.55rem;
+            }
+        }
+
+        /* ================================================================ */
+        /* ACCESSIBILITY                                                   */
+        /* ================================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .hero-slide {
+                transition: none !important;
+            }
+        }
+
+        .btn:focus-visible,
+        .view-all:focus-visible,
+        .slide-arrows button:focus-visible,
+        .indicator:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-contrast: high) {
+            .feature-card {
+                border: 2px solid var(--border-light);
+            }
+
+            .doing-card {
+                border: 2px solid var(--border-light);
+            }
+
+            .hero-stats-badge {
+                border: 2px solid var(--border-light);
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* ================================================================ */
+        /* LOADING PLACEHOLDER FOR DYNAMIC IMAGES                         */
+        /* ================================================================ */
+        .hero-slide.loading {
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-slide.loading .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ================================================================ */
+        /* FALLBACK STYLES FOR MISSING IMAGES                             */
+        /* ================================================================ */
+        .hero-slide .fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-light), var(--bg-white));
+            color: var(--text-light);
+            font-size: 4rem;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .hero-slide .fallback span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER (included)                                               -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- HERO — PERFECTLY ALIGNED TEXT & IMAGE                       -->
+        <!-- ============================================================ -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-grid">
+
+                    <!-- ======================================================== -->
+                    <!-- LEFT: TEXT CONTENT                                      -->
+                    <!-- ======================================================== -->
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <span class="dot"></span>
+                            Horizon Europe Project
+                        </div>
+                        <h1>
+                            BRIDGE-AI<br>
+                            <span class="highlight">Kenya at JKUAT</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Generative AI, IoT sensing and digital skills for climate-smart mushroom farming and rural innovation.
+                        </p>
+                        <p class="hero-description">
+                            BRIDGE-AI Kenya documents JKUAT's contribution to the Horizon Europe BRIDGE-AI project.
+                            Through the JKUAT Smart Farm Zone and JHUB Africa, we explore how GenAI-enabled decision support,
+                            sensor data, digital shadows and inclusive training can help mushroom farmers, youth, women,
+                            developers and SMEs adopt practical digital agriculture solutions.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="{{ url_for('public.smart_mushrooms') }}" class="btn-primary">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M12 2C8 4 4 7 4 12c0 4 2 7 8 7s8-3 8-7c0-5-4-8-8-10z"/>
+                                    <path d="M12 12c-2 0-3-1-3-2s1-2 3-2 3 1 3 2-1 2-3 2z"/>
+                                    <path d="M12 14v4"/>
+                                    <path d="M10 16h4"/>
+                                </svg>
+                                Explore Smart Mushrooms
+                            </a>
+                            <a href="{{ url_for('public.training_wp5') }}" class="btn-secondary">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M12 6v7m0 0l-2-2m2 2l2-2M4 4v16h16V4H4z"/>
+                                    <path d="M8 12h8"/>
+                                </svg>
+                                Join Training Updates
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ======================================================== -->
+                    <!-- RIGHT: DYNAMIC ROTATING IMAGE SLIDER                   -->
+                    <!-- ======================================================== -->
+                    <div class="hero-image">
+                        <div class="hero-image-wrapper" id="heroSlider">
+
+                            <!-- Slides Container -->
+                            <div class="hero-slider" id="sliderContainer">
+                                <!-- Slides will be dynamically inserted by JavaScript -->
+                            </div>
+
+                            <!-- Slide Indicators -->
+                            <div class="slide-indicators" id="slideIndicators">
+                                <!-- Indicators will be dynamically inserted by JavaScript -->
+                            </div>
+
+                            <!-- Navigation Arrows -->
+                            <div class="slide-arrows">
+                                <button class="slide-prev" id="slidePrev" aria-label="Previous slide">‹</button>
+                                <button class="slide-next" id="slideNext" aria-label="Next slide">›</button>
+                            </div>
+
+                        </div>
+
+                        <!-- ==================================================== -->
+                        <!-- STATS BADGE - BELOW IMAGE (NO OVERLAP)              -->
+                        <!-- ==================================================== -->
+                        <div class="hero-stats-badge">
+                            <div class="badge-item">
+                                <span class="badge-number">400K<span class="badge-suffix">+</span></span>
+                                <span class="badge-label">Farmers Reached</span>
+                            </div>
+                            <div class="badge-divider"></div>
+                            <div class="badge-item">
+                                <span class="badge-number">8</span>
+                                <span class="badge-label">Partners</span>
+                            </div>
+                            <div class="badge-divider"></div>
+                            <div class="badge-item">
+                                <span class="badge-number">36</span>
+                                <span class="badge-label">Months</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Stats below hero -->
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="stat-number">36</span>
+                        <span class="stat-label">Months</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Countries</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-number">JKUAT</span>
+                        <span class="stat-label">WP5 Lead</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-number">8</span>
+                        <span class="stat-label">Partners</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PROJECT FACTS STRIP — CLEAN                                  -->
+        <!-- ============================================================ -->
+        <div style="background:var(--bg-light);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:20px 0;">
+            <div class="container">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:16px;text-align:center;">
+                    <div>
+                        <div style="font-weight:700;font-size:0.85rem;color:var(--text-dark);">Horizon Europe</div>
+                        <div style="font-size:0.7rem;color:var(--text-light);">Grant No. 101299050</div>
+                    </div>
+                    <div style="width:1px;background:var(--border-light);height:30px;align-self:center;display:block;"></div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.85rem;color:var(--text-dark);">36 Months</div>
+                        <div style="font-size:0.7rem;color:var(--text-light);">Project Duration</div>
+                    </div>
+                    <div style="width:1px;background:var(--border-light);height:30px;align-self:center;display:block;"></div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.85rem;color:var(--text-dark);">3 Countries</div>
+                        <div style="font-size:0.7rem;color:var(--text-light);">Kenya · Tunisia · Nigeria</div>
+                    </div>
+                    <div style="width:1px;background:var(--border-light);height:30px;align-self:center;display:block;"></div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.85rem;color:var(--text-dark);">JKUAT</div>
+                        <div style="font-size:0.7rem;color:var(--text-light);">WP5 Capacity Lead</div>
+                    </div>
+                    <div style="width:1px;background:var(--border-light);height:30px;align-self:center;display:block;"></div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.85rem;color:var(--text-dark);">Smart Mushroom</div>
+                        <div style="font-size:0.7rem;color:var(--text-light);">Kenya Pilot Site</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- WHY IT MATTERS — FEATURE CARDS                               -->
+        <!-- ============================================================ -->
+        <section class="section" id="why-it-matters">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Why It Matters</span>
+                    <h2>Transforming Agriculture <span class="highlight">with AI</span></h2>
+                    <p>BRIDGE-AI Kenya addresses three critical areas for sustainable development</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-number">01</span>
+                        <div class="feature-icon">🌾</div>
+                        <h3>Climate-Smart Mushroom Farming</h3>
+                        <p>Using IoT sensors, GenAI analytics, and digital shadows to optimize growing conditions, reduce waste, and increase yields for Kenyan mushroom farmers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-number">02</span>
+                        <div class="feature-icon">📊</div>
+                        <h3>Inclusive Digital Skills</h3>
+                        <p>Empowering youth, women, and smallholder farmers with hands-on training in AI, IoT, and digital agriculture — building capacity for the future.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-number">03</span>
+                        <div class="feature-icon">🧠</div>
+                        <h3>African GenAI Capacity</h3>
+                        <p>Building local expertise in generative AI for agriculture, creating a replicable model that can scale across East Africa and beyond.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- WHAT JKUAT IS DOING                                          -->
+        <!-- ============================================================ -->
+        <section class="section section-alt" id="jkuat-doing">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag gold">JKUAT's Role</span>
+                    <h2>What JKUAT <span class="highlight">Is Doing</span></h2>
+                    <p>Leading the Smart Mushroom pilot and WP5 Capacity Building in Kenya</p>
+                </div>
+                <div class="doing-grid">
+                    <div class="doing-card">
+                        <span class="doing-icon">🍄</span>
+                        <span class="doing-tag">Pilot</span>
+                        <h4>Smart Mushroom Pilot</h4>
+                        <p>GenAI-assisted monitoring, anomaly detection, digital shadows, IoT sensing and farmer advisory tools for mushroom grow rooms at JKUAT Smart Farm Zone.</p>
+                    </div>
+                    <div class="doing-card">
+                        <span class="doing-icon">🤝</span>
+                        <span class="doing-tag">Living Lab</span>
+                        <h4>Kenya Living Lab</h4>
+                        <p>Co-design and feedback activities with farmers, researchers, youth, women, advisors and SMEs to ensure solutions meet local needs.</p>
+                    </div>
+                    <div class="doing-card">
+                        <span class="doing-icon">🎓</span>
+                        <span class="doing-tag">Training</span>
+                        <h4>Training &amp; Bootcamps</h4>
+                        <p>Hands-on training programs, bootcamps, and SME mentoring to build digital skills and enable replication across East Africa.</p>
+                    </div>
+                    <div class="doing-card">
+                        <span class="doing-icon">📊</span>
+                        <span class="doing-tag">Mentoring</span>
+                        <h4>SME Mentoring</h4>
+                        <p>Supporting agricultural SMEs to adopt, adapt, and scale smart farming solutions through mentoring and technical assistance.</p>
+                    </div>
+                    <div class="doing-card">
+                        <span class="doing-icon">📚</span>
+                        <span class="doing-tag">Replication</span>
+                        <h4>Replication Toolkit</h4>
+                        <p>Developing playbooks, training materials, and open repositories to enable replication of the Smart Mushroom model across East Africa.</p>
+                    </div>
+                    <div class="doing-card">
+                        <span class="doing-icon">💡</span>
+                        <span class="doing-tag">WP5</span>
+                        <h4>WP5 Leadership</h4>
+                        <p>Leading Work Package 5: Capacity Building and Replication, building African expertise in GenAI solutions for agriculture.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PROGRESS COUNTERS — CLEAN WHITE                              -->
+        <!-- ============================================================ -->
+        <section class="counters-section">
+            <div class="container">
+                <div class="counters-grid">
+                    <div class="counter-item">
+                        <span class="counter-number" data-count="12">0<span class="counter-suffix">+</span></span>
+                        <span class="counter-label">Activities</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-number" data-count="150">0<span class="counter-suffix">+</span></span>
+                        <span class="counter-label">Participants Trained</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-number" data-count="45">0<span class="counter-suffix">%</span></span>
+                        <span class="counter-label">Women/Youth Reached</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-number" data-count="8">0<span class="counter-suffix">+</span></span>
+                        <span class="counter-label">Events</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-number" data-count="15">0<span class="counter-suffix">+</span></span>
+                        <span class="counter-label">Resources</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-number" data-count="10">0<span class="counter-suffix">+</span></span>
+                        <span class="counter-label">SMEs Mentored</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- LATEST ACTIVITIES & UPCOMING EVENTS                          -->
+        <!-- ============================================================ -->
+        <section class="section" id="latest">
+            <div class="container">
+                <div class="two-col-grid">
+
+                    <!-- Activities -->
+                    <div>
+                        <div style="margin-bottom:24px;">
+                            <span class="section-tag">Updates</span>
+                            <h2 style="font-size:1.8rem;font-weight:700;color:var(--text-dark);margin-top:4px;">Latest <span style="color:var(--primary);">Activities</span></h2>
+                        </div>
+
+                        {% if activities %}
+                            {% for activity in activities[:3] %}
+                            <div class="activity-item">
+                                <div class="activity-img">
+                                    {% if activity.featured_image %}
+                                        <img src="{{ url_for('static', filename=activity.featured_image) }}" alt="{{ activity.title }}" loading="lazy">
+                                    {% else %}
+                                        <div class="placeholder">📰</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="activity-meta">
+                                        <span class="date">{{ activity.date[:10] if activity.date else 'Coming Soon' }}</span>
+                                        {% if activity.wp_tag %}
+                                            <span class="tag">{{ activity.wp_tag }}</span>
+                                        {% endif %}
+                                        {% if activity.activity_type %}
+                                            <span class="tag">{{ activity.activity_type|replace('_', ' ')|title }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <h4>{{ activity.title }}</h4>
+                                    <p>{{ activity.summary[:120] + '...' if activity.summary and activity.summary|length > 120 else activity.summary }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="activity-item">
+                                <div class="activity-img"><div class="placeholder">📰</div></div>
+                                <div>
+                                    <div class="activity-meta"><span class="date">Coming Soon</span></div>
+                                    <h4>Activities Loading</h4>
+                                    <p>Check back soon for updates from BRIDGE-AI Kenya activities.</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-img"><div class="placeholder">🍄</div></div>
+                                <div>
+                                    <div class="activity-meta"><span class="date">Coming Soon</span></div>
+                                    <h4>Smart Mushroom Pilot</h4>
+                                    <p>Updates on the Smart Mushroom pilot at JKUAT Smart Farm Zone.</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-img"><div class="placeholder">🎓</div></div>
+                                <div>
+                                    <div class="activity-meta"><span class="date">Coming Soon</span></div>
+                                    <h4>Training Workshops</h4>
+                                    <p>Information on upcoming training and capacity building events.</p>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ url_for('public.activities') }}" class="view-all">
+                            View all activities
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- Events -->
+                    <div>
+                        <div style="margin-bottom:24px;">
+                            <span class="section-tag gold">Events</span>
+                            <h2 style="font-size:1.8rem;font-weight:700;color:var(--text-dark);margin-top:4px;">Upcoming <span style="color:var(--primary);">Training</span></h2>
+                        </div>
+
+                        {% if events %}
+                            {% for event in events[:3] %}
+                            <div class="event-item">
+                                <div class="event-date">
+                                    <span class="day">{{ event.date[8:10] if event.date and event.date|length >= 10 else 'TBA' }}</span>
+                                    <span class="month">{{ event.date[5:7] if event.date and event.date|length >= 7 else 'TBA' }}</span>
+                                </div>
+                                <div class="event-info">
+                                    <h5>{{ event.title }}</h5>
+                                    <p>{{ event.location or 'Location TBD' }}</p>
+                                </div>
+                                <span class="event-status {% if event.status == 'soon' %}soon{% endif %}">
+                                    {% if event.status == 'upcoming' %}Register Now{% elif event.status == 'soon' %}Soon{% else %}{{ event.status|title }}{% endif %}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="event-item">
+                                <div class="event-date"><span class="day">TBA</span><span class="month">TBA</span></div>
+                                <div class="event-info"><h5>Bootcamp Coming Soon</h5><p>East Africa/Kenya Bootcamp</p></div>
+                                <span class="event-status soon">Coming Soon</span>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-date"><span class="day">TBA</span><span class="month">TBA</span></div>
+                                <div class="event-info"><h5>SME Mentoring Program</h5><p>Applications opening soon</p></div>
+                                <span class="event-status soon">Coming Soon</span>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-date"><span class="day">TBA</span><span class="month">TBA</span></div>
+                                <div class="event-info"><h5>Farmer Training Workshop</h5><p>Smart Mushroom Monitoring</p></div>
+                                <span class="event-status soon">Coming Soon</span>
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ url_for('public.training_wp5') }}" class="view-all">
+                            View all training
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- EU FUNDING BLOCK                                             -->
+        <!-- ============================================================ -->
+        <section style="padding-bottom:80px;">
+            <div class="container">
+                <div class="eu-block">
+                    <img src="{{ url_for('static', filename='images/logos/eu_emblem.svg') }}"
+                         alt="European Union"
+                         class="eu-icon"
+                         id="euIcon"
+                         loading="lazy">
+                    <div class="eu-text">
+                        <strong>This project has received funding from the European Union's Horizon Europe research and innovation programme under grant agreement No. 101299050.</strong>
+                        <div class="disclaimer">
+                            Funded by the European Union. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Health and Digital Executive Agency. Neither the European Union nor the granting authority can be held responsible for them.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER (included)                                               -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT — DYNAMIC SLIDER + COUNTERS           -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // HERO IMAGE SLIDER — DYNAMIC FROM API
+            // ================================================================
+
+            const sliderContainer = document.getElementById('sliderContainer');
+            const indicatorsContainer = document.getElementById('slideIndicators');
+
+            // Default fallback images (in case API fails)
+            const defaultImages = [
+                'smart-farm-1.jpg',
+                'smart-farm-2.jpg',
+                'smart-farm-3.jpg',
+                'smart-farm-4.jpg',
+                'smart-farm-5.jpg'
+            ];
+
+            // Default slide data (titles and descriptions)
+            const slideData = [
+                { tag: '📍 JKUAT Smart Farm', title: 'Smart Mushroom Pilot', desc: 'Climate-controlled growing chamber' },
+                { tag: '📡 IoT Sensors', title: 'Real-Time Environmental Monitoring', desc: 'Temperature, humidity, CO₂ & light tracking' },
+                { tag: '🎓 Capacity Building', title: 'Farmer Training Program', desc: 'Empowering youth & women in agritech' },
+                { tag: '💻 Digital Agriculture', title: 'GenAI Advisory & Analytics', desc: 'AI-powered decision support for farmers' },
+                { tag: '🌾 Sustainable Agriculture', title: 'Climate-Smart Mushroom Harvest', desc: 'Increased yields, reduced waste' }
+            ];
+
+            let slides = [];
+            let currentIndex = 0;
+            let slideInterval;
+
+            function loadHeroImages() {
+                // Show loading state
+                sliderContainer.innerHTML = `
+                    <div class="hero-slide loading active">
+                        <div class="loader"></div>
+                    </div>
+                `;
+
+                // Try to fetch images from API
+                fetch('/api/hero-images/')
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('API response not OK');
+                        }
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        var imageList = data.images && data.images.length > 0 ? data.images : defaultImages;
+                        buildSlider(imageList);
+                    })
+                    .catch(function(error) {
+                        console.warn('Failed to load hero images from API, using defaults:', error);
+                        buildSlider(defaultImages);
+                    });
+            }
+
+            function buildSlider(imageList) {
+                // Clear loading state
+                sliderContainer.innerHTML = '';
+                indicatorsContainer.innerHTML = '';
+
+                // Create slides
+                imageList.forEach(function(image, index) {
+                    // Use slideData if available, otherwise use defaults
+                    var data = slideData[index % slideData.length] || {
+                        tag: '📸 Image ' + (index + 1),
+                        title: 'BRIDGE-AI Kenya',
+                        desc: 'Smart Agriculture Innovation'
+                    };
+
+                    var slide = document.createElement('div');
+                    slide.className = 'hero-slide' + (index === 0 ? ' active' : '');
+                    slide.setAttribute('data-index', index);
+
+                    var img = document.createElement('img');
+                    img.src = "{{ url_for('static', filename='images/hero/') }}" + image;
+                    img.alt = data.title;
+                    img.loading = 'lazy';
+
+                    // Handle image loading errors
+                    img.addEventListener('error', function() {
+                        this.style.display = 'none';
+                        var fallback = document.createElement('div');
+                        fallback.className = 'fallback';
+                        fallback.innerHTML = '🍄<span>' + data.title + '</span>';
+                        slide.appendChild(fallback);
+                    });
+
+                    slide.appendChild(img);
+
+                    // Add overlay
+                    var overlay = document.createElement('div');
+                    overlay.className = 'slide-overlay';
+                    overlay.innerHTML = `
+                        <span class="slide-tag">${data.tag}</span>
+                        <p class="slide-title">${data.title}</p>
+                        <p class="slide-desc">${data.desc}</p>
+                    `;
+                    slide.appendChild(overlay);
+
+                    sliderContainer.appendChild(slide);
+
+                    // Create indicator
+                    var indicator = document.createElement('button');
+                    indicator.className = 'indicator' + (index === 0 ? ' active' : '');
+                    indicator.setAttribute('data-index', index);
+                    indicator.setAttribute('aria-label', 'Slide ' + (index + 1));
+                    indicator.addEventListener('click', function() {
+                        var idx = parseInt(this.getAttribute('data-index'));
+                        if (!isNaN(idx) && idx !== currentIndex) {
+                            stopAutoSlide();
+                            showSlide(idx);
+                            startAutoSlide();
+                        }
+                    });
+                    indicatorsContainer.appendChild(indicator);
+                });
+
+                // Store slides reference
+                slides = document.querySelectorAll('.hero-slide');
+
+                // If slides exist, start autoplay
+                if (slides.length > 0) {
+                    startAutoSlide();
+                }
+
+                // Add keyboard navigation
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowLeft') {
+                        stopAutoSlide();
+                        prevSlide();
+                        startAutoSlide();
+                    } else if (e.key === 'ArrowRight') {
+                        stopAutoSlide();
+                        nextSlide();
+                        startAutoSlide();
+                    }
+                });
+            }
+
+            function showSlide(index) {
+                slides.forEach(function(slide) {
+                    slide.classList.remove('active');
+                });
+
+                if (slides[index]) {
+                    slides[index].classList.add('active');
+                }
+
+                var indicators = document.querySelectorAll('.indicator');
+                indicators.forEach(function(ind, i) {
+                    ind.classList.toggle('active', i === index);
+                });
+
+                currentIndex = index;
+            }
+
+            function nextSlide() {
+                var nextIndex = (currentIndex + 1) % slides.length;
+                showSlide(nextIndex);
+            }
+
+            function prevSlide() {
+                var prevIndex = (currentIndex - 1 + slides.length) % slides.length;
+                showSlide(prevIndex);
+            }
+
+            function startAutoSlide() {
+                if (slideInterval) {
+                    clearInterval(slideInterval);
+                }
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopAutoSlide() {
+                if (slideInterval) {
+                    clearInterval(slideInterval);
+                    slideInterval = null;
+                }
+            }
+
+            // Arrow button events
+            var prevBtn = document.getElementById('slidePrev');
+            var nextBtn = document.getElementById('slideNext');
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    stopAutoSlide();
+                    prevSlide();
+                    startAutoSlide();
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    stopAutoSlide();
+                    nextSlide();
+                    startAutoSlide();
+                });
+            }
+
+            // Pause on hover
+            if (sliderContainer) {
+                sliderContainer.addEventListener('mouseenter', stopAutoSlide);
+                sliderContainer.addEventListener('mouseleave', startAutoSlide);
+            }
+
+            // Initialize slider
+            loadHeroImages();
+
+            // ================================================================
+            // COUNTER ANIMATION
+            // ================================================================
+
+            function animateCounters() {
+                var counters = document.querySelectorAll('.counter-number');
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            var counter = entry.target;
+                            var target = parseInt(counter.getAttribute('data-count')) || 0;
+                            var duration = 2000;
+                            var startTime = performance.now();
+
+                            function updateCounter(currentTime) {
+                                var elapsed = currentTime - startTime;
+                                var progress = Math.min(elapsed / duration, 1);
+                                var value = Math.floor(progress * target);
+
+                                var textNode = counter.childNodes[0];
+                                if (textNode) {
+                                    textNode.textContent = value;
+                                }
+
+                                if (progress < 1) {
+                                    requestAnimationFrame(updateCounter);
+                                } else {
+                                    if (textNode) {
+                                        textNode.textContent = target;
+                                    }
+                                }
+                            }
+
+                            requestAnimationFrame(updateCounter);
+                            observer.unobserve(counter);
+                        }
+                    });
+                }, { threshold: 0.3 });
+
+                counters.forEach(function(counter) {
+                    observer.observe(counter);
+                });
+            }
+
+            // ================================================================
+            // SMOOTH SCROLL
+            // ================================================================
+
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    var targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    var targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        var header = document.querySelector('.site-header');
+                        var headerHeight = header ? header.offsetHeight : 72;
+                        var targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // ================================================================
+            // INIT
+            // ================================================================
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', animateCounters);
+            } else {
+                animateCounters();
+            }
+
+            console.log('✅ BRIDGE-AI Kenya Complete Homepage initialized');
+
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - MANAGE RESOURCES                              -->
+<!-- ================================================================ -->
+<!-- Full CRUD for Resource content type.                           -->
+<!-- Fields: title, type, language, version, file/link, WP,         -->
+<!-- licence, public/private status, accessibility notes.          -->
+<!-- Uses JSON file storage - no database required.                -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Resources - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📚 Manage <span class="highlight">Resources</span>{% endblock %}
+
+{% block page_subtitle %}Create, edit, and delete public deliverables, slides, guides, videos, training kits, policy briefs, and publications{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-resources">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ Add Resource
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search resources..." onkeyup="filterTable()">
+            <select id="filterType" onchange="filterTable()">
+                <option value="">All Types</option>
+                <option value="deliverable">Deliverable</option>
+                <option value="policy_brief">Policy Brief</option>
+                <option value="video">Video</option>
+                <option value="presentation">Presentation</option>
+                <option value="training_kit">Training Kit</option>
+                <option value="publication">Publication</option>
+                <option value="guide">Guide</option>
+                <option value="repository">Repository</option>
+                <option value="article">Article</option>
+            </select>
+            <select id="filterPublic" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="true">Public</option>
+                <option value="false">Private</option>
+            </select>
+            <select id="filterWp" onchange="filterTable()">
+                <option value="">All WPs</option>
+                <option value="WP1">WP1</option>
+                <option value="WP2">WP2</option>
+                <option value="WP3">WP3</option>
+                <option value="WP4">WP4</option>
+                <option value="WP5">WP5</option>
+                <option value="WP6">WP6</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:25%;">Title</th>
+                <th style="width:15%;">Type</th>
+                <th style="width:10%;">Language</th>
+                <th style="width:8%;">Version</th>
+                <th style="width:10%;">WP</th>
+                <th style="width:10%;">Public</th>
+                <th style="width:12%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No resources found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Resource" to create your first resource.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- HIDDEN FORM TEMPLATES FOR MODAL                              -->
+<!-- ============================================================ -->
+<div style="display:none;">
+    <!-- Create Form Template -->
+    <div id="createFormTemplate">
+        <div class="form-group">
+            <label>Title <span class="required">*</span></label>
+            <input type="text" id="form-title" placeholder="Enter resource title">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Resource Type <span class="required">*</span></label>
+                <select id="form-resource-type">
+                    <option value="">Select type</option>
+                    <option value="deliverable">Deliverable</option>
+                    <option value="policy_brief">Policy Brief</option>
+                    <option value="video">Video</option>
+                    <option value="presentation">Presentation</option>
+                    <option value="training_kit">Training Kit</option>
+                    <option value="publication">Publication</option>
+                    <option value="guide">Guide</option>
+                    <option value="repository">Repository</option>
+                    <option value="article">Article</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Language</label>
+                <select id="form-language">
+                    <option value="English">English</option>
+                    <option value="French">French</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Swahili">Swahili</option>
+                    <option value="Kikuyu">Kikuyu</option>
+                    <option value="Luo">Luo</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Version</label>
+                <input type="text" id="form-version" placeholder="e.g. 1.0">
+            </div>
+            <div class="form-group">
+                <label>Work Package</label>
+                <select id="form-wp">
+                    <option value="">Select WP</option>
+                    <option value="WP1">WP1</option>
+                    <option value="WP2">WP2</option>
+                    <option value="WP3">WP3</option>
+                    <option value="WP4">WP4</option>
+                    <option value="WP5">WP5</option>
+                    <option value="WP6">WP6</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="form-description" rows="2" placeholder="Brief description of the resource"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>File Path</label>
+                <input type="text" id="form-file-path" placeholder="uploads/resources/filename.pdf">
+                <small style="color:var(--text-light);font-size:0.7rem;">Path to the uploaded file</small>
+            </div>
+            <div class="form-group">
+                <label>External Link</label>
+                <input type="url" id="form-external-link" placeholder="https://...">
+                <small style="color:var(--text-light);font-size:0.7rem;">URL if hosted externally</small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>License</label>
+            <select id="form-license">
+                <option value="All rights reserved">All rights reserved</option>
+                <option value="Creative Commons BY-NC-SA 4.0">Creative Commons BY-NC-SA 4.0</option>
+                <option value="Creative Commons BY-SA 4.0">Creative Commons BY-SA 4.0</option>
+                <option value="Creative Commons BY-NC 4.0">Creative Commons BY-NC 4.0</option>
+                <option value="MIT License">MIT License</option>
+                <option value="Open Access">Open Access</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><input type="checkbox" id="form-is-public" checked> Publicly Available</label>
+        </div>
+        <div class="form-group">
+            <label>Accessibility Notes</label>
+            <textarea id="form-accessibility-notes" rows="2" placeholder="e.g. PDF with alt text and structured headings"></textarea>
+        </div>
+    </div>
+
+    <!-- Edit Form Template -->
+    <div id="editFormTemplate">
+        <div class="form-group">
+            <label>Title <span class="required">*</span></label>
+            <input type="text" id="edit-form-title" placeholder="Enter resource title">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Resource Type <span class="required">*</span></label>
+                <select id="edit-form-resource-type">
+                    <option value="">Select type</option>
+                    <option value="deliverable">Deliverable</option>
+                    <option value="policy_brief">Policy Brief</option>
+                    <option value="video">Video</option>
+                    <option value="presentation">Presentation</option>
+                    <option value="training_kit">Training Kit</option>
+                    <option value="publication">Publication</option>
+                    <option value="guide">Guide</option>
+                    <option value="repository">Repository</option>
+                    <option value="article">Article</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Language</label>
+                <select id="edit-form-language">
+                    <option value="English">English</option>
+                    <option value="French">French</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Swahili">Swahili</option>
+                    <option value="Kikuyu">Kikuyu</option>
+                    <option value="Luo">Luo</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Version</label>
+                <input type="text" id="edit-form-version" placeholder="e.g. 1.0">
+            </div>
+            <div class="form-group">
+                <label>Work Package</label>
+                <select id="edit-form-wp">
+                    <option value="">Select WP</option>
+                    <option value="WP1">WP1</option>
+                    <option value="WP2">WP2</option>
+                    <option value="WP3">WP3</option>
+                    <option value="WP4">WP4</option>
+                    <option value="WP5">WP5</option>
+                    <option value="WP6">WP6</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="edit-form-description" rows="2" placeholder="Brief description of the resource"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>File Path</label>
+                <input type="text" id="edit-form-file-path" placeholder="uploads/resources/filename.pdf">
+                <small style="color:var(--text-light);font-size:0.7rem;">Path to the uploaded file</small>
+            </div>
+            <div class="form-group">
+                <label>External Link</label>
+                <input type="url" id="edit-form-external-link" placeholder="https://...">
+                <small style="color:var(--text-light);font-size:0.7rem;">URL if hosted externally</small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>License</label>
+            <select id="edit-form-license">
+                <option value="All rights reserved">All rights reserved</option>
+                <option value="Creative Commons BY-NC-SA 4.0">Creative Commons BY-NC-SA 4.0</option>
+                <option value="Creative Commons BY-SA 4.0">Creative Commons BY-SA 4.0</option>
+                <option value="Creative Commons BY-NC 4.0">Creative Commons BY-NC 4.0</option>
+                <option value="MIT License">MIT License</option>
+                <option value="Open Access">Open Access</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><input type="checkbox" id="edit-form-is-public"> Publicly Available</label>
+        </div>
+        <div class="form-group">
+            <label>Accessibility Notes</label>
+            <textarea id="edit-form-accessibility-notes" rows="2" placeholder="e.g. PDF with alt text and structured headings"></textarea>
+        </div>
+        <!-- Hidden ID field -->
+        <input type="hidden" id="edit-form-id">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let resources = [];
+        let editingId = null;
+        const API_URL = '/api/resources/';
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+
+        function loadResources() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    resources = data || [];
+                    renderTable(resources);
+                    updateCounts(resources.length);
+                })
+                .catch(error => {
+                    console.error('Error loading resources:', error);
+                    showToast('error', 'Failed to load resources');
+                });
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            <span class="empty-icon">📭</span>
+                            <h4>No resources found</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Resource" to create your first resource.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(formatResourceType(item.resource_type || '-'))}</span></td>
+                    <td>${escapeHtml(item.language || 'English')}</td>
+                    <td>${escapeHtml(item.version || '-')}</td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.wp_tag || '-')}</span></td>
+                    <td>${item.is_public ? '✅ Yes' : '❌ No'}</td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteResource(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateCounts(data.length);
+        }
+
+        // ================================================================
+        // FORMAT RESOURCE TYPE
+        // ================================================================
+
+        function formatResourceType(type) {
+            const types = {
+                'deliverable': 'Deliverable',
+                'policy_brief': 'Policy Brief',
+                'video': 'Video',
+                'presentation': 'Presentation',
+                'training_kit': 'Training Kit',
+                'publication': 'Publication',
+                'guide': 'Guide',
+                'repository': 'Repository',
+                'article': 'Article'
+            };
+            return types[type] || type;
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('filterType').value;
+            const publicFilter = document.getElementById('filterPublic').value;
+            const wpFilter = document.getElementById('filterWp').value;
+
+            let filtered = resources;
+
+            if (search) {
+                filtered = filtered.filter(item => {
+                    const searchable = [
+                        item.title,
+                        item.description,
+                        item.resource_type,
+                        item.language,
+                        item.license,
+                        item.accessibility_notes
+                    ].join(' ').toLowerCase();
+                    return searchable.includes(search);
+                });
+            }
+
+            if (typeFilter) {
+                filtered = filtered.filter(item => item.resource_type === typeFilter);
+            }
+
+            if (publicFilter) {
+                const isPublic = publicFilter === 'true';
+                filtered = filtered.filter(item => item.is_public === isPublic);
+            }
+
+            if (wpFilter) {
+                filtered = filtered.filter(item => item.wp_tag === wpFilter);
+            }
+
+            renderTable(filtered);
+        };
+
+        // ================================================================
+        // CREATE MODAL
+        // ================================================================
+
+        window.openCreateModal = function() {
+            editingId = null;
+            const formHtml = document.getElementById('createFormTemplate').innerHTML;
+            openModal('Add New Resource', formHtml, saveResource);
+        };
+
+        // ================================================================
+        // EDIT MODAL
+        // ================================================================
+
+        window.openEditModal = function(id) {
+            const item = resources.find(r => r.id === id);
+            if (!item) {
+                showToast('error', 'Resource not found');
+                return;
+            }
+
+            editingId = id;
+            const formHtml = document.getElementById('editFormTemplate').innerHTML;
+            openModal('Edit Resource', formHtml, saveResource);
+
+            // Populate form fields
+            setTimeout(() => {
+                document.getElementById('edit-form-id').value = item.id;
+                document.getElementById('edit-form-title').value = item.title || '';
+                document.getElementById('edit-form-resource-type').value = item.resource_type || '';
+                document.getElementById('edit-form-language').value = item.language || 'English';
+                document.getElementById('edit-form-version').value = item.version || '';
+                document.getElementById('edit-form-wp').value = item.wp_tag || '';
+                document.getElementById('edit-form-description').value = item.description || '';
+                document.getElementById('edit-form-file-path').value = item.file_path || '';
+                document.getElementById('edit-form-external-link').value = item.external_link || '';
+                document.getElementById('edit-form-license').value = item.license || 'All rights reserved';
+                document.getElementById('edit-form-is-public').checked = item.is_public !== undefined ? item.is_public : true;
+                document.getElementById('edit-form-accessibility-notes').value = item.accessibility_notes || '';
+            }, 100);
+        };
+
+        // ================================================================
+        // SAVE RESOURCE
+        // ================================================================
+
+        window.saveResource = function() {
+            const isEdit = !!editingId;
+
+            // Get form values based on mode
+            let data;
+            if (isEdit) {
+                data = {
+                    id: parseInt(document.getElementById('edit-form-id').value),
+                    title: document.getElementById('edit-form-title').value.trim(),
+                    resource_type: document.getElementById('edit-form-resource-type').value,
+                    language: document.getElementById('edit-form-language').value,
+                    version: document.getElementById('edit-form-version').value.trim(),
+                    description: document.getElementById('edit-form-description').value.trim(),
+                    file_path: document.getElementById('edit-form-file-path').value.trim(),
+                    external_link: document.getElementById('edit-form-external-link').value.trim(),
+                    wp_tag: document.getElementById('edit-form-wp').value,
+                    license: document.getElementById('edit-form-license').value,
+                    is_public: document.getElementById('edit-form-is-public').checked,
+                    accessibility_notes: document.getElementById('edit-form-accessibility-notes').value.trim()
+                };
+            } else {
+                data = {
+                    title: document.getElementById('form-title').value.trim(),
+                    resource_type: document.getElementById('form-resource-type').value,
+                    language: document.getElementById('form-language').value,
+                    version: document.getElementById('form-version').value.trim(),
+                    description: document.getElementById('form-description').value.trim(),
+                    file_path: document.getElementById('form-file-path').value.trim(),
+                    external_link: document.getElementById('form-external-link').value.trim(),
+                    wp_tag: document.getElementById('form-wp').value,
+                    license: document.getElementById('form-license').value,
+                    is_public: document.getElementById('form-is-public').checked,
+                    accessibility_notes: document.getElementById('form-accessibility-notes').value.trim()
+                };
+            }
+
+            // Validate required fields
+            if (!data.title) {
+                showToast('warning', 'Title is required');
+                return;
+            }
+            if (!data.resource_type) {
+                showToast('warning', 'Resource type is required');
+                return;
+            }
+
+            // Ensure either file_path or external_link is provided
+            if (!data.file_path && !data.external_link) {
+                showToast('warning', 'Please provide either a file path or an external link');
+                return;
+            }
+
+            // Auto-generate slug (handled by backend)
+            if (!data.slug) {
+                data.slug = slugify(data.title);
+            }
+
+            const url = isEdit ? `${API_URL}${editingId}/` : API_URL;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', `Resource ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeModal();
+                    loadResources();
+                } else {
+                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} resource`);
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // DELETE RESOURCE
+        // ================================================================
+
+        window.deleteResource = function(id) {
+            const item = resources.find(r => r.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            fetch(`${API_URL}${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Resource deleted successfully!');
+                    loadResources();
+                } else {
+                    showToast('error', result.error || 'Failed to delete resource');
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function slugify(text) {
+            return text.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function updateCounts(count) {
+            const countEl = document.getElementById('count-resources');
+            const tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = `${count} items`;
+            if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // INITIALIZE
+        // ================================================================
+
+        loadResources();
+
+        console.log('✅ BRIDGE-AI Kenya Manage Resources page initialized');
+
+    })();
+</script>
+{% endblock %}

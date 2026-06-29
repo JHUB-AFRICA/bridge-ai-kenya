@@ -1,0 +1,1390 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - TRAINING MATERIALS PAGE                      -->
+<!-- ================================================================ -->
+<!-- This page displays all training modules, videos, guides, and    -->
+<!-- repositories for BRIDGE-AI Kenya.                               -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Materials - BRIDGE-AI Kenya</title>
+    <meta name="description" content="Access all BRIDGE-AI Kenya training modules, video tutorials, downloadable guides, and repository links for capacity building.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES & RESET                                           */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --primary-lighter: #2a6a8b;
+            --accent: #1a8a6a;
+            --accent-light: #7ad4b8;
+            --gold: #d4a843;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ================================================================ */
+        /* ANIMATIONS                                                      */
+        /* ================================================================ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================================================================ */
+        /* BREADCRUMB                                                      */
+        /* ================================================================ */
+        .breadcrumb-bar {
+            background: var(--bg-light);
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .breadcrumb-bar .breadcrumb-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .breadcrumb-bar .breadcrumb-container a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb-bar .breadcrumb-container .sep {
+            color: var(--text-light);
+        }
+
+        .breadcrumb-bar .breadcrumb-container .current {
+            color: var(--text-body);
+            font-weight: 500;
+        }
+
+        /* ================================================================ */
+        /* HERO SECTION                                                    */
+        /* ================================================================ */
+        .hero-materials {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px 50px;
+            overflow: hidden;
+            background: linear-gradient(160deg, #061420 0%, #0f2b3d 50%, #1a4a6b 100%);
+        }
+
+        .hero-materials::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=1600&h=600&fit=crop&crop=center&auto=format');
+            background-size: cover;
+            background-position: center;
+            animation: slowZoom 20s ease-in-out forwards;
+            z-index: 0;
+            opacity: 0.2;
+        }
+
+        .hero-materials::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(6, 20, 32, 0.85) 0%, rgba(15, 43, 61, 0.70) 50%, rgba(26, 74, 107, 0.60) 100%);
+            z-index: 1;
+        }
+
+        .hero-materials .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .hero-materials .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 16px;
+        }
+
+        .hero-materials .hero-badge .highlight-badge {
+            color: var(--accent-light);
+        }
+
+        .hero-materials h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .hero-materials h1 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-materials .hero-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 650px;
+            margin: 0 auto 24px;
+            line-height: 1.8;
+        }
+
+        .hero-materials .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 16px 30px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .hero-materials .hero-stats .stat-item {
+            text-align: center;
+        }
+
+        .hero-materials .hero-stats .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hero-materials .hero-stats .stat-label {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ================================================================ */
+        /* SECTION HEADERS                                                 */
+        /* ================================================================ */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(26, 74, 107, 0.06);
+            color: var(--primary-light);
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 6px;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .section-header h2 .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 4px auto 0;
+        }
+
+        /* ================================================================ */
+        /* MODULES SECTION                                                 */
+        /* ================================================================ */
+        .section-modules {
+            padding: 60px 24px 50px;
+            background: var(--bg-white);
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 28px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 28px 26px 24px;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(26, 138, 106, 0.15), rgba(26, 74, 107, 0.08));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .module-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .module-card .module-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 14px;
+            border-radius: 50px;
+            margin-bottom: 10px;
+        }
+
+        .module-card .module-level.beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .module-card .module-level.intermediate {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .module-card .module-level.advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .module-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .module-card .module-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .module-card .module-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-bottom: 14px;
+        }
+
+        .module-card .module-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .module-card .module-meta .meta-item svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .module-card .module-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .module-card .module-tags .tag {
+            background: rgba(26, 74, 107, 0.04);
+            color: var(--primary-light);
+            padding: 2px 12px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .module-card .module-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .module-card .module-actions .btn-resource {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            background: rgba(26, 74, 107, 0.06);
+            text-decoration: none;
+            transition: all var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .module-card .module-actions .btn-resource:hover {
+            background: rgba(26, 74, 107, 0.12);
+            gap: 10px;
+        }
+
+        .module-card .module-actions .btn-resource.primary {
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+
+        .module-card .module-actions .btn-resource.primary:hover {
+            box-shadow: 0 4px 20px rgba(26, 74, 107, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* ================================================================ */
+        /* FILTERS                                                        */
+        /* ================================================================ */
+        .filter-bar {
+            max-width: 1280px;
+            margin: 0 auto 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-bar .filter-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-bar select {
+            padding: 8px 36px 8px 16px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-body);
+            background: var(--bg-white);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a4a6b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            font-family: inherit;
+            min-width: 140px;
+        }
+
+        .filter-bar select:hover {
+            border-color: var(--primary-light);
+        }
+
+        .filter-bar select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(26, 74, 107, 0.08);
+        }
+
+        .filter-bar .filter-clear {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-light);
+            border: 1.5px solid var(--border-light);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-bar .filter-clear:hover {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+        }
+
+        /* ================================================================ */
+        /* VIDEO TUTORIALS SECTION                                         */
+        /* ================================================================ */
+        .section-videos {
+            padding: 60px 24px 50px;
+            background: var(--bg-light);
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .video-card .video-thumbnail {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, var(--bg-light), #d4dce6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-card .video-thumbnail .play-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .video-card:hover .video-thumbnail .play-icon {
+            transform: scale(1.1);
+            background: #ffffff;
+        }
+
+        .video-card .video-thumbnail .play-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary-light);
+        }
+
+        .video-card .video-thumbnail .video-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            color: #ffffff;
+            padding: 2px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .video-card .video-body {
+            padding: 18px 20px 20px;
+        }
+
+        .video-card .video-body h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .video-card .video-body p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .video-card .video-body .btn-watch {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .video-card .video-body .btn-watch:hover {
+            gap: 12px;
+            color: var(--accent);
+        }
+
+        .video-card .video-body .btn-watch .arrow {
+            transition: transform var(--transition);
+        }
+
+        .video-card .video-body .btn-watch:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* DOWNLOADABLE GUIDES SECTION                                     */
+        /* ================================================================ */
+        .section-guides {
+            padding: 60px 24px 50px;
+            background: var(--bg-white);
+        }
+
+        .guides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .guide-card {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-md);
+            padding: 24px 22px;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.80);
+        }
+
+        .guide-card .guide-icon {
+            width: 40px;
+            height: 40px;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+
+        .guide-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .guide-card .guide-meta {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .guide-card .guide-meta span {
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        .guide-card .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all var(--transition);
+            margin-top: auto;
+            align-self: flex-start;
+            border: none;
+            cursor: pointer;
+        }
+
+        .guide-card .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(26, 138, 106, 0.25);
+            gap: 10px;
+        }
+
+        .guide-card .btn-download .arrow {
+            transition: transform var(--transition);
+        }
+
+        .guide-card .btn-download:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* REPOSITORY LINKS SECTION                                        */
+        /* ================================================================ */
+        .section-repo-materials {
+            padding: 60px 24px 70px;
+            background: var(--primary-dark);
+            color: #ffffff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-repo-materials::before {
+            content: '⌨️';
+            position: absolute;
+            font-size: 16rem;
+            opacity: 0.03;
+            right: -5%;
+            bottom: -10%;
+        }
+
+        .section-repo-materials .repo-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-repo-materials h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .section-repo-materials h2 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-repo-materials p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 4px auto 28px;
+        }
+
+        .repo-links-materials {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .repo-links-materials .repo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .repo-links-materials .repo-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .repo-links-materials .repo-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ================================================================ */
+        /* NO CONTENT STATE                                                */
+        /* ================================================================ */
+        .no-content {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.50);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            border: 2px dashed rgba(0, 0, 0, 0.06);
+        }
+
+        .no-content .no-icon {
+            width: 48px;
+            height: 48px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .no-content h4 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .no-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 1024px) {
+            .hero-materials h1 { font-size: 2.8rem; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 64px; }
+            .hero-materials { min-height: 40vh; padding: 50px 20px 40px; }
+            .hero-materials h1 { font-size: 2.2rem; }
+            .hero-materials .hero-subtitle { font-size: 1rem; }
+            .hero-materials .hero-stats { gap: 16px; padding: 14px 20px; flex-wrap: wrap; }
+            .hero-materials .hero-stats .stat-number { font-size: 1.4rem; }
+            .section-header h2 { font-size: 1.8rem; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .videos-grid { grid-template-columns: 1fr 1fr; }
+            .guides-grid { grid-template-columns: 1fr 1fr; }
+            .section-modules, .section-videos, .section-guides, .section-repo-materials {
+                padding: 40px 16px 35px;
+            }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-bar select { width: 100%; min-width: unset; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-materials h1 { font-size: 1.8rem; }
+            .hero-materials .hero-stats { flex-direction: column; gap: 8px; align-items: center; }
+            .videos-grid { grid-template-columns: 1fr; }
+            .guides-grid { grid-template-columns: 1fr; }
+            .module-card { padding: 20px 18px; }
+            .module-card .module-actions { flex-direction: column; }
+            .module-card .module-actions .btn-resource { justify-content: center; }
+            .repo-links-materials { flex-direction: column; align-items: center; }
+            .repo-links-materials .repo-btn { width: 100%; justify-content: center; }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-light); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- BREADCRUMB                                                      -->
+    <!-- ================================================================ -->
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <a href="{{ url_for('public.index') }}">Home</a>
+            <span class="sep">/</span>
+            <a href="{{ url_for('public.training_wp5') }}">Training & WP5</a>
+            <span class="sep">/</span>
+            <span class="current">Training Materials</span>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- HERO SECTION                                                  -->
+        <!-- ============================================================ -->
+        <section class="hero-materials">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    T5.1 — <span class="highlight-badge">Training Content Development</span>
+                </div>
+                <h1>
+                    Training <span class="gradient-text">Materials</span> &amp; Resources
+                </h1>
+                <p class="hero-subtitle">
+                    Access all BRIDGE-AI Kenya training modules, video tutorials, downloadable guides,
+                    and repository links for capacity building and replication.
+                </p>
+                <div class="hero-stats" id="heroStats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-modules">0</span>
+                        <span class="stat-label">Modules</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-videos">0</span>
+                        <span class="stat-label">Videos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-guides">0</span>
+                        <span class="stat-label">Downloadable Guides</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Repositories</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODULE CATALOGUE                                             -->
+        <!-- ============================================================ -->
+        <section class="section-modules" id="modules">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">📚 Module Catalogue</span>
+                <h2>Training <span class="gradient-text">Modules</span></h2>
+                <p>Comprehensive modules covering GenAI, IoT, smart farming, and digital agriculture.</p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar" id="filterBar">
+                <span class="filter-label">🔍 Filter:</span>
+                <select id="filterLevel" onchange="applyFilters()">
+                    <option value="">All Levels</option>
+                    {% for level in levels %}
+                        <option value="{{ level }}">{{ level|title }}</option>
+                    {% endfor %}
+                </select>
+                <select id="filterTag" onchange="applyFilters()">
+                    <option value="">All Topics</option>
+                    {% for tag in tags %}
+                        <option value="{{ tag }}">{{ tag }}</option>
+                    {% endfor %}
+                </select>
+                <button class="filter-clear" onclick="clearFilters()">✕ Clear</button>
+            </div>
+
+            <div class="modules-grid" id="modulesGrid">
+                <!-- Rendered by JavaScript -->
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- VIDEO TUTORIALS                                              -->
+        <!-- ============================================================ -->
+        <section class="section-videos" id="videos">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">🎬 Video Tutorials</span>
+                <h2>Watch &amp; <span class="gradient-text">Learn</span></h2>
+                <p>Video tutorials covering key concepts and practical demonstrations.</p>
+            </div>
+
+            <div class="videos-grid" id="videosGrid">
+                <!-- Rendered by JavaScript -->
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- DOWNLOADABLE GUIDES                                          -->
+        <!-- ============================================================ -->
+        <section class="section-guides" id="guides">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">📄 Downloadable Guides</span>
+                <h2>Resource <span class="gradient-text">Guides</span></h2>
+                <p>Downloadable PDF guides, checklists, and training manuals.</p>
+            </div>
+
+            <div class="guides-grid" id="guidesGrid">
+                <!-- Rendered by JavaScript -->
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- REPOSITORY LINKS                                             -->
+        <!-- ============================================================ -->
+        <section class="section-repo-materials" id="repositories">
+            <div class="repo-container animate-on-scroll">
+                <h2>Code &amp; <span class="gradient-text">Repositories</span></h2>
+                <p>Access open-source code, APIs, and contribution guidelines.</p>
+                <div class="repo-links-materials">
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.15 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.62.24 2.85.12 3.15.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="3" y1="15" x2="21" y2="15"/>
+                            <line x1="9" y1="21" x2="9" y2="9"/>
+                        </svg>
+                        FIWARE
+                    </a>
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        Contribution Guide
+                    </a>
+                    <a href="#" class="repo-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Community of Practice
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // STATE
+            // ================================================================
+
+            let allMaterials = [];
+            let filteredMaterials = [];
+
+            // ================================================================
+            // LOAD DATA
+            // ================================================================
+
+            function loadMaterials() {
+                console.log('🔄 Loading training materials...');
+                fetch('/api/training-materials/', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📥 Materials loaded:', data);
+                    allMaterials = data || [];
+                    filteredMaterials = [...allMaterials];
+                    renderAll();
+                })
+                .catch(error => {
+                    console.error('❌ Error loading materials:', error);
+                    allMaterials = [];
+                    filteredMaterials = [];
+                    renderAll();
+                });
+            }
+
+            // ================================================================
+            // RENDER ALL SECTIONS
+            // ================================================================
+
+            function renderAll() {
+                renderModules(filteredMaterials);
+                renderVideos(filteredMaterials);
+                renderGuides(filteredMaterials);
+                updateStats(filteredMaterials);
+            }
+
+            // ================================================================
+            // RENDER MODULES
+            // ================================================================
+
+            function renderModules(materials) {
+                const container = document.getElementById('modulesGrid');
+                const modules = materials.filter(m => m.id);
+
+                if (modules.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-content" style="grid-column:1/-1;">
+                            <svg class="no-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                            <h4>No Modules Found</h4>
+                            <p>No training modules match your filters. Try clearing the filters.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = modules.map(module => `
+                    <div class="module-card animate-on-scroll">
+                        <span class="module-level ${module.level || 'beginner'}">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                ${module.level === 'beginner' ? '<circle cx="12" cy="12" r="10"/>' :
+                                  module.level === 'intermediate' ? '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>' :
+                                  '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/><circle cx="12" cy="12" r="4"/>'}
+                            </svg>
+                            ${module.level || 'Beginner'}
+                        </span>
+                        <h3>${escapeHtml(module.title)}</h3>
+                        <p class="module-description">${escapeHtml(module.description || 'No description available.')}</p>
+                        <div class="module-meta">
+                            <span class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                ${module.duration || 'N/A'}
+                            </span>
+                            <span class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                </svg>
+                                ${module.download_url ? 'Guide Available' : 'Coming Soon'}
+                            </span>
+                        </div>
+                        ${module.tags && module.tags.length > 0 ? `
+                            <div class="module-tags">
+                                ${module.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="module-actions">
+                            ${module.video_url ? `
+                                <a href="${escapeHtml(module.video_url)}" target="_blank" class="btn-resource">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    Watch Video
+                                </a>
+                            ` : ''}
+                            ${module.download_url ? `
+                                <a href="{{ url_for('static', filename='${module.download_url}') }}" class="btn-resource primary">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Download Guide
+                                </a>
+                            ` : ''}
+                            ${module.repository_url ? `
+                                <a href="${escapeHtml(module.repository_url)}" target="_blank" class="btn-resource">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                                    View Repository
+                                </a>
+                            ` : ''}
+                            <a href="{{ url_for('public.resources') }}" class="btn-resource">
+                                View Resources →
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Trigger animations
+                setTimeout(observeElements, 100);
+            }
+
+            // ================================================================
+            // RENDER VIDEOS
+            // ================================================================
+
+            function renderVideos(materials) {
+                const container = document.getElementById('videosGrid');
+                const videos = materials.filter(m => m.video_url);
+
+                if (videos.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-content" style="grid-column:1/-1;">
+                            <svg class="no-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            <h4>No Videos Available</h4>
+                            <p>Video tutorials will be added soon. Check back later.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = videos.map(video => `
+                    <div class="video-card animate-on-scroll">
+                        <div class="video-thumbnail">
+                            <div class="play-icon">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </div>
+                            <span class="video-duration">${video.duration || 'N/A'}</span>
+                        </div>
+                        <div class="video-body">
+                            <h4>${escapeHtml(video.title)}</h4>
+                            <p>${escapeHtml(video.description ? video.description.substring(0, 80) + '...' : '')}</p>
+                            <a href="${escapeHtml(video.video_url)}" target="_blank" class="btn-watch">
+                                Watch Now <span class="arrow">→</span>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+
+                setTimeout(observeElements, 100);
+            }
+
+            // ================================================================
+            // RENDER GUIDES
+            // ================================================================
+
+            function renderGuides(materials) {
+                const container = document.getElementById('guidesGrid');
+                const guides = materials.filter(m => m.download_url);
+
+                if (guides.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-content" style="grid-column:1/-1;">
+                            <svg class="no-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                            <h4>No Guides Available</h4>
+                            <p>Downloadable guides will be added soon. Check back later.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = guides.map(guide => `
+                    <div class="guide-card animate-on-scroll">
+                        <svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        <h4>${escapeHtml(guide.title)}</h4>
+                        <p class="guide-meta">
+                            <span>📄 PDF</span>
+                            <span>📅 ${formatDate(guide.created_at)}</span>
+                        </p>
+                        <a href="{{ url_for('static', filename='${guide.download_url}') }}" class="btn-download">
+                            Download Guide <span class="arrow">→</span>
+                        </a>
+                    </div>
+                `).join('');
+
+                setTimeout(observeElements, 100);
+            }
+
+            // ================================================================
+            // UPDATE STATS
+            // ================================================================
+
+            function updateStats(materials) {
+                const modules = materials.filter(m => m.id);
+                const videos = materials.filter(m => m.video_url);
+                const guides = materials.filter(m => m.download_url);
+
+                document.getElementById('stat-modules').textContent = modules.length;
+                document.getElementById('stat-videos').textContent = videos.length;
+                document.getElementById('stat-guides').textContent = guides.length;
+            }
+
+            // ================================================================
+            // FILTERS
+            // ================================================================
+
+            window.applyFilters = function() {
+                const level = document.getElementById('filterLevel').value;
+                const tag = document.getElementById('filterTag').value;
+
+                filteredMaterials = allMaterials.filter(m => {
+                    let match = true;
+                    if (level && m.level !== level) match = false;
+                    if (tag && (!m.tags || !m.tags.includes(tag))) match = false;
+                    return match;
+                });
+
+                renderAll();
+            };
+
+            window.clearFilters = function() {
+                document.getElementById('filterLevel').value = '';
+                document.getElementById('filterTag').value = '';
+                filteredMaterials = [...allMaterials];
+                renderAll();
+            };
+
+            // ================================================================
+            // SCROLL ANIMATIONS
+            // ================================================================
+
+            function observeElements() {
+                const elements = document.querySelectorAll('.animate-on-scroll:not(.visible)');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+
+                elements.forEach(el => observer.observe(el));
+            }
+
+            // ================================================================
+            // UTILITY FUNCTIONS
+            // ================================================================
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return 'N/A';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch {
+                    return dateStr.substring(0, 10);
+                }
+            }
+
+            // ================================================================
+            // INITIALIZE
+            // ================================================================
+
+            loadMaterials();
+            observeElements();
+
+            console.log('✅ BRIDGE-AI Kenya Training Materials page initialized');
+
+        })();
+    </script>
+
+</body>
+</html>

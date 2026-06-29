@@ -1,0 +1,505 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - MANAGE PARTNERS                               -->
+<!-- ================================================================ -->
+<!-- Full CRUD for Partner content type.                             -->
+<!-- Fields: name, short_name, country, role, logo, website,        -->
+<!-- description, display_order, is_consortium.                     -->
+<!-- Uses JSON file storage - no database required.                -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Partners - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}🤝 Manage <span class="highlight">Partners</span>{% endblock %}
+
+{% block page_subtitle %}Create, edit, and delete consortium and local ecosystem partners{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-partners">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ Add Partner
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search partners..." onkeyup="filterTable()">
+            <select id="filterConsortium" onchange="filterTable()">
+                <option value="">All Partners</option>
+                <option value="true">Consortium Partners</option>
+                <option value="false">Ecosystem Partners</option>
+            </select>
+            <select id="filterCountry" onchange="filterTable()">
+                <option value="">All Countries</option>
+                <option value="Spain">Spain</option>
+                <option value="Kenya">Kenya</option>
+                <option value="Tunisia">Tunisia</option>
+                <option value="Nigeria">Nigeria</option>
+                <option value="Austria">Austria</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:5%;">#</th>
+                <th style="width:20%;">Name</th>
+                <th style="width:12%;">Short Name</th>
+                <th style="width:12%;">Country</th>
+                <th style="width:15%;">Role</th>
+                <th style="width:10%;">Type</th>
+                <th style="width:14%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No partners found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Partner" to create your first partner.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- HIDDEN FORM TEMPLATES FOR MODAL                              -->
+<!-- ============================================================ -->
+<div style="display:none;">
+    <!-- Create Form Template -->
+    <div id="createFormTemplate">
+        <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" id="form-name" placeholder="e.g. FUNDACIO EURECAT">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Short Name <span class="required">*</span></label>
+                <input type="text" id="form-short-name" placeholder="e.g. EURECAT">
+                <small style="color:var(--text-light);font-size:0.7rem;">Used for display and badges</small>
+            </div>
+            <div class="form-group">
+                <label>Country <span class="required">*</span></label>
+                <select id="form-country">
+                    <option value="">Select country</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="Tunisia">Tunisia</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="Austria">Austria</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Uganda">Uganda</option>
+                    <option value="Tanzania">Tanzania</option>
+                    <option value="Rwanda">Rwanda</option>
+                    <option value="Ethiopia">Ethiopia</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Role</label>
+            <input type="text" id="form-role" placeholder="e.g. Coordinator, Beneficiary, WP5 Lead">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="form-description" rows="3" placeholder="Brief description of the partner's role and contribution"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Website</label>
+            <input type="url" id="form-website" placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+            <label>Logo Path</label>
+            <input type="text" id="form-logo" placeholder="logos/partners/eurecat.svg">
+            <small style="color:var(--text-light);font-size:0.7rem;">Path to logo image file</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" id="form-display-order" placeholder="0" value="0">
+                <small style="color:var(--text-light);font-size:0.7rem;">Lower numbers appear first</small>
+            </div>
+            <div class="form-group">
+                <label>Partner Type</label>
+                <select id="form-is-consortium">
+                    <option value="true">Consortium Partner</option>
+                    <option value="false">Ecosystem Partner</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form Template -->
+    <div id="editFormTemplate">
+        <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" id="edit-form-name" placeholder="e.g. FUNDACIO EURECAT">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Short Name <span class="required">*</span></label>
+                <input type="text" id="edit-form-short-name" placeholder="e.g. EURECAT">
+                <small style="color:var(--text-light);font-size:0.7rem;">Used for display and badges</small>
+            </div>
+            <div class="form-group">
+                <label>Country <span class="required">*</span></label>
+                <select id="edit-form-country">
+                    <option value="">Select country</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="Tunisia">Tunisia</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="Austria">Austria</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Uganda">Uganda</option>
+                    <option value="Tanzania">Tanzania</option>
+                    <option value="Rwanda">Rwanda</option>
+                    <option value="Ethiopia">Ethiopia</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Role</label>
+            <input type="text" id="edit-form-role" placeholder="e.g. Coordinator, Beneficiary, WP5 Lead">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="edit-form-description" rows="3" placeholder="Brief description of the partner's role and contribution"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Website</label>
+            <input type="url" id="edit-form-website" placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+            <label>Logo Path</label>
+            <input type="text" id="edit-form-logo" placeholder="logos/partners/eurecat.svg">
+            <small style="color:var(--text-light);font-size:0.7rem;">Path to logo image file</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" id="edit-form-display-order" placeholder="0">
+                <small style="color:var(--text-light);font-size:0.7rem;">Lower numbers appear first</small>
+            </div>
+            <div class="form-group">
+                <label>Partner Type</label>
+                <select id="edit-form-is-consortium">
+                    <option value="true">Consortium Partner</option>
+                    <option value="false">Ecosystem Partner</option>
+                </select>
+            </div>
+        </div>
+        <!-- Hidden ID field -->
+        <input type="hidden" id="edit-form-id">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let partners = [];
+        let editingId = null;
+        const API_URL = '/api/partners/';
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+
+        function loadPartners() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    partners = data || [];
+                    renderTable(partners);
+                    updateCounts(partners.length);
+                })
+                .catch(error => {
+                    console.error('Error loading partners:', error);
+                    showToast('error', 'Failed to load partners');
+                });
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            <span class="empty-icon">📭</span>
+                            <h4>No partners found</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Partner" to create your first partner.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${escapeHtml(item.name || 'Unnamed')}</strong></td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(item.short_name || '-')}</span></td>
+                    <td>${escapeHtml(item.country || '-')}</td>
+                    <td>${escapeHtml(item.role || '-')}</td>
+                    <td>${item.is_consortium ? '<span class="status-badge" style="background:var(--success-light);color:#155724;">Consortium</span>' : '<span class="status-badge" style="background:var(--bg-light);color:var(--text-muted);">Ecosystem</span>'}</td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deletePartner(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateCounts(data.length);
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const consortiumFilter = document.getElementById('filterConsortium').value;
+            const countryFilter = document.getElementById('filterCountry').value;
+
+            let filtered = partners;
+
+            if (search) {
+                filtered = filtered.filter(item => {
+                    const searchable = [
+                        item.name,
+                        item.short_name,
+                        item.country,
+                        item.role,
+                        item.description
+                    ].join(' ').toLowerCase();
+                    return searchable.includes(search);
+                });
+            }
+
+            if (consortiumFilter) {
+                const isConsortium = consortiumFilter === 'true';
+                filtered = filtered.filter(item => item.is_consortium === isConsortium);
+            }
+
+            if (countryFilter) {
+                filtered = filtered.filter(item => item.country === countryFilter);
+            }
+
+            renderTable(filtered);
+        };
+
+        // ================================================================
+        // CREATE MODAL
+        // ================================================================
+
+        window.openCreateModal = function() {
+            editingId = null;
+            const formHtml = document.getElementById('createFormTemplate').innerHTML;
+            openModal('Add New Partner', formHtml, savePartner);
+        };
+
+        // ================================================================
+        // EDIT MODAL
+        // ================================================================
+
+        window.openEditModal = function(id) {
+            const item = partners.find(p => p.id === id);
+            if (!item) {
+                showToast('error', 'Partner not found');
+                return;
+            }
+
+            editingId = id;
+            const formHtml = document.getElementById('editFormTemplate').innerHTML;
+            openModal('Edit Partner', formHtml, savePartner);
+
+            // Populate form fields
+            setTimeout(() => {
+                document.getElementById('edit-form-id').value = item.id;
+                document.getElementById('edit-form-name').value = item.name || '';
+                document.getElementById('edit-form-short-name').value = item.short_name || '';
+                document.getElementById('edit-form-country').value = item.country || '';
+                document.getElementById('edit-form-role').value = item.role || '';
+                document.getElementById('edit-form-description').value = item.description || '';
+                document.getElementById('edit-form-website').value = item.website || '';
+                document.getElementById('edit-form-logo').value = item.logo || '';
+                document.getElementById('edit-form-display-order').value = item.display_order || 0;
+                document.getElementById('edit-form-is-consortium').value = item.is_consortium ? 'true' : 'false';
+            }, 100);
+        };
+
+        // ================================================================
+        // SAVE PARTNER
+        // ================================================================
+
+        window.savePartner = function() {
+            const isEdit = !!editingId;
+
+            // Get form values based on mode
+            let data;
+            if (isEdit) {
+                data = {
+                    id: parseInt(document.getElementById('edit-form-id').value),
+                    name: document.getElementById('edit-form-name').value.trim(),
+                    short_name: document.getElementById('edit-form-short-name').value.trim(),
+                    country: document.getElementById('edit-form-country').value,
+                    role: document.getElementById('edit-form-role').value.trim(),
+                    description: document.getElementById('edit-form-description').value.trim(),
+                    website: document.getElementById('edit-form-website').value.trim(),
+                    logo: document.getElementById('edit-form-logo').value.trim(),
+                    display_order: parseInt(document.getElementById('edit-form-display-order').value) || 0,
+                    is_consortium: document.getElementById('edit-form-is-consortium').value === 'true'
+                };
+            } else {
+                data = {
+                    name: document.getElementById('form-name').value.trim(),
+                    short_name: document.getElementById('form-short-name').value.trim(),
+                    country: document.getElementById('form-country').value,
+                    role: document.getElementById('form-role').value.trim(),
+                    description: document.getElementById('form-description').value.trim(),
+                    website: document.getElementById('form-website').value.trim(),
+                    logo: document.getElementById('form-logo').value.trim(),
+                    display_order: parseInt(document.getElementById('form-display-order').value) || 0,
+                    is_consortium: document.getElementById('form-is-consortium').value === 'true'
+                };
+            }
+
+            // Validate required fields
+            if (!data.name) {
+                showToast('warning', 'Full name is required');
+                return;
+            }
+            if (!data.short_name) {
+                showToast('warning', 'Short name is required');
+                return;
+            }
+            if (!data.country) {
+                showToast('warning', 'Country is required');
+                return;
+            }
+
+            const url = isEdit ? `${API_URL}${editingId}/` : API_URL;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', `Partner ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeModal();
+                    loadPartners();
+                } else {
+                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} partner`);
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // DELETE PARTNER
+        // ================================================================
+
+        window.deletePartner = function(id) {
+            const item = partners.find(p => p.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            fetch(`${API_URL}${id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Partner deleted successfully!');
+                    loadPartners();
+                } else {
+                    showToast('error', result.error || 'Failed to delete partner');
+                }
+            })
+            .catch(error => {
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateCounts(count) {
+            const countEl = document.getElementById('count-partners');
+            const tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = `${count} items`;
+            if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // INITIALIZE
+        // ================================================================
+
+        loadPartners();
+
+        console.log('✅ BRIDGE-AI Kenya Manage Partners page initialized');
+
+    })();
+</script>
+{% endblock %}

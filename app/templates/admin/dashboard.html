@@ -1,0 +1,834 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ADMIN DASHBOARD                               -->
+<!-- ================================================================ -->
+<!-- Extends the admin layout with sidebar and top bar.             -->
+<!-- Shows statistics, quick actions, and content overview.         -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Dashboard - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📊 <span class="highlight">Dashboard</span>{% endblock %}
+
+{% block page_subtitle %}Overview of BRIDGE-AI Kenya content{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- WELCOME BANNER                                              -->
+<!-- ============================================================ -->
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h2>👋 Welcome back, {{ current_user.username if current_user else 'Admin' }}!</h2>
+        <p>Here's what's happening with <span class="highlight-text">BRIDGE-AI Kenya</span> today</p>
+    </div>
+    <div class="welcome-stats">
+        <div class="ws-item">
+            <span class="ws-number">{{ stats.submissions if stats else 0 }}</span>
+            <span class="ws-label">Total Submissions</span>
+        </div>
+        <div class="ws-item">
+            <span class="ws-number">{{ stats.unread_submissions if stats else 0 }}</span>
+            <span class="ws-label">Unread</span>
+        </div>
+        <div class="ws-item">
+            <span class="ws-number">{{ stats.published_activities if stats else 0 }}</span>
+            <span class="ws-label">Published</span>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATS GRID                                                  -->
+<!-- ============================================================ -->
+<div class="stats-grid">
+
+    <!-- Activities -->
+    <div class="stat-card border-accent">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.activities if stats else 0 }}</span>
+            <span class="stat-icon">📰</span>
+        </div>
+        <span class="stat-label">Activities</span>
+        <div class="stat-sub">
+            <span class="stat-dot green"></span>
+            {{ stats.published_activities if stats else 0 }} published
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.activities if stats else 0 %}
+            {% set published = stats.published_activities if stats else 0 %}
+            {% set percent = (published / total * 100)|round|int if total > 0 else 0 %}
+            <div class="stat-fill accent" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+
+    <div class="stat-card border-gold">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.challenges if stats else 0 }}</span>
+            <span class="stat-icon">🚀</span>
+        </div>
+        <span class="stat-label">SME Challenges</span>
+        <div class="stat-sub">
+            <span class="stat-dot gold"></span>
+            Innovation challenges
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.challenges if stats else 0 %}
+            {% set percent = 100 if total > 0 else 0 %}
+            <div class="stat-fill gold" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+    <!-- ✅ SME Submissions - ADD THIS NEW CARD -->
+    <div class="stat-card border-error">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.sme_submissions if stats else 0 }}</span>
+            <span class="stat-icon">📩</span>
+        </div>
+        <span class="stat-label">SME Submissions</span>
+        <div class="stat-sub">
+            <span class="stat-dot red"></span>
+            Interest forms
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.sme_submissions if stats else 0 %}
+            {% set percent = 100 if total > 0 else 0 %}
+            <div class="stat-fill error" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+    <!-- ✅ Community Repositories - ADD THIS NEW CARD -->
+    <div class="stat-card border-accent">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.repositories if stats else 0 }}</span>
+            <span class="stat-icon">📦</span>
+        </div>
+        <span class="stat-label">Repositories</span>
+        <div class="stat-sub">
+            <span class="stat-dot blue"></span>
+            Code repositories
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.repositories if stats else 0 %}
+            {% set percent = 100 if total > 0 else 0 %}
+            <div class="stat-fill accent" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+    <!-- ✅ Community Events - ADD THIS NEW CARD -->
+    <div class="stat-card border-gold">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.community_events if stats else 0 }}</span>
+            <span class="stat-icon">📅</span>
+        </div>
+        <span class="stat-label">Community Events</span>
+        <div class="stat-sub">
+            <span class="stat-dot gold"></span>
+            Meetups &amp; workshops
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.community_events if stats else 0 %}
+            {% set percent = 100 if total > 0 else 0 %}
+            <div class="stat-fill gold" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+    <!-- ✅ Community Submissions - ADD THIS NEW CARD -->
+    <div class="stat-card border-error">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.community_submissions if stats else 0 }}</span>
+            <span class="stat-icon">🌐</span>
+        </div>
+        <span class="stat-label">Community Join Requests</span>
+        <div class="stat-sub">
+            <span class="stat-dot red"></span>
+            New members
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.community_submissions if stats else 0 %}
+            {% set percent = 100 if total > 0 else 0 %}
+            <div class="stat-fill error" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+
+
+    <!-- ✅ Replication Resources - ADD THIS NEW CARD -->
+<div class="stat-card border-accent">
+    <div class="stat-top">
+        <span class="stat-number">{{ stats.replication_resources if stats else 0 }}</span>
+        <span class="stat-icon">📥</span>
+    </div>
+    <span class="stat-label">Replication Resources</span>
+    <div class="stat-sub">
+        <span class="stat-dot blue"></span>
+        Downloadable resources
+    </div>
+    <div class="stat-bar">
+        {% set total = stats.replication_resources if stats else 0 %}
+        {% set percent = 100 if total > 0 else 0 %}
+        <div class="stat-fill accent" data-percent="{{ percent }}"></div>
+    </div>
+</div>
+
+<!-- ✅ Replication Templates - ADD THIS NEW CARD -->
+<div class="stat-card border-gold">
+    <div class="stat-top">
+        <span class="stat-number">{{ stats.replication_templates if stats else 0 }}</span>
+        <span class="stat-icon">📝</span>
+    </div>
+    <span class="stat-label">Replication Templates</span>
+    <div class="stat-sub">
+        <span class="stat-dot gold"></span>
+        Localisation templates
+    </div>
+    <div class="stat-bar">
+        {% set total = stats.replication_templates if stats else 0 %}
+        {% set percent = 100 if total > 0 else 0 %}
+        <div class="stat-fill gold" data-percent="{{ percent }}"></div>
+    </div>
+</div>
+
+<!-- ✅ Replication Lessons - ADD THIS NEW CARD -->
+<div class="stat-card">
+    <div class="stat-top">
+        <span class="stat-number">{{ stats.replication_lessons if stats else 0 }}</span>
+        <span class="stat-icon">📖</span>
+    </div>
+    <span class="stat-label">Replication Lessons</span>
+    <div class="stat-sub">
+        <span class="stat-dot blue"></span>
+        Kenya lessons
+    </div>
+    <div class="stat-bar">
+        {% set total = stats.replication_lessons if stats else 0 %}
+        {% set percent = 100 if total > 0 else 0 %}
+        <div class="stat-fill" data-percent="{{ percent }}"></div>
+    </div>
+</div>
+
+
+
+
+
+    <!-- Events -->
+    <div class="stat-card border-gold">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.events if stats else 0 }}</span>
+            <span class="stat-icon">📅</span>
+        </div>
+        <span class="stat-label">Events</span>
+        <div class="stat-sub">
+            <span class="stat-dot gold"></span>
+            {{ stats.upcoming_events if stats else 0 }} upcoming
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.events if stats else 0 %}
+            {% set upcoming = stats.upcoming_events if stats else 0 %}
+            {% set percent = (upcoming / total * 100)|round|int if total > 0 else 0 %}
+            <div class="stat-fill gold" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+    <!-- Resources -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.resources if stats else 0 }}</span>
+            <span class="stat-icon">📚</span>
+        </div>
+        <span class="stat-label">Resources</span>
+        <div class="stat-sub">
+            <span class="stat-dot blue"></span>
+            Public materials
+        </div>
+        <div class="stat-bar">
+            <div class="stat-fill" data-percent="75"></div>
+        </div>
+    </div>
+
+    <!-- Training Materials - ✅ NEW CARD -->
+    <div class="stat-card border-accent">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.training_materials if stats else 0 }}</span>
+            <span class="stat-icon">📖</span>
+        </div>
+        <span class="stat-label">Training Materials</span>
+        <div class="stat-sub">
+            <span class="stat-dot blue"></span>
+            Modules &amp; resources
+        </div>
+        <div class="stat-bar">
+            {% set total = stats.training_materials if stats else 0 %}
+            {% set percent = 100 if total > 0 else 0 %}
+            <div class="stat-fill accent" data-percent="{{ percent }}"></div>
+        </div>
+    </div>
+
+    <!-- Partners -->
+    <div class="stat-card border-accent">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.partners if stats else 0 }}</span>
+            <span class="stat-icon">🤝</span>
+        </div>
+        <span class="stat-label">Partners</span>
+        <div class="stat-sub">
+            <span class="stat-dot green"></span>
+            Consortium partners
+        </div>
+        <div class="stat-bar">
+            <div class="stat-fill accent" data-percent="100"></div>
+        </div>
+    </div>
+
+    <!-- Team -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.team if stats else 0 }}</span>
+            <span class="stat-icon">👥</span>
+        </div>
+        <span class="stat-label">Team Members</span>
+        <div class="stat-sub">
+            <span class="stat-dot blue"></span>
+            JKUAT team
+        </div>
+        <div class="stat-bar">
+            <div class="stat-fill" data-percent="60"></div>
+        </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="stat-card border-gold">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.albums if stats else 0 }}</span>
+            <span class="stat-icon">🖼️</span>
+        </div>
+        <span class="stat-label">Gallery Albums</span>
+        <div class="stat-sub">
+            <span class="stat-dot gold"></span>
+            {{ stats.images if stats else 0 }} total images
+        </div>
+        <div class="stat-bar">
+            <div class="stat-fill gold" data-percent="40"></div>
+        </div>
+    </div>
+
+    <!-- FAQs -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.faqs if stats else 0 }}</span>
+            <span class="stat-icon">❓</span>
+        </div>
+        <span class="stat-label">FAQs</span>
+        <div class="stat-sub">
+            <span class="stat-dot blue"></span>
+            Published questions
+        </div>
+        <div class="stat-bar">
+            <div class="stat-fill" data-percent="50"></div>
+        </div>
+    </div>
+
+    <!-- Submissions -->
+    <div class="stat-card border-error">
+        <div class="stat-top">
+            <span class="stat-number">{{ stats.submissions if stats else 0 }}</span>
+            <span class="stat-icon">📩</span>
+        </div>
+        <span class="stat-label">Submissions</span>
+        <div class="stat-sub {% if stats.unread_submissions and stats.unread_submissions > 0 %}text-error{% else %}text-muted{% endif %}">
+            <span class="stat-dot {% if stats.unread_submissions and stats.unread_submissions > 0 %}red{% else %}green{% endif %}"></span>
+            {{ stats.unread_submissions if stats else 0 }} unread
+        </div>
+        <div class="stat-bar">
+            {% set sub_total = stats.submissions if stats else 0 %}
+            {% set sub_unread = stats.unread_submissions if stats else 0 %}
+            {% set sub_read = sub_total - sub_unread %}
+            {% set sub_percent = (sub_read / sub_total * 100)|round|int if sub_total > 0 else 0 %}
+            <div class="stat-fill" data-percent="{{ sub_percent }}"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- QUICK ACTIONS                                               -->
+<!-- ============================================================ -->
+<div style="margin-bottom: 12px;">
+    <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 14px;">⚡ Quick Actions</h3>
+</div>
+<div class="quick-actions">
+    <a href="{{ url_for('admin.admin_activities') }}" class="quick-action">
+        <span class="qa-icon">📰</span>
+        <div class="qa-content">
+            <div class="qa-title">Add Activity</div>
+            <div class="qa-desc">Create a new news post</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.admin_events') }}" class="quick-action">
+        <span class="qa-icon">📅</span>
+        <div class="qa-content">
+            <div class="qa-title">Add Event</div>
+            <div class="qa-desc">Create a new training event</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.admin_resources') }}" class="quick-action">
+        <span class="qa-icon">📚</span>
+        <div class="qa-content">
+            <div class="qa-title">Add Resource</div>
+            <div class="qa-desc">Upload a public resource</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.admin_training_materials') }}" class="quick-action">
+        <span class="qa-icon">📖</span>
+        <div class="qa-content">
+            <div class="qa-title">Add Training Material</div>
+            <div class="qa-desc">Create a new training module</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.admin_gallery') }}" class="quick-action">
+        <span class="qa-icon">🖼️</span>
+        <div class="qa-content">
+            <div class="qa-title">Add Gallery Album</div>
+            <div class="qa-desc">Create a new photo album</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.admin_team') }}" class="quick-action">
+        <span class="qa-icon">👥</span>
+        <div class="qa-content">
+            <div class="qa-title">Add Team Member</div>
+            <div class="qa-desc">Add a JKUAT team profile</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.admin_faqs') }}" class="quick-action">
+        <span class="qa-icon">❓</span>
+        <div class="qa-content">
+            <div class="qa-title">Add FAQ</div>
+            <div class="qa-desc">Create a new FAQ entry</div>
+        </div>
+    </a>
+
+    <a href="{{ url_for('admin.admin_sme') }}" class="quick-action">
+        <span class="qa-icon">🚀</span>
+        <div class="qa-content">
+            <div class="qa-title">Manage SME</div>
+            <div class="qa-desc">Challenges, hackathons, stories, submissions</div>
+        </div>
+    </a>
+
+
+    <a href="{{ url_for('admin.admin_community') }}" class="quick-action">
+        <span class="qa-icon">🌐</span>
+        <div class="qa-content">
+            <div class="qa-title">Manage Community</div>
+            <div class="qa-desc">Repositories, events, join requests</div>
+        </div>
+    </a>
+
+
+    <a href="{{ url_for('admin.admin_replication') }}" class="quick-action">
+        <span class="qa-icon">📦</span>
+        <div class="qa-content">
+            <div class="qa-title">Manage Replication</div>
+            <div class="qa-desc">Resources, templates, lessons</div>
+        </div>
+    </a>
+
+
+
+
+</div>
+
+<!-- ============================================================ -->
+<!-- DASHBOARD STYLES (embedded)                                  -->
+<!-- ============================================================ -->
+<style>
+    /* ================================================================ */
+    /* WELCOME BANNER                                                 */
+    /* ================================================================ */
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 50%, var(--accent) 100%);
+        border-radius: var(--radius-lg);
+        padding: 32px 40px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .welcome-banner .welcome-text h2 {
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .welcome-banner .welcome-text p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .welcome-banner .welcome-text p .highlight-text {
+        color: #7ad4b8;
+        font-weight: 600;
+    }
+
+    .welcome-banner .welcome-stats {
+        display: flex;
+        gap: 24px;
+    }
+
+    .welcome-banner .welcome-stats .ws-item {
+        text-align: center;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .welcome-banner .welcome-stats .ws-item .ws-number {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: block;
+    }
+
+    .welcome-banner .welcome-stats .ws-item .ws-label {
+        font-size: 0.6rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ================================================================ */
+    /* STATS GRID                                                     */
+    /* ================================================================ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 18px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 20px 20px 18px;
+        transition: all var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-light), var(--accent));
+        opacity: 0;
+        transition: opacity var(--transition);
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+
+    .stat-card .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .stat-card .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        display: block;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+    }
+
+    .stat-card .stat-number .stat-suffix {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .stat-card .stat-icon {
+        font-size: 1.6rem;
+        opacity: 0.6;
+        transition: all var(--transition);
+    }
+
+    .stat-card:hover .stat-icon {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .stat-card .stat-sub {
+        font-size: 0.7rem;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .stat-card .stat-sub .stat-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .stat-card .stat-sub .stat-dot.green {
+        background: var(--success);
+    }
+    .stat-card .stat-sub .stat-dot.gold {
+        background: var(--gold);
+    }
+    .stat-card .stat-sub .stat-dot.red {
+        background: var(--error);
+    }
+    .stat-card .stat-sub .stat-dot.blue {
+        background: var(--primary-light);
+    }
+
+    .stat-card .stat-sub.text-success {
+        color: var(--success);
+    }
+    .stat-card .stat-sub.text-error {
+        color: var(--error);
+    }
+    .stat-card .stat-sub.text-warning {
+        color: var(--warning);
+    }
+    .stat-card .stat-sub.text-muted {
+        color: var(--text-muted);
+    }
+
+    .stat-card .stat-bar {
+        width: 100%;
+        height: 3px;
+        background: var(--bg-light);
+        border-radius: 2px;
+        margin-top: 12px;
+        overflow: hidden;
+    }
+
+    .stat-card .stat-bar .stat-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--primary-light), var(--accent));
+        transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        width: 0%;
+    }
+
+    .stat-card .stat-bar .stat-fill.accent {
+        background: linear-gradient(90deg, var(--accent), #2ecc71);
+    }
+
+    .stat-card .stat-bar .stat-fill.gold {
+        background: linear-gradient(90deg, var(--gold), #f1c40f);
+    }
+
+    .stat-card .stat-bar .stat-fill.error {
+        background: linear-gradient(90deg, var(--error), #e67e22);
+    }
+
+    .stat-card.border-accent {
+        border-color: var(--accent);
+    }
+    .stat-card.border-accent::before {
+        background: var(--accent);
+        opacity: 1;
+    }
+
+    .stat-card.border-gold {
+        border-color: var(--gold);
+    }
+    .stat-card.border-gold::before {
+        background: var(--gold);
+        opacity: 1;
+    }
+
+    .stat-card.border-error {
+        border-color: var(--error);
+    }
+    .stat-card.border-error::before {
+        background: var(--error);
+        opacity: 1;
+    }
+
+    /* ================================================================ */
+    /* QUICK ACTIONS                                                   */
+    /* ================================================================ */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 32px;
+    }
+
+    .quick-action {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 18px 20px;
+        text-decoration: none;
+        color: var(--text-body);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: all var(--transition);
+    }
+
+    .quick-action:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+
+    .quick-action .qa-icon {
+        font-size: 1.6rem;
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-light);
+        border-radius: var(--radius-sm);
+        transition: all var(--transition);
+    }
+
+    .quick-action:hover .qa-icon {
+        background: rgba(26, 74, 107, 0.06);
+        transform: scale(1.05);
+    }
+
+    .quick-action .qa-content .qa-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .quick-action .qa-content .qa-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    @media (max-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .welcome-banner {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 24px 28px;
+        }
+
+        .welcome-banner .welcome-stats {
+            width: 100%;
+            justify-content: space-around;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-banner .welcome-stats {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .welcome-banner .welcome-stats .ws-item {
+            flex: 1;
+            min-width: 70px;
+        }
+    }
+
+    /* ================================================================ */
+    /* REDUCED MOTION                                                  */
+    /* ================================================================ */
+    @media (prefers-reduced-motion: reduce) {
+        .stat-card .stat-bar .stat-fill {
+            transition: none !important;
+        }
+    }
+</style>
+
+<!-- ============================================================ -->
+<!-- DASHBOARD JAVASCRIPT                                         -->
+<!-- ============================================================ -->
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // ANIMATE STAT BARS ON LOAD
+        // ================================================================
+
+        function animateBars() {
+            const bars = document.querySelectorAll('.stat-fill');
+            bars.forEach(function(bar, index) {
+                const percent = bar.getAttribute('data-percent') || 0;
+                setTimeout(function() {
+                    bar.style.width = percent + '%';
+                }, 200 + (index * 50));
+            });
+        }
+
+        // Run animation after page load
+        if (document.readyState === 'complete') {
+            animateBars();
+        } else {
+            window.addEventListener('load', animateBars);
+        }
+
+        console.log('✅ BRIDGE-AI Kenya Admin Dashboard initialized');
+
+    })();
+</script>
+
+{% endblock %}

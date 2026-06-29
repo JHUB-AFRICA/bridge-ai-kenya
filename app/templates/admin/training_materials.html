@@ -1,0 +1,516 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - MANAGE TRAINING MATERIALS                    -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Training Materials - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📚 Manage <span class="highlight">Training Materials</span>{% endblock %}
+
+{% block page_subtitle %}Create, edit, and delete training modules, videos, guides, and resources{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-materials">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ Add Material
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search materials..." onkeyup="filterTable()">
+            <select id="filterLevel" onchange="filterTable()">
+                <option value="">All Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:25%;">Title</th>
+                <th style="width:12%;">Level</th>
+                <th style="width:15%;">Duration</th>
+                <th style="width:10%;">Video</th>
+                <th style="width:10%;">Guide</th>
+                <th style="width:13%;">Tags</th>
+                <th style="width:15%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No training materials found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Material" to create your first training module.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="materialModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="materialModalTitle">Add New Material</h3>
+            <button class="modal-close" onclick="closeMaterialModal()">✕</button>
+        </div>
+        <div class="modal-body" id="materialModalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeMaterialModal()">Cancel</button>
+            <button class="btn btn-primary" id="materialSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CREATE FORM TEMPLATE                                         -->
+<!-- ============================================================ -->
+<div style="display:none;">
+    <div id="createFormHtml">
+        <div class="form-group">
+            <label>Module Title <span class="required">*</span></label>
+            <input type="text" id="form-title" placeholder="e.g. GenAI for Agriculture">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="form-slug" placeholder="URL-friendly version (auto-generated)">
+            <small style="color:var(--text-light);font-size:0.7rem;">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="form-description" rows="3" placeholder="Detailed description of the module content..."></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Level <span class="required">*</span></label>
+                <select id="form-level">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Duration</label>
+                <input type="text" id="form-duration" placeholder="e.g. 2 hours">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Tags</label>
+            <input type="text" id="form-tags" placeholder='e.g. GenAI, Agriculture, Fundamentals'>
+            <small style="color:var(--text-light);font-size:0.7rem;">Comma-separated tags (e.g. GenAI, Agriculture)</small>
+        </div>
+        <div class="form-group">
+            <label>Video URL (YouTube/Vimeo)</label>
+            <input type="url" id="form-video-url" placeholder="https://www.youtube.com/embed/...">
+            <small style="color:var(--text-light);font-size:0.7rem;">Embed URL for video tutorial</small>
+        </div>
+        <div class="form-group">
+            <label>Downloadable Guide (PDF)</label>
+            <input type="text" id="form-download-url" placeholder="uploads/guides/filename.pdf">
+            <small style="color:var(--text-light);font-size:0.7rem;">Path to the downloadable PDF guide</small>
+        </div>
+        <div class="form-group">
+            <label>Repository URL (GitHub/FIWARE)</label>
+            <input type="url" id="form-repo-url" placeholder="https://github.com/...">
+            <small style="color:var(--text-light);font-size:0.7rem;">Link to code repository</small>
+        </div>
+        <input type="hidden" id="form-edit-id" value="">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let materials = [];
+        let editingId = null;
+        const API_URL = '/api/training-materials/';
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+
+        function loadMaterials() {
+            console.log('🔄 Loading training materials...');
+            fetch(API_URL, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('📥 Data received:', data);
+                materials = data || [];
+                renderTable(materials);
+                updateCounts(materials.length);
+            })
+            .catch(error => {
+                console.error('❌ Error loading materials:', error);
+                showToast('error', 'Failed to load training materials: ' + error.message);
+            });
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            <span class="empty-icon">📭</span>
+                            <h4>No training materials found</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Material" to create your first training module.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                    <td><span class="status-badge ${item.level || 'beginner'}">${escapeHtml(item.level || 'beginner')}</span></td>
+                    <td>${escapeHtml(item.duration || '-')}</td>
+                    <td>${item.video_url ? '✅' : '❌'}</td>
+                    <td>${item.download_url ? '✅' : '❌'}</td>
+                    <td>${item.tags && item.tags.length > 0 ? item.tags.map(t => `<span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);font-size:0.6rem;">${escapeHtml(t)}</span>`).join(' ') : '-'}</td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteMaterial(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateCounts(data.length);
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const levelFilter = document.getElementById('filterLevel').value;
+
+            let filtered = materials;
+
+            if (search) {
+                filtered = filtered.filter(item => {
+                    const searchable = [
+                        item.title,
+                        item.description,
+                        item.tags ? item.tags.join(' ') : '',
+                        item.level
+                    ].join(' ').toLowerCase();
+                    return searchable.includes(search);
+                });
+            }
+
+            if (levelFilter) {
+                filtered = filtered.filter(item => item.level === levelFilter);
+            }
+
+            renderTable(filtered);
+        };
+
+        // ================================================================
+        // MODAL FUNCTIONS
+        // ================================================================
+
+        function getFormHtml() {
+            return document.getElementById('createFormHtml').innerHTML;
+        }
+
+        function getFormData() {
+            const tagsValue = document.getElementById('form-tags').value.trim();
+            let tags = [];
+            if (tagsValue) {
+                tags = tagsValue.split(',').map(t => t.trim()).filter(t => t);
+            }
+            
+            return {
+                title: document.getElementById('form-title').value.trim(),
+                slug: document.getElementById('form-slug').value.trim(),
+                description: document.getElementById('form-description').value.trim(),
+                level: document.getElementById('form-level').value,
+                duration: document.getElementById('form-duration').value.trim(),
+                tags: tags.length > 0 ? tags : null,
+                video_url: document.getElementById('form-video-url').value.trim() || null,
+                download_url: document.getElementById('form-download-url').value.trim() || null,
+                repository_url: document.getElementById('form-repo-url').value.trim() || null
+            };
+        }
+
+        function populateForm(data) {
+            document.getElementById('form-title').value = data.title || '';
+            document.getElementById('form-slug').value = data.slug || '';
+            document.getElementById('form-description').value = data.description || '';
+            document.getElementById('form-level').value = data.level || 'beginner';
+            document.getElementById('form-duration').value = data.duration || '';
+            document.getElementById('form-tags').value = data.tags ? data.tags.join(', ') : '';
+            document.getElementById('form-video-url').value = data.video_url || '';
+            document.getElementById('form-download-url').value = data.download_url || '';
+            document.getElementById('form-repo-url').value = data.repository_url || '';
+            document.getElementById('form-edit-id').value = data.id || '';
+        }
+
+        function openMaterialModal(title, editData) {
+            const modal = document.getElementById('materialModal');
+            const modalTitle = document.getElementById('materialModalTitle');
+            const modalBody = document.getElementById('materialModalBody');
+            const saveBtn = document.getElementById('materialSaveBtn');
+
+            modalTitle.textContent = title;
+            modalBody.innerHTML = getFormHtml();
+
+            if (editData) {
+                populateForm(editData);
+                editingId = editData.id;
+            } else {
+                editingId = null;
+                populateForm({});
+            }
+
+            saveBtn.onclick = saveMaterial;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeMaterialModal = function() {
+            const modal = document.getElementById('materialModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            editingId = null;
+        };
+
+        window.openCreateModal = function() {
+            openMaterialModal('Add New Training Material', null);
+        };
+
+        window.openEditModal = function(id) {
+            const item = materials.find(m => m.id === id);
+            if (!item) {
+                showToast('error', 'Material not found');
+                return;
+            }
+            openMaterialModal('Edit Training Material', item);
+        };
+
+        // ================================================================
+        // SAVE MATERIAL
+        // ================================================================
+
+        window.saveMaterial = function() {
+            const isEdit = !!editingId;
+            const data = getFormData();
+
+            console.log('📝 Form Data:', data);
+
+            // Validate
+            if (!data.title) {
+                showToast('warning', 'Title is required');
+                return;
+            }
+
+            // Auto-generate slug if not provided
+            if (!data.slug) {
+                data.slug = slugify(data.title);
+            }
+
+            // Clean up data - remove empty fields
+            Object.keys(data).forEach(key => {
+                if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                    delete data[key];
+                }
+            });
+
+            const url = isEdit ? `${API_URL}${editingId}` : API_URL;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            console.log(`📤 Sending ${method} request to ${url}`);
+            console.log('📤 Data:', JSON.stringify(data, null, 2));
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+            console.log('🔐 CSRF Token:', csrfToken);
+
+            const saveBtn = document.getElementById('materialSaveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Saving...';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                return response.text().then(text => {
+                    console.log('📥 Raw response:', text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('❌ Failed to parse JSON:', text);
+                        throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                    }
+                });
+            })
+            .then(result => {
+                console.log('📥 Parsed result:', result);
+                if (result.success) {
+                    showToast('success', `Material ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeMaterialModal();
+                    loadMaterials();
+                } else {
+                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} material`);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Fetch error:', error);
+                showToast('error', `Error: ${error.message}`);
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save';
+            });
+        };
+
+        // ================================================================
+        // DELETE MATERIAL
+        // ================================================================
+
+        window.deleteMaterial = function(id) {
+            const item = materials.find(m => m.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            console.log(`🗑️ Deleting material ${id}`);
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+            fetch(`${API_URL}${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Material deleted successfully!');
+                    loadMaterials();
+                } else {
+                    showToast('error', result.error || 'Failed to delete material');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Delete error:', error);
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // CLOSE MODAL ON OVERLAY CLICK
+        // ================================================================
+
+        document.getElementById('materialModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMaterialModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMaterialModal();
+            }
+        });
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function slugify(text) {
+            return text.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function updateCounts(count) {
+            const countEl = document.getElementById('count-materials');
+            const tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = `${count} items`;
+            if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // INITIALIZE
+        // ================================================================
+
+        loadMaterials();
+
+        console.log('✅ BRIDGE-AI Kenya Admin Training Materials page initialized');
+
+    })();
+</script>
+{% endblock %}

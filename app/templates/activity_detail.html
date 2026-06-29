@@ -1,0 +1,396 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ACTIVITY DETAIL                               -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ activity.title }} - BRIDGE-AI Kenya</title>
+    <meta name="description" content="{{ activity.summary or activity.title }}">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES                                                   */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --accent: #1a8a6a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ================================================================ */
+        /* BREADCRUMB                                                      */
+        /* ================================================================ */
+        .breadcrumb {
+            padding: 24px 0 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .breadcrumb a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb .sep {
+            color: var(--text-light);
+            margin: 0 6px;
+        }
+
+        /* ================================================================ */
+        /* ARTICLE                                                        */
+        /* ================================================================ */
+        .article-header {
+            margin-bottom: 32px;
+        }
+
+        .article-header .article-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .article-header .article-tag {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--primary-light);
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .article-header .article-tag.wp {
+            background: #d4e8f5;
+            color: #1a4a6b;
+        }
+
+        .article-header .article-tag.audience {
+            background: #ece4f5;
+            color: #5a3a7a;
+        }
+
+        .article-header h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.8px;
+            line-height: 1.12;
+            margin-bottom: 12px;
+        }
+
+        .article-header .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .article-header .article-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .article-header .article-meta .meta-divider {
+            width: 4px;
+            height: 4px;
+            background: var(--border-light);
+            border-radius: 50%;
+        }
+
+        .article-featured-image {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 32px;
+            background: var(--bg-light);
+        }
+
+        .article-featured-image img {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .article-body {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: var(--text-body);
+        }
+
+        .article-body p {
+            margin-bottom: 20px;
+        }
+
+        .article-body h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 32px 0 16px;
+        }
+
+        .article-body h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 24px 0 12px;
+        }
+
+        .article-body ul,
+        .article-body ol {
+            margin: 0 0 20px 24px;
+        }
+
+        .article-body li {
+            margin-bottom: 6px;
+        }
+
+        .article-body blockquote {
+            border-left: 4px solid var(--primary-light);
+            padding: 16px 24px;
+            margin: 24px 0;
+            background: var(--bg-light);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .article-body blockquote strong {
+            color: var(--text-dark);
+            display: block;
+            margin-top: 8px;
+            font-style: normal;
+        }
+
+        .article-footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .article-footer .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+
+        .article-footer .back-link:hover {
+            gap: 12px;
+            color: var(--accent);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .article-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .article-body {
+                font-size: 0.98rem;
+            }
+
+            .article-header .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .article-header .article-meta .meta-divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .article-header h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <div class="container">
+
+            <!-- ============================================================ -->
+            <!-- BREADCRUMB                                                    -->
+            <!-- ============================================================ -->
+            <nav class="breadcrumb">
+                <a href="{{ url_for('public.index') }}">Home</a>
+                <span class="sep">/</span>
+                <a href="{{ url_for('public.activities') }}">Activities</a>
+                <span class="sep">/</span>
+                <span>{{ activity.title }}</span>
+            </nav>
+
+            <!-- ============================================================ -->
+            <!-- ARTICLE                                                     -->
+            <!-- ============================================================ -->
+            <article>
+
+                <!-- Header -->
+                <header class="article-header">
+                    <div class="article-tags">
+                        {% if activity.wp_tag %}
+                            <span class="article-tag wp">{{ activity.wp_tag }}</span>
+                        {% endif %}
+                        {% if activity.activity_type %}
+                            <span class="article-tag">{{ activity.activity_type|replace('_', ' ')|title }}</span>
+                        {% endif %}
+                        {% if activity.audience %}
+                            <span class="article-tag audience">{{ activity.audience|title }}</span>
+                        {% endif %}
+                    </div>
+                    <h1>{{ activity.title }}</h1>
+                    <div class="article-meta">
+                        <span class="meta-item">📅 {{ activity.date[:10] if activity.date else 'Date TBD' }}</span>
+                        {% if activity.location %}
+                            <span class="meta-divider"></span>
+                            <span class="meta-item">📍 {{ activity.location }}</span>
+                        {% endif %}
+                        {% if activity.author %}
+                            <span class="meta-divider"></span>
+                            <span class="meta-item">✍️ {{ activity.author }}</span>
+                        {% endif %}
+                    </div>
+                </header>
+
+                <!-- Featured Image -->
+                {% if activity.featured_image %}
+                    <div class="article-featured-image">
+                        <img src="{{ url_for('static', filename=activity.featured_image) }}" alt="{{ activity.title }}" loading="lazy">
+                    </div>
+                {% endif %}
+
+                <!-- Body -->
+                <div class="article-body">
+                    {{ activity.body|safe }}
+                </div>
+
+                <!-- Footer -->
+                <footer class="article-footer">
+                    <a href="{{ url_for('public.activities') }}" class="back-link">
+                        ← Back to Activities
+                    </a>
+                    {% if activity.evidence_status %}
+                        <span style="font-size: 0.75rem; color: var(--text-light);">
+                            Status: {{ activity.evidence_status|title }}
+                        </span>
+                    {% endif %}
+                </footer>
+
+            </article>
+
+        </div>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            console.log('✅ BRIDGE-AI Kenya Activity Detail page initialized');
+
+        })();
+    </script>
+</body>
+</html>

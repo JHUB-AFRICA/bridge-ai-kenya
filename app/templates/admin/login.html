@@ -1,0 +1,541 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - ADMIN LOGIN                                   -->
+<!-- ================================================================ -->
+<!-- Uses JSON-based authentication - no database required          -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - BRIDGE-AI Kenya</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES                                                   */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --accent: #1a8a6a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --border-light: #e4eaf0;
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-lg: 20px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --error: #e74c3c;
+            --error-light: #fde8e8;
+            --success: #28a745;
+            --success-light: #d4edda;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(160deg, #061420 0%, #0f2b3d 50%, #1a4a6b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 44px 40px 40px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+
+        .login-header .login-logo img {
+            height: 48px;
+            width: auto;
+        }
+
+        .login-header .login-logo .logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .login-header .login-logo .logo-text .highlight {
+            color: var(--primary-light);
+        }
+
+        .login-header .login-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .login-header .login-badge {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--text-muted);
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 6px;
+            border: 1px solid var(--border-light);
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .flash-message.error {
+            background: var(--error-light);
+            color: #721c24;
+            border-left: 3px solid var(--error);
+        }
+
+        .flash-message.success {
+            background: var(--success-light);
+            color: #155724;
+            border-left: 3px solid var(--success);
+        }
+
+        .flash-message .flash-icon {
+            font-size: 1rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .login-form .form-group label .required {
+            color: var(--error);
+            margin-left: 2px;
+        }
+
+        .login-form .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .login-form .form-group .input-wrapper .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .login-form .form-group input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            font-family: inherit;
+            color: var(--text-body);
+            background: var(--bg-white);
+            transition: all var(--transition);
+        }
+
+        .login-form .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(26, 74, 107, 0.08);
+        }
+
+        .login-form .form-group input.error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+        }
+
+        .login-form .form-group .error-message {
+            font-size: 0.78rem;
+            color: var(--error);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .login-form .form-group .error-message.visible {
+            display: block;
+        }
+
+        .login-form .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .login-form .form-options .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .login-form .form-options .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-light);
+            cursor: pointer;
+        }
+
+        .login-form .form-options .forgot-link {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .login-form .form-options .forgot-link:hover {
+            color: var(--primary-light);
+        }
+
+        .login-form .submit-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary-light);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-form .submit-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 74, 107, 0.2);
+        }
+
+        .login-form .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-form .submit-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .login-form .submit-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .login-form .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .login-footer p {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .login-footer p a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .login-footer p a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 24px 28px;
+            }
+            .login-header .login-logo img {
+                height: 38px;
+            }
+            .login-header .login-logo .logo-text {
+                font-size: 1.1rem;
+            }
+            .login-form .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .login-container {
+                animation: none;
+            }
+            .flash-message {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+
+        <div class="login-header">
+            <a href="{{ url_for('public.index') }}" class="login-logo">
+                <img src="{{ url_for('static', filename='images/logos/bridge_ai_logo.svg') }}"
+                     alt="BRIDGE-AI Kenya"
+                     id="loginLogo">
+                <span class="logo-text">BRIDGE-AI <span class="highlight">Kenya</span></span>
+            </a>
+            <p class="login-subtitle">Admin Panel — Secure Access</p>
+            <span class="login-badge">🔐 Restricted</span>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span class="flash-icon">{% if category == 'success' %}✅{% else %}⚠️{% endif %}</span>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('admin.admin_login') }}" class="login-form" id="loginForm" novalidate>
+            <!-- CSRF token is handled by Flask-WTF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" name="username" id="username" class="form-control"
+                           placeholder="Enter your username" autocomplete="username" required>
+                </div>
+                <div class="error-message" id="username_error">Please enter your username.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" name="password" id="password" class="form-control"
+                           placeholder="Enter your password" autocomplete="current-password" required>
+                </div>
+                <div class="error-message" id="password_error">Please enter your password.</div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="submit-btn" id="loginSubmit">
+                <span class="btn-text">🔐 Sign In</span>
+                <span class="spinner"></span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>
+                &copy; 2026 BRIDGE-AI Kenya &middot;
+                <a href="{{ url_for('public.index') }}">Return to Website</a>
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // LOGO FALLBACK
+            // ================================================================
+
+            const logo = document.getElementById('loginLogo');
+            if (logo) {
+                logo.addEventListener('error', function() {
+                    this.src = "{{ url_for('static', filename='images/logos/bridge_ai_logo.png') }}";
+                });
+            }
+
+            // ================================================================
+            // FORM VALIDATION
+            // ================================================================
+
+            const form = document.getElementById('loginForm');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+
+                    const username = document.getElementById('username');
+                    const usernameError = document.getElementById('username_error');
+                    if (!username.value.trim()) {
+                        isValid = false;
+                        username.classList.add('error');
+                        if (usernameError) usernameError.classList.add('visible');
+                    } else {
+                        username.classList.remove('error');
+                        if (usernameError) usernameError.classList.remove('visible');
+                    }
+
+                    const password = document.getElementById('password');
+                    const passwordError = document.getElementById('password_error');
+                    if (!password.value.trim()) {
+                        isValid = false;
+                        password.classList.add('error');
+                        if (passwordError) passwordError.classList.add('visible');
+                    } else {
+                        password.classList.remove('error');
+                        if (passwordError) passwordError.classList.remove('visible');
+                    }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        const firstError = form.querySelector('.error');
+                        if (firstError) {
+                            firstError.focus();
+                        }
+                    } else {
+                        const submitBtn = document.getElementById('loginSubmit');
+                        if (submitBtn) {
+                            submitBtn.classList.add('loading');
+                            submitBtn.disabled = true;
+                        }
+                    }
+                });
+
+                form.querySelectorAll('input').forEach(function(field) {
+                    field.addEventListener('input', function() {
+                        const errorEl = document.getElementById(this.id + '_error');
+                        this.classList.remove('error');
+                        if (errorEl) errorEl.classList.remove('visible');
+                    });
+                });
+            }
+
+            // ================================================================
+            // FLASH MESSAGE AUTO-DISMISS
+            // ================================================================
+
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(msg) {
+                setTimeout(function() {
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateY(-10px)';
+                    setTimeout(function() {
+                        msg.remove();
+                    }, 400);
+                }, 5000);
+            });
+
+            console.log('✅ BRIDGE-AI Kenya Admin Login page initialized');
+
+        })();
+    </script>
+</body>
+</html>

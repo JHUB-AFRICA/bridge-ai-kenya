@@ -1,0 +1,1705 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - SME MENTORING PAGE                           -->
+<!-- ================================================================ -->
+<!-- Dedicated page for SME engagement and mentoring:               -->
+<!-- Expression of Interest form, Challenge Statements,             -->
+<!-- Hackathon Archive, and Success Stories.                        -->
+<!-- Modern glassmorphism design, fully responsive.                -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SME Mentoring - BRIDGE-AI Kenya</title>
+    <meta name="description" content="BRIDGE-AI Kenya SME Mentoring: Supporting agri-SMEs, startups, and innovators through mentoring, hackathons, and innovation challenges.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES & RESET                                           */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --primary-lighter: #2a6a8b;
+            --accent: #1a8a6a;
+            --accent-light: #7ad4b8;
+            --gold: #c8922a;
+            --gold-light: #e8b55a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --bg-lighter: #fafcfe;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.10);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.14);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --error: #e74c3c;
+            --success: #28a745;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ================================================================ */
+        /* ANIMATIONS                                                      */
+        /* ================================================================ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(26, 138, 106, 0.25); }
+            50% { box-shadow: 0 0 45px rgba(26, 138, 106, 0.5); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================================================================ */
+        /* BREADCRUMB                                                      */
+        /* ================================================================ */
+        .breadcrumb-bar {
+            background: var(--bg-white);
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 72px;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .breadcrumb-bar .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color var(--transition);
+            font-weight: 500;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb-bar .breadcrumb-container .sep {
+            color: var(--text-light);
+            opacity: 0.4;
+        }
+
+        .breadcrumb-bar .breadcrumb-container .current {
+            color: var(--text-body);
+            font-weight: 600;
+        }
+
+        /* ================================================================ */
+        /* HERO SECTION                                                    */
+        /* ================================================================ */
+        .hero-sme {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px 50px;
+            overflow: hidden;
+        }
+
+        .hero-sme .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=1600&h=900&fit=crop&crop=center&auto=format');
+            background-size: cover;
+            background-position: center;
+            animation: slowZoom 20s ease-in-out forwards;
+            z-index: 0;
+        }
+
+        .hero-sme .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                rgba(8, 26, 40, 0.92) 0%,
+                rgba(15, 43, 61, 0.80) 40%,
+                rgba(26, 74, 107, 0.65) 70%,
+                rgba(26, 138, 106, 0.25) 100%
+            );
+            z-index: 1;
+        }
+
+        .hero-sme .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            text-align: center;
+            animation: fadeInUp 0.9s ease forwards;
+        }
+
+        .hero-sme .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+        }
+
+        .hero-sme .hero-badge .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            display: inline-block;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .hero-sme h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .hero-sme h1 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sme .hero-subtitle {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto 28px;
+            line-height: 1.8;
+        }
+
+        .hero-sme .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-sme .hero-actions .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(26, 138, 106, 0.25);
+        }
+
+        .hero-sme .hero-actions .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 138, 106, 0.35);
+            gap: 16px;
+        }
+
+        .hero-sme .hero-actions .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+        }
+
+        .hero-sme .hero-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+
+        /* ================================================================ */
+        /* SECTION HEADERS                                                 */
+        /* ================================================================ */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header .section-tag {
+            display: inline-block;
+            background: rgba(26, 74, 107, 0.04);
+            color: var(--primary-light);
+            padding: 4px 18px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .section-header .section-tag.gold {
+            background: rgba(200, 146, 42, 0.06);
+            color: #8a6d1b;
+        }
+
+        .section-header h2 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.8px;
+            line-height: 1.2;
+        }
+
+        .section-header h2 .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 6px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ================================================================ */
+        /* PROGRAM OVERVIEW                                                */
+        /* ================================================================ */
+        .section-overview {
+            padding: 70px 24px 60px;
+            background: var(--bg-white);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .overview-card {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            text-align: center;
+            transition: all 0.3s var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .overview-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.80);
+        }
+
+        .overview-card .ov-icon {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .overview-card h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .overview-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* ================================================================ */
+        /* SUCCESS STORIES                                                 */
+        /* ================================================================ */
+        .section-stories {
+            padding: 70px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .story-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.4s var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .story-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .story-card .story-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--bg-light), #d4dce6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .story-card .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s var(--transition);
+        }
+
+        .story-card:hover .story-image img {
+            transform: scale(1.03);
+        }
+
+        .story-card .story-image .placeholder {
+            font-size: 4rem;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .story-card .story-image .placeholder span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .story-card .story-body {
+            padding: 24px 26px 20px;
+        }
+
+        .story-card .story-body .story-badge {
+            display: inline-block;
+            background: rgba(26, 138, 106, 0.08);
+            color: var(--accent);
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .story-card .story-body .story-industry {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .story-card .story-body h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .story-card .story-body .story-founder {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .story-card .story-body .story-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .story-card .story-body .story-impact {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(26, 138, 106, 0.04);
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* ================================================================ */
+        /* CHALLENGES SECTION                                              */
+        /* ================================================================ */
+        .section-challenges {
+            padding: 70px 24px 60px;
+            background: var(--bg-white);
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .challenge-card {
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 28px 28px 24px;
+            transition: all 0.3s var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            opacity: 0;
+            transition: opacity 0.4s var(--transition);
+        }
+
+        .challenge-card:hover::before {
+            opacity: 1;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.80);
+        }
+
+        .challenge-card .challenge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 16px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .challenge-card .challenge-status.open {
+            background: var(--success);
+            color: #ffffff;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .challenge-card .challenge-status.closed {
+            background: var(--text-muted);
+            color: #ffffff;
+        }
+
+        .challenge-card .challenge-status.coming {
+            background: var(--warning);
+            color: #ffffff;
+        }
+
+        .challenge-card .challenge-status .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            display: inline-block;
+        }
+
+        .challenge-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .challenge-card .challenge-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .challenge-card .challenge-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .challenge-card .challenge-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .challenge-card .challenge-meta .meta-item .icon {
+            font-size: 0.9rem;
+        }
+
+        .challenge-card .btn-apply {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+        }
+
+        .challenge-card .btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 74, 107, 0.2);
+            gap: 10px;
+        }
+
+        /* ================================================================ */
+        /* HACKATHON ARCHIVE                                               */
+        /* ================================================================ */
+        .section-hackathons {
+            padding: 70px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .hackathons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hackathon-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 28px 28px 24px;
+            transition: all 0.3s var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hackathon-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .hackathon-card .hackathon-date {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 4px;
+        }
+
+        .hackathon-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .hackathon-card .hackathon-location {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .hackathon-card .hackathon-outcome {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .hackathon-card .hackathon-participants {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .hackathon-card .btn-gallery {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            background: rgba(26, 74, 107, 0.06);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            margin-top: 10px;
+        }
+
+        .hackathon-card .btn-gallery:hover {
+            background: rgba(26, 74, 107, 0.12);
+            gap: 10px;
+        }
+
+        /* ================================================================ */
+        /* REGISTRATION / EXPRESSION OF INTEREST                          */
+        /* ================================================================ */
+        .section-register {
+            padding: 70px 24px 60px;
+            background: linear-gradient(160deg, var(--bg-white) 0%, var(--bg-light) 100%);
+        }
+
+        .register-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-xl);
+            padding: 48px 52px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .register-container .register-icon {
+            font-size: 3.2rem;
+            display: block;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .register-container h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .register-container .register-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        .register-container .form-group {
+            margin-bottom: 18px;
+        }
+
+        .register-container .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .register-container .form-group label .required {
+            color: var(--error);
+            margin-left: 2px;
+        }
+
+        .register-container .form-group input,
+        .register-container .form-group textarea,
+        .register-container .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: var(--text-body);
+            background: var(--bg-white);
+            transition: all 0.3s var(--transition);
+        }
+
+        .register-container .form-group input:focus,
+        .register-container .form-group textarea:focus,
+        .register-container .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(26, 74, 107, 0.06);
+        }
+
+        .register-container .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .register-container .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .register-container .form-group .help-text {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .register-container .form-group .consent-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text-body);
+        }
+
+        .register-container .form-group .consent-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .register-container .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 44px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--accent), #0f6a4a);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 24px rgba(26, 138, 106, 0.2);
+        }
+
+        .register-container .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 44px rgba(26, 138, 106, 0.3);
+            gap: 14px;
+        }
+
+        .register-container .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .register-container .register-note {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 16px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .register-container .register-note .privacy-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-container .register-note .privacy-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ================================================================ */
+        /* TOAST NOTIFICATION                                              */
+        /* ================================================================ */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .toast {
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            animation: toastSlide 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+        .toast.error {
+            background: var(--error);
+        }
+        .toast.warning {
+            background: var(--warning);
+        }
+
+        .toast .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 1024px) {
+            .hero-sme h1 {
+                font-size: 2.8rem;
+            }
+
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .breadcrumb-bar {
+                top: 64px;
+                padding: 10px 16px;
+            }
+
+            .hero-sme {
+                min-height: 50vh;
+                padding: 50px 20px 40px;
+            }
+
+            .hero-sme h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-sme .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-sme .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-sme .hero-actions .btn-primary,
+            .hero-sme .hero-actions .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .challenges-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hackathons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .register-container {
+                padding: 32px 24px;
+            }
+
+            .register-container h3 {
+                font-size: 1.4rem;
+            }
+
+            .register-container .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .register-container .btn-submit {
+                padding: 14px 24px;
+                font-size: 0.9rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-overview,
+            .section-stories,
+            .section-challenges,
+            .section-hackathons,
+            .section-register {
+                padding: 50px 16px 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-sme h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-sme .hero-badge {
+                font-size: 0.55rem;
+                padding: 6px 16px;
+            }
+
+            .overview-card {
+                padding: 24px 18px;
+            }
+
+            .story-card .story-image {
+                height: 140px;
+            }
+
+            .story-card .story-body {
+                padding: 18px 18px 16px;
+            }
+
+            .challenge-card {
+                padding: 20px 18px;
+            }
+
+            .hackathon-card {
+                padding: 20px 18px;
+            }
+
+            .register-container {
+                padding: 24px 16px;
+            }
+
+            .register-container h3 {
+                font-size: 1.2rem;
+            }
+
+            .register-container .register-desc {
+                font-size: 0.85rem;
+            }
+
+            .register-container .form-group input,
+            .register-container .form-group textarea,
+            .register-container .form-group select {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .stories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .challenges-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hackathons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ================================================================ */
+        /* REDUCED MOTION                                                  */
+        /* ================================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- BREADCRUMB                                                      -->
+    <!-- ================================================================ -->
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <a href="{{ url_for('public.index') }}">Home</a>
+            <span class="sep">/</span>
+            <a href="{{ url_for('public.training_wp5') }}">Training &amp; WP5</a>
+            <span class="sep">/</span>
+            <span class="current">SME Mentoring</span>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- HERO SECTION                                                    -->
+    <!-- ================================================================ -->
+    <section class="hero-sme">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                T5.3 — SME Engagement &amp; Mentoring
+            </div>
+            <h1>
+                Innovation &amp; <span class="gradient-text">Mentorship</span>
+            </h1>
+            <p class="hero-subtitle">
+                Supporting agri-SMEs, startups, and innovators through mentoring, hackathons,
+                and innovation challenges. JKUAT provides technical and business mentoring
+                to help you adopt and scale digital agriculture solutions.
+            </p>
+            <div class="hero-actions">
+                <a href="#register" class="btn-primary">
+                    Express Interest
+                    <span>→</span>
+                </a>
+                <a href="#challenges" class="btn-secondary">
+                    View Challenges
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- PROGRAM OVERVIEW                                                -->
+    <!-- ================================================================ -->
+    <section class="section-overview">
+        <div class="section-header animate-on-scroll">
+            <span class="section-tag">📋 Program Overview</span>
+            <h2>What We <span class="gradient-text">Offer</span></h2>
+            <p>Comprehensive support for agri-SMEs and innovators in Kenya</p>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-card animate-on-scroll">
+                <span class="ov-icon">🤝</span>
+                <h4>SME Mentoring</h4>
+                <p>One-on-one technical and business mentoring for agricultural SMEs, helping them adopt and scale GenAI-enabled solutions.</p>
+            </div>
+            <div class="overview-card animate-on-scroll">
+                <span class="ov-icon">💡</span>
+                <h4>Innovation Challenges</h4>
+                <p>Participate in challenge statements to develop solutions for real agricultural problems using GenAI, IoT, and digital agriculture.</p>
+            </div>
+            <div class="overview-card animate-on-scroll">
+                <span class="ov-icon">🚀</span>
+                <h4>Hackathons &amp; Events</h4>
+                <p>Join our hackathons to collaborate, build prototypes, and showcase your innovations to industry experts and investors.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- SUCCESS STORIES                                                 -->
+    <!-- ================================================================ -->
+    <section class="section-stories" id="stories">
+        <div class="section-header animate-on-scroll">
+            <span class="section-tag gold">⭐ Success Stories</span>
+            <h2>Real Impact, <span class="gradient-text">Real Results</span></h2>
+            <p>Hear from SMEs and innovators who have benefited from BRIDGE-AI mentoring</p>
+        </div>
+
+        <div class="stories-grid" id="storiesGrid">
+            <!-- Rendered by JavaScript -->
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- CHALLENGES SECTION                                              -->
+    <!-- ================================================================ -->
+    <section class="section-challenges" id="challenges">
+        <div class="section-header animate-on-scroll">
+            <span class="section-tag">🚀 Innovation Challenges</span>
+            <h2>Current <span class="gradient-text">Challenge Statements</span></h2>
+            <p>Open challenges for innovators, SMEs, and startups</p>
+        </div>
+
+        <div class="challenges-grid" id="challengesGrid">
+            <!-- Rendered by JavaScript -->
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- HACKATHON ARCHIVE                                               -->
+    <!-- ================================================================ -->
+    <section class="section-hackathons" id="hackathons">
+        <div class="section-header animate-on-scroll">
+            <span class="section-tag gold">🏆 Hackathon Archive</span>
+            <h2>Past <span class="gradient-text">Hackathons</span></h2>
+            <p>Explore past hackathon events and their outcomes</p>
+        </div>
+
+        <div class="hackathons-grid" id="hackathonsGrid">
+            <!-- Rendered by JavaScript -->
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- EXPRESSION OF INTEREST FORM                                     -->
+    <!-- ================================================================ -->
+    <section class="section-register" id="register">
+        <div class="register-container animate-on-scroll">
+            <span class="register-icon">📝</span>
+            <h3>Express Your Interest</h3>
+            <p class="register-desc">
+                Interested in joining our SME mentoring program or participating in challenges?
+                Fill in the form below and our team will get back to you.
+            </p>
+
+            <form id="smeForm">
+                <div class="form-group">
+                    <label for="form-name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="form-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="form-email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="form-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="form-phone">Phone Number</label>
+                    <input type="tel" id="form-phone" placeholder="+254 700 000 000">
+                </div>
+                <div class="form-group">
+                    <label for="form-org">Organisation / SME Name <span class="required">*</span></label>
+                    <input type="text" id="form-org" placeholder="Your organisation name" required>
+                </div>
+                <div class="form-group">
+                    <label for="form-industry">Industry / Sector <span class="required">*</span></label>
+                    <select id="form-industry" required>
+                        <option value="">Select your industry</option>
+                        <option value="mushroom-farming">Mushroom Farming</option>
+                        <option value="crop-farming">Crop Farming</option>
+                        <option value="livestock">Livestock</option>
+                        <option value="agritech">AgriTech</option>
+                        <option value="food-processing">Food Processing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="form-interest">Area of Interest <span class="required">*</span></label>
+                    <select id="form-interest" required>
+                        <option value="">Select your interest</option>
+                        <option value="mentoring">SME Mentoring</option>
+                        <option value="challenge">Innovation Challenge</option>
+                        <option value="hackathon">Hackathon</option>
+                        <option value="multiple">Multiple</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="form-message">Tell us about your organisation and needs</label>
+                    <textarea id="form-message" placeholder="What challenges are you facing? What support do you need?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="consent-label">
+                        <input type="checkbox" id="form-consent" required>
+                        I consent to BRIDGE-AI Kenya contacting me about mentoring opportunities and challenges.
+                        <span class="required">*</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn-submit" id="formSubmit">
+                    Submit Interest
+                    <span>→</span>
+                </button>
+            </form>
+
+            <p class="register-note">
+                🔒 Your data is protected. See our
+                <a href="{{ url_for('public.privacy_ethics') }}" class="privacy-link">Privacy Policy</a>.
+                <br>
+                <span style="display:inline-block;margin-top:4px;font-size:0.7rem;color:var(--text-light);">
+                    ✓ Privacy notice &bull; ✓ Consent checkbox &bull; ✓ Data minimisation
+                </span>
+            </p>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // LOAD DATA FROM API
+            // ================================================================
+
+            function loadData() {
+                // Load success stories
+                fetch('/api/success-stories/')
+                    .then(response => response.json())
+                    .then(data => renderStories(data || []))
+                    .catch(() => renderStories([]));
+
+                // Load challenges
+                fetch('/api/challenges/')
+                    .then(response => response.json())
+                    .then(data => renderChallenges(data || []))
+                    .catch(() => renderChallenges([]));
+
+                // Load hackathons
+                fetch('/api/hackathons/')
+                    .then(response => response.json())
+                    .then(data => renderHackathons(data || []))
+                    .catch(() => renderHackathons([]));
+            }
+
+            // ================================================================
+            // RENDER SUCCESS STORIES
+            // ================================================================
+
+            function renderStories(stories) {
+                const container = document.getElementById('storiesGrid');
+
+                if (!stories || stories.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;padding:40px 20px;background:rgba(255,255,255,0.5);border-radius:20px;border:2px dashed var(--border-light);">
+                            <span style="font-size:3rem;display:block;margin-bottom:10px;">🌟</span>
+                            <h4 style="font-size:1.1rem;color:var(--text-dark);">Success Stories Coming Soon</h4>
+                            <p style="color:var(--text-muted);">Stories from mentored SMEs will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = stories.map(story => `
+                    <div class="story-card animate-on-scroll">
+                        <div class="story-image">
+                            ${story.image ? `
+                                <img src="{{ url_for('static', filename='${story.image}') }}" alt="${escapeHtml(story.title)}" loading="lazy">
+                            ` : `
+                                <div class="placeholder">
+                                    🏢
+                                    <span>${escapeHtml(story.industry || 'SME')}</span>
+                                </div>
+                            `}
+                        </div>
+                        <div class="story-body">
+                            <span class="story-badge">Success Story</span>
+                            <div class="story-industry">${escapeHtml(story.industry || 'AgriTech')}</div>
+                            <h4>${escapeHtml(story.sme_name || story.title)}</h4>
+                            ${story.founder_name ? `<div class="story-founder">👤 ${escapeHtml(story.founder_name)}</div>` : ''}
+                            <p class="story-text">${escapeHtml(story.story)}</p>
+                            ${story.impact ? `<span class="story-impact">📈 ${escapeHtml(story.impact)}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+                observeElements();
+            }
+
+            // ================================================================
+            // RENDER CHALLENGES
+            // ================================================================
+
+            function renderChallenges(challenges) {
+                const container = document.getElementById('challengesGrid');
+
+                if (!challenges || challenges.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;padding:40px 20px;background:rgba(255,255,255,0.5);border-radius:20px;border:2px dashed var(--border-light);">
+                            <span style="font-size:3rem;display:block;margin-bottom:10px;">💡</span>
+                            <h4 style="font-size:1.1rem;color:var(--text-dark);">No Active Challenges</h4>
+                            <p style="color:var(--text-muted);">Check back soon for new innovation challenges.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = challenges.map(challenge => `
+                    <div class="challenge-card animate-on-scroll">
+                        <span class="challenge-status ${challenge.status || 'open'}">
+                            <span class="status-dot"></span>
+                            ${challenge.status === 'open' ? 'Open for Applications' :
+                              challenge.status === 'coming' ? 'Coming Soon' :
+                              'Closed'}
+                        </span>
+                        <h4>${escapeHtml(challenge.title)}</h4>
+                        <p class="challenge-desc">${escapeHtml(challenge.description)}</p>
+                        <div class="challenge-meta">
+                            ${challenge.deadline ? `
+                                <span class="meta-item">
+                                    <span class="icon">📅</span> Deadline: ${formatDate(challenge.deadline)}
+                                </span>
+                            ` : ''}
+                            ${challenge.prize ? `
+                                <span class="meta-item">
+                                    <span class="icon">🏆</span> Prize: ${escapeHtml(challenge.prize)}
+                                </span>
+                            ` : ''}
+                            ${challenge.eligibility ? `
+                                <span class="meta-item">
+                                    <span class="icon">👥</span> ${escapeHtml(challenge.eligibility)}
+                                </span>
+                            ` : ''}
+                        </div>
+                        ${challenge.status === 'open' ? `
+                            <a href="#register" class="btn-apply">
+                                Apply Now <span>→</span>
+                            </a>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                observeElements();
+            }
+
+            // ================================================================
+            // RENDER HACKATHONS
+            // ================================================================
+
+            function renderHackathons(hackathons) {
+                const container = document.getElementById('hackathonsGrid');
+
+                if (!hackathons || hackathons.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;padding:40px 20px;background:rgba(255,255,255,0.5);border-radius:20px;border:2px dashed var(--border-light);">
+                            <span style="font-size:3rem;display:block;margin-bottom:10px;">🏆</span>
+                            <h4 style="font-size:1.1rem;color:var(--text-dark);">No Hackathons Yet</h4>
+                            <p style="color:var(--text-muted);">Past hackathon events will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = hackathons.map(hackathon => `
+                    <div class="hackathon-card animate-on-scroll">
+                        <div class="hackathon-date">📅 ${formatDate(hackathon.date)}</div>
+                        <h4>${escapeHtml(hackathon.title)}</h4>
+                        <div class="hackathon-location">📍 ${escapeHtml(hackathon.location || 'Location TBD')}</div>
+                        ${hackathon.outcome ? `<p class="hackathon-outcome">${escapeHtml(hackathon.outcome)}</p>` : ''}
+                        ${hackathon.participants ? `<span class="hackathon-participants">👥 ${hackathon.participants} participants</span>` : ''}
+                        ${hackathon.gallery_link ? `
+                            <a href="${escapeHtml(hackathon.gallery_link)}" class="btn-gallery">
+                                View Gallery <span>→</span>
+                            </a>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                observeElements();
+            }
+
+            // ================================================================
+            // FORM SUBMISSION
+            // ================================================================
+
+            const form = document.getElementById('smeForm');
+            const submitBtn = document.getElementById('formSubmit');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    // Gather form data
+                    const data = {
+                        name: document.getElementById('form-name').value.trim(),
+                        email: document.getElementById('form-email').value.trim(),
+                        phone: document.getElementById('form-phone').value.trim(),
+                        organisation: document.getElementById('form-org').value.trim(),
+                        industry: document.getElementById('form-industry').value,
+                        interest: document.getElementById('form-interest').value,
+                        message: document.getElementById('form-message').value.trim(),
+                        consent: document.getElementById('form-consent').checked,
+                        submitted_at: new Date().toISOString()
+                    };
+
+                    // Validate
+                    if (!data.name || !data.email || !data.organisation || !data.industry || !data.interest) {
+                        showToast('warning', 'Please fill in all required fields.');
+                        return;
+                    }
+
+                    if (!data.consent) {
+                        showToast('warning', 'Please consent to data processing.');
+                        return;
+                    }
+
+                    // Disable button
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Submitting...';
+
+                    // Send to API
+                    fetch('/api/sme-interest/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': window.getCsrfToken ? window.getCsrfToken() : ''
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showToast('success', 'Thank you! Your interest has been submitted.');
+                            form.reset();
+                        } else {
+                            showToast('error', result.error || 'Failed to submit. Please try again.');
+                        }
+                    })
+                    .catch(() => {
+                        showToast('error', 'Network error. Please try again.');
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit Interest <span>→</span>';
+                    });
+                });
+            }
+
+            // ================================================================
+            // TOAST NOTIFICATIONS
+            // ================================================================
+
+            function showToast(type, message) {
+                const container = document.querySelector('.toast-container');
+                if (!container) return;
+
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icons = { success: '✅', error: '❌', warning: '⚠️' };
+                toast.innerHTML = `
+                    <span>${icons[type] || 'ℹ️'}</span>
+                    <span>${message}</span>
+                    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => { if (toast.parentElement) toast.remove(); }, 5000);
+            }
+
+            // ================================================================
+            // SCROLL ANIMATIONS
+            // ================================================================
+
+            function observeElements() {
+                const elements = document.querySelectorAll('.animate-on-scroll:not(.visible)');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+                elements.forEach(el => observer.observe(el));
+            }
+
+            // ================================================================
+            // UTILITY FUNCTIONS
+            // ================================================================
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return 'TBD';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch {
+                    return dateStr.substring(0, 10);
+                }
+            }
+
+            // ================================================================
+            // TOAST CONTAINER
+            // ================================================================
+
+            // Ensure toast container exists
+            if (!document.querySelector('.toast-container')) {
+                const container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            // ================================================================
+            // INIT
+            // ================================================================
+
+            loadData();
+            observeElements();
+
+            console.log('✅ BRIDGE-AI Kenya SME Mentoring page initialized');
+
+        })();
+    </script>
+
+</body>
+</html>

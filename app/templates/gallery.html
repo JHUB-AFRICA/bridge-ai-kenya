@@ -1,0 +1,537 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - GALLERY PAGE                                  -->
+<!-- ================================================================ -->
+<!-- This page displays all gallery albums from the database.        -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - BRIDGE-AI Kenya</title>
+    <meta name="description" content="Photo galleries from BRIDGE-AI Kenya activities, training events, and the Smart Mushroom pilot at JKUAT.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES                                                   */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --accent: #1a8a6a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ================================================================ */
+        /* PAGE HERO                                                       */
+        /* ================================================================ */
+        .page-hero {
+            background: linear-gradient(160deg, #061420 0%, #0f2b3d 40%, #1a4a6b 100%);
+            padding: 70px 24px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '🖼️';
+            position: absolute;
+            font-size: 18rem;
+            opacity: 0.03;
+            right: -5%;
+            bottom: -20%;
+            transform: rotate(-8deg);
+        }
+
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero h1 .highlight {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-hero p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 10px auto 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .page-hero .breadcrumb a:hover {
+            color: #ffffff;
+        }
+
+        .page-hero .breadcrumb .sep {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .page-hero .hero-count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 18px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ================================================================ */
+        /* GALLERY GRID                                                    */
+        /* ================================================================ */
+        .gallery-section {
+            padding: 50px 24px 60px;
+        }
+
+        .gallery-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 28px;
+        }
+
+        .gallery-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all var(--transition);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .gallery-card .gallery-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, var(--bg-light), #e8f0f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-card .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition);
+        }
+
+        .gallery-card:hover .gallery-image img {
+            transform: scale(1.03);
+        }
+
+        .gallery-card .gallery-image .image-placeholder {
+            font-size: 4rem;
+            color: var(--text-light);
+        }
+
+        .gallery-card .gallery-image .image-count {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .gallery-card .gallery-body {
+            padding: 20px 24px 22px;
+        }
+
+        .gallery-card .gallery-body .gallery-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
+        .gallery-card .gallery-body .gallery-meta .meta-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .gallery-card .gallery-body .gallery-meta .meta-tag {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--text-muted);
+            padding: 1px 12px;
+            border-radius: 50px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .gallery-card .gallery-body .gallery-meta .meta-tag.consent {
+            background: var(--accent-light);
+            color: #155724;
+        }
+
+        .gallery-card .gallery-body h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .gallery-card .gallery-body .gallery-location {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .gallery-card .gallery-body .gallery-description {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-top: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .gallery-card .gallery-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px 18px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .gallery-card .gallery-footer .gallery-photographer {
+            font-size: 0.72rem;
+            color: var(--text-light);
+        }
+
+        .gallery-card .gallery-footer .gallery-view {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all var(--transition);
+        }
+
+        .gallery-card .gallery-footer .gallery-view:hover {
+            color: var(--accent);
+            gap: 8px;
+        }
+
+        /* ================================================================ */
+        /* EMPTY STATE                                                     */
+        /* ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border-light);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3.6rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .page-hero {
+                padding: 50px 20px 40px;
+            }
+
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .page-hero p {
+                font-size: 1rem;
+            }
+
+            .gallery-section {
+                padding: 30px 16px 40px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .gallery-card .gallery-image {
+                height: 160px;
+            }
+
+            .gallery-card .gallery-body {
+                padding: 14px 16px 12px;
+            }
+
+            .gallery-card .gallery-body h3 {
+                font-size: 0.95rem;
+            }
+
+            .gallery-card .gallery-footer {
+                flex-direction: column;
+                gap: 6px;
+                align-items: flex-start;
+                padding: 10px 16px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                max-width: 360px;
+                margin: 0 auto;
+            }
+
+            .gallery-card .gallery-image {
+                height: 200px;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- PAGE HERO                                                    -->
+        <!-- ============================================================ -->
+        <section class="page-hero">
+            <div class="breadcrumb">
+                <a href="{{ url_for('public.index') }}">Home</a>
+                <span class="sep">/</span>
+                <span>Gallery</span>
+            </div>
+            <h1>Photo <span class="highlight">Gallery</span></h1>
+            <p>Visual stories from BRIDGE-AI Kenya activities, training events, and the Smart Mushroom pilot</p>
+            <span class="hero-count">🖼️ {{ albums|length if albums else 0 }} albums</span>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- GALLERY GRID                                                 -->
+        <!-- ============================================================ -->
+        <section class="gallery-section" id="albums">
+            <div class="gallery-container">
+
+                {% if albums and albums|length > 0 %}
+                    <div class="gallery-grid">
+                        {% for album in albums %}
+                        <a href="{{ url_for('public.gallery_album', slug=album.slug) if album.slug else '#' }}" class="gallery-card">
+                            <div class="gallery-image">
+                                {% if album.cover_image %}
+                                    <img src="{{ url_for('static', filename=album.cover_image) }}" alt="{{ album.title }}" loading="lazy">
+                                {% else %}
+                                    <span class="image-placeholder">🖼️</span>
+                                {% endif %}
+                                {% if album.images and album.images|length > 0 %}
+                                    <span class="image-count">{{ album.images|length }} photos</span>
+                                {% endif %}
+                            </div>
+                            <div class="gallery-body">
+                                <div class="gallery-meta">
+                                    <span class="meta-date">📅 {{ album.date.strftime('%d %b %Y') if album.date else 'Date TBD' }}</span>
+                                    {% if album.consent_confirmed %}
+                                        <span class="meta-tag consent">✓ Consent Verified</span>
+                                    {% endif %}
+                                    {% if not album.is_published %}
+                                        <span class="meta-tag">Draft</span>
+                                    {% endif %}
+                                </div>
+                                <h3>{{ album.title }}</h3>
+                                {% if album.location %}
+                                    <span class="gallery-location">📍 {{ album.location }}</span>
+                                {% endif %}
+                                {% if album.description %}
+                                    <p class="gallery-description">{{ album.description }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="gallery-footer">
+                                {% if album.photographer_credit %}
+                                    <span class="gallery-photographer">📷 {{ album.photographer_credit }}</span>
+                                {% else %}
+                                    <span class="gallery-photographer">📷 JKUAT / JHUB Africa</span>
+                                {% endif %}
+                                <span class="gallery-view">View Album →</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span class="empty-icon">🖼️</span>
+                        <h3>No Albums Available</h3>
+                        <p>Photo galleries will be added here as activities and events take place.</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // SMOOTH SCROLL FOR INTERNAL LINKS
+            // ================================================================
+
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            console.log('✅ BRIDGE-AI Kenya Gallery page initialized');
+
+        })();
+    </script>
+</body>
+</html>

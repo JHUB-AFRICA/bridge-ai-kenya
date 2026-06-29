@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "AgriTech Solutions Ltd",
+    "slug": "agritech-solutions",
+    "industry": "Mushroom Farming",
+    "sme_name": "AgriTech Solutions Ltd",
+    "founder_name": "John Mwangi",
+    "story": "Through BRIDGE-AI mentoring, AgriTech Solutions adopted IoT sensors and AI monitoring systems. They increased their mushroom yield by 40% and reduced post-harvest losses by 60%.",
+    "image": "uploads/stories/agritech-solutions.jpg",
+    "impact": "40% yield increase",
+    "date": "2026-05-15"
+  }
+]

@@ -1,0 +1,526 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - PARTNERS PAGE                                 -->
+<!-- ================================================================ -->
+<!-- This page displays all consortium partners from the database.   -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partners - BRIDGE-AI Kenya</title>
+    <meta name="description" content="BRIDGE-AI consortium partners including EURECAT, JKUAT, UPM, and leading organizations from Kenya, Tunisia, Nigeria, Spain, and Austria.">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES                                                   */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --accent: #1a8a6a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ================================================================ */
+        /* PAGE HERO                                                       */
+        /* ================================================================ */
+        .page-hero {
+            background: linear-gradient(160deg, #061420 0%, #0f2b3d 40%, #1a4a6b 100%);
+            padding: 70px 24px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '🤝';
+            position: absolute;
+            font-size: 18rem;
+            opacity: 0.03;
+            right: -5%;
+            bottom: -20%;
+            transform: rotate(-8deg);
+        }
+
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero h1 .highlight {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-hero p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 10px auto 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .breadcrumb a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .page-hero .breadcrumb a:hover {
+            color: #ffffff;
+        }
+
+        .page-hero .breadcrumb .sep {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .page-hero .hero-count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 18px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ================================================================ */
+        /* PARTNERS GRID                                                   */
+        /* ================================================================ */
+        .partners-section {
+            padding: 50px 24px 60px;
+        }
+
+        .partners-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .partner-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 32px 24px 28px;
+            text-align: center;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .partner-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .partner-card .partner-logo {
+            width: 100px;
+            height: 100px;
+            background: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border-light);
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+
+        .partner-card:hover .partner-logo {
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 16px rgba(26, 74, 107, 0.1);
+        }
+
+        .partner-card .partner-logo img {
+            width: 60%;
+            height: auto;
+            max-width: 70px;
+            object-fit: contain;
+        }
+
+        .partner-card .partner-logo .logo-placeholder {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .partner-card .partner-country {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--text-muted);
+            padding: 2px 14px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .partner-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .partner-card .partner-short {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .partner-card .partner-role {
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .partner-card .partner-description {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.7;
+            margin: 10px 0 16px;
+            flex-grow: 1;
+        }
+
+        .partner-card .partner-website {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: 1px solid var(--border-light);
+            border-radius: 50px;
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all var(--transition);
+        }
+
+        .partner-card .partner-website:hover {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+        }
+
+        .partner-card .partner-website .web-icon {
+            font-size: 0.8rem;
+        }
+
+        /* ================================================================ */
+        /* PARTNER NOTE                                                    */
+        /* ================================================================ */
+        .partner-note {
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 24px 28px;
+            margin-top: 40px;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .partner-note p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .partner-note p strong {
+            color: var(--text-dark);
+        }
+
+        /* ================================================================ */
+        /* EMPTY STATE                                                     */
+        /* ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border-light);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3.6rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .page-hero {
+                padding: 50px 20px 40px;
+            }
+
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .page-hero p {
+                font-size: 1rem;
+            }
+
+            .partners-section {
+                padding: 30px 16px 40px;
+            }
+
+            .partners-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .partner-card {
+                padding: 24px 16px 20px;
+            }
+
+            .partner-card .partner-logo {
+                width: 72px;
+                height: 72px;
+            }
+
+            .partner-card .partner-logo img {
+                max-width: 50px;
+            }
+
+            .partner-card .partner-logo .logo-placeholder {
+                font-size: 1.8rem;
+            }
+
+            .partner-card h3 {
+                font-size: 0.95rem;
+            }
+
+            .partner-card .partner-description {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .partners-grid {
+                grid-template-columns: 1fr;
+                max-width: 360px;
+                margin: 0 auto;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                    -->
+    <!-- ================================================================ -->
+    <main>
+
+        <!-- ============================================================ -->
+        <!-- PAGE HERO                                                    -->
+        <!-- ============================================================ -->
+        <section class="page-hero">
+            <div class="breadcrumb">
+                <a href="{{ url_for('public.index') }}">Home</a>
+                <span class="sep">/</span>
+                <span>Partners</span>
+            </div>
+            <h1>Our <span class="highlight">Partners</span></h1>
+            <p>The BRIDGE-AI consortium — leading organizations from Kenya, Tunisia, Nigeria, Spain, and Austria</p>
+            <span class="hero-count">🤝 {{ partners|length if partners else 0 }} consortium partners</span>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PARTNERS GRID                                                -->
+        <!-- ============================================================ -->
+        <section class="partners-section" id="consortium">
+            <div class="partners-container">
+
+                {% if partners and partners|length > 0 %}
+                    <div class="partners-grid">
+                        {% for partner in partners %}
+                        <div class="partner-card">
+                            <div class="partner-logo">
+                                {% if partner.logo %}
+                                    <img src="{{ url_for('static', filename=partner.logo) }}" alt="{{ partner.name }}" loading="lazy">
+                                {% else %}
+                                    <span class="logo-placeholder">{{ partner.short_name|upper|first }}</span>
+                                {% endif %}
+                            </div>
+                            <span class="partner-country">🌍 {{ partner.country }}</span>
+                            <h3>{{ partner.name }}</h3>
+                            <span class="partner-short">{{ partner.short_name }}</span>
+                            {% if partner.role %}
+                                <span class="partner-role">{{ partner.role }}</span>
+                            {% endif %}
+                            {% if partner.description %}
+                                <p class="partner-description">{{ partner.description }}</p>
+                            {% endif %}
+                            {% if partner.website %}
+                                <a href="{{ partner.website }}" target="_blank" rel="noopener noreferrer" class="partner-website">
+                                    <span class="web-icon">🔗</span> Visit Website
+                                </a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span class="empty-icon">🤝</span>
+                        <h3>Partners Loading</h3>
+                        <p>Partner information is being added. Check back soon.</p>
+                    </div>
+                {% endif %}
+
+                <!-- ============================================================ -->
+                <!-- PARTNER NOTE                                                  -->
+                <!-- ============================================================ -->
+                <div class="partner-note">
+                    <p>
+                        <strong>📋 Official Partner List</strong><br>
+                        This list reflects the BRIDGE-AI consortium partners as per Grant Agreement No. 101299050.
+                        All partners are beneficiaries of the Horizon Europe research and innovation programme.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // SMOOTH SCROLL FOR INTERNAL LINKS
+            // ================================================================
+
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            console.log('✅ BRIDGE-AI Kenya Partners page initialized');
+
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - MANAGE ACTIVITIES                            -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Activities - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📰 Manage <span class="highlight">Activities</span>{% endblock %}
+
+{% block page_subtitle %}Create, edit, and delete activity posts{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-activities">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ Add Activity
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search activities..." onkeyup="filterTable()">
+            <select id="filterWp" onchange="filterTable()">
+                <option value="">All WPs</option>
+                <option value="WP1">WP1</option>
+                <option value="WP2">WP2</option>
+                <option value="WP3">WP3</option>
+                <option value="WP4">WP4</option>
+                <option value="WP5">WP5</option>
+                <option value="WP6">WP6</option>
+            </select>
+            <select id="filterStatus" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="draft">Draft</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="approved">Approved</option>
+                <option value="published">Published</option>
+                <option value="archived">Archived</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:30%;">Title</th>
+                <th style="width:12%;">WP</th>
+                <th style="width:15%;">Date</th>
+                <th style="width:10%;">Type</th>
+                <th style="width:12%;">Audience</th>
+                <th style="width:11%;">Status</th>
+                <th style="width:10%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No activities found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Activity" to create your first post.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="activityModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="activityModalTitle">Add New Activity</h3>
+            <button class="modal-close" onclick="closeActivityModal()">✕</button>
+        </div>
+        <div class="modal-body" id="activityModalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeActivityModal()">Cancel</button>
+            <button class="btn btn-primary" id="activitySaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+
+<div style="display:none;">
+    <div id="createFormHtml">
+        <div class="form-group">
+            <label>Title <span class="required">*</span></label>
+            <input type="text" id="form-title" placeholder="Enter activity title">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="form-slug" placeholder="URL-friendly version (auto-generated)">
+            <small style="color:var(--text-light);font-size:0.7rem;">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-group">
+            <label>Summary</label>
+            <textarea id="form-summary" rows="2" placeholder="Brief summary of the activity"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Body <span class="required">*</span></label>
+            <textarea id="form-body" rows="4" placeholder="Full content of the activity"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="form-date">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="form-location" placeholder="e.g. JKUAT Smart Farm Zone">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Work Package</label>
+                <select id="form-wp">
+                    <option value="">Select WP</option>
+                    <option value="WP1">WP1</option>
+                    <option value="WP2">WP2</option>
+                    <option value="WP3">WP3</option>
+                    <option value="WP4">WP4</option>
+                    <option value="WP5">WP5</option>
+                    <option value="WP6">WP6</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Activity Type</label>
+                <select id="form-activity-type">
+                    <option value="">Select type</option>
+                    <option value="training">Training</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="bootcamp">Bootcamp</option>
+                    <option value="field_demo">Field Demo</option>
+                    <option value="meeting">Meeting</option>
+                    <option value="media">Media</option>
+                    <option value="publication">Publication</option>
+                    <option value="resource">Resource</option>
+                    <option value="repository">Repository</option>
+                    <option value="policy">Policy</option>
+                    <option value="stakeholder_engagement">Stakeholder Engagement</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Audience</label>
+                <select id="form-audience">
+                    <option value="">Select audience</option>
+                    <option value="farmers">Farmers</option>
+                    <option value="youth">Youth</option>
+                    <option value="women">Women</option>
+                    <option value="students">Students</option>
+                    <option value="developers">Developers</option>
+                    <option value="smes">SMEs</option>
+                    <option value="researchers">Researchers</option>
+                    <option value="policymakers">Policymakers</option>
+                    <option value="media">Media</option>
+                    <option value="public">Public</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Author</label>
+                <input type="text" id="form-author" placeholder="Author name">
+            </div>
+        </div>
+
+  
+        <div class="form-group">
+            <label>Featured Image</label>
+            <input type="file" id="form-featured-image" accept="image/*" onchange="previewImage(event)">
+            <div id="image-preview-container" style="margin-top:10px;display:none;">
+                <img id="image-preview" src="#" alt="Preview" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--border);">
+                <button type="button" onclick="removeImage()" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:0.8rem;display:block;margin-top:5px;">✕ Remove</button>
+            </div>
+            <div id="current-image-display" style="margin-top:5px;display:none;">
+                <span style="font-size:0.8rem;color:var(--text-light);">Current image:</span><br>
+                <img id="current-image" src="#" alt="Current" style="max-width:150px;max-height:100px;border-radius:4px;margin-top:5px;border:1px solid var(--border);">
+            </div>
+            <input type="hidden" id="form-existing-image" value="">
+            <small style="color:var(--text-light);font-size:0.7rem;">Upload an image (JPG, PNG, WebP). Max 5MB.</small>
+        </div>
+
+        
+        <div class="form-group">
+            <label>Evidence Status</label>
+            <select id="form-evidence-status">
+                <option value="draft">Draft</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="approved">Approved</option>
+                <option value="published">Published</option>
+                <option value="archived">Archived</option>
+            </select>
+        </div>
+        <input type="hidden" id="form-edit-id" value="">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let activities = [];
+        let editingId = null;
+        let selectedFile = null;
+        const API_URL = '/api/activities/';
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+
+        function loadActivities() {
+            console.log('🔄 Loading activities...');
+            fetch(API_URL, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('📥 Data received:', data);
+                activities = data || [];
+                renderTable(activities);
+                updateCounts(activities.length);
+            })
+            .catch(error => {
+                console.error('❌ Error loading activities:', error);
+                showToast('error', 'Failed to load activities: ' + error.message);
+            });
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            <span class="empty-icon">📭</span>
+                            <h4>No activities found</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Activity" to create your first post.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(item.wp_tag || '-')}</span></td>
+                    <td>${item.date ? formatDate(item.date) : '-'}</td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.activity_type || '-')}</span></td>
+                    <td>${escapeHtml(item.audience || '-')}</td>
+                    <td><span class="status-badge ${item.evidence_status || 'draft'}">${escapeHtml(item.evidence_status || 'draft')}</span></td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteActivity(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateCounts(data.length);
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const wpFilter = document.getElementById('filterWp').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            let filtered = activities;
+
+            if (search) {
+                filtered = filtered.filter(item => {
+                    const searchable = [
+                        item.title,
+                        item.summary,
+                        item.body,
+                        item.location,
+                        item.author,
+                        item.audience
+                    ].join(' ').toLowerCase();
+                    return searchable.includes(search);
+                });
+            }
+
+            if (wpFilter) {
+                filtered = filtered.filter(item => item.wp_tag === wpFilter);
+            }
+
+            if (statusFilter) {
+                filtered = filtered.filter(item => item.evidence_status === statusFilter);
+            }
+
+            renderTable(filtered);
+        };
+
+        // ================================================================
+        // IMAGE PREVIEW FUNCTIONS
+        // ================================================================
+
+        window.previewImage = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            selectedFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewContainer = document.getElementById('image-preview-container');
+                const preview = document.getElementById('image-preview');
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+                
+                // Hide current image display
+                const currentDisplay = document.getElementById('current-image-display');
+                if (currentDisplay) currentDisplay.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.removeImage = function() {
+            const fileInput = document.getElementById('form-featured-image');
+            fileInput.value = '';
+            selectedFile = null;
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('image-preview').src = '#';
+            
+            // Show current image if it exists
+            const existingImage = document.getElementById('form-existing-image');
+            if (existingImage && existingImage.value) {
+                const currentDisplay = document.getElementById('current-image-display');
+                if (currentDisplay) currentDisplay.style.display = 'block';
+            }
+        };
+
+        // ================================================================
+        // MODAL FUNCTIONS
+        // ================================================================
+
+        function getFormHtml() {
+            return document.getElementById('createFormHtml').innerHTML;
+        }
+
+        function getFormData() {
+            return {
+                title: document.getElementById('form-title').value.trim(),
+                slug: document.getElementById('form-slug').value.trim(),
+                summary: document.getElementById('form-summary').value.trim(),
+                body: document.getElementById('form-body').value.trim(),
+                date: document.getElementById('form-date').value,
+                location: document.getElementById('form-location').value.trim(),
+                wp_tag: document.getElementById('form-wp').value,
+                activity_type: document.getElementById('form-activity-type').value,
+                audience: document.getElementById('form-audience').value,
+                author: document.getElementById('form-author').value.trim(),
+                evidence_status: document.getElementById('form-evidence-status').value
+            };
+        }
+
+        function populateForm(data) {
+            document.getElementById('form-title').value = data.title || '';
+            document.getElementById('form-slug').value = data.slug || '';
+            document.getElementById('form-summary').value = data.summary || '';
+            document.getElementById('form-body').value = data.body || '';
+            document.getElementById('form-date').value = data.date ? data.date.substring(0, 10) : '';
+            document.getElementById('form-location').value = data.location || '';
+            document.getElementById('form-wp').value = data.wp_tag || '';
+            document.getElementById('form-activity-type').value = data.activity_type || '';
+            document.getElementById('form-audience').value = data.audience || '';
+            document.getElementById('form-author').value = data.author || '';
+            document.getElementById('form-evidence-status').value = data.evidence_status || 'draft';
+            document.getElementById('form-edit-id').value = data.id || '';
+            
+            // ✅ Show existing image if present
+            if (data.featured_image) {
+                const currentDisplay = document.getElementById('current-image-display');
+                const currentImage = document.getElementById('current-image');
+                currentImage.src = '/' + data.featured_image;
+                currentDisplay.style.display = 'block';
+                document.getElementById('form-existing-image').value = data.featured_image;
+            } else {
+                document.getElementById('current-image-display').style.display = 'none';
+                document.getElementById('form-existing-image').value = '';
+            }
+            
+            // Reset file input and preview
+            document.getElementById('form-featured-image').value = '';
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('image-preview').src = '#';
+            selectedFile = null;
+        }
+
+        function openActivityModal(title, editData) {
+            const modal = document.getElementById('activityModal');
+            const modalTitle = document.getElementById('activityModalTitle');
+            const modalBody = document.getElementById('activityModalBody');
+            const saveBtn = document.getElementById('activitySaveBtn');
+
+            modalTitle.textContent = title;
+            modalBody.innerHTML = getFormHtml();
+
+            if (editData) {
+                populateForm(editData);
+                editingId = editData.id;
+            } else {
+                editingId = null;
+                populateForm({});
+            }
+
+            saveBtn.onclick = saveActivity;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeActivityModal = function() {
+            const modal = document.getElementById('activityModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            editingId = null;
+            selectedFile = null;
+        };
+
+        window.openCreateModal = function() {
+            openActivityModal('Add New Activity', null);
+        };
+
+        window.openEditModal = function(id) {
+            const item = activities.find(a => a.id === id);
+            if (!item) {
+                showToast('error', 'Activity not found');
+                return;
+            }
+            openActivityModal('Edit Activity', item);
+        };
+
+        // ================================================================
+        // SAVE ACTIVITY - ✅ FORM DATA FOR IMAGE UPLOAD
+        // ================================================================
+
+        window.saveActivity = function() {
+            const isEdit = !!editingId;
+            
+            // Get form data
+            const title = document.getElementById('form-title').value.trim();
+            const body = document.getElementById('form-body').value.trim();
+            const slug = document.getElementById('form-slug').value.trim();
+            const summary = document.getElementById('form-summary').value.trim();
+            const date = document.getElementById('form-date').value;
+            const location = document.getElementById('form-location').value.trim();
+            const wp_tag = document.getElementById('form-wp').value;
+            const activity_type = document.getElementById('form-activity-type').value;
+            const audience = document.getElementById('form-audience').value;
+            const author = document.getElementById('form-author').value.trim();
+            const evidence_status = document.getElementById('form-evidence-status').value;
+            
+            // Validate
+            if (!title) {
+                showToast('warning', 'Title is required');
+                return;
+            }
+            if (!body) {
+                showToast('warning', 'Body is required');
+                return;
+            }
+
+            // ✅ Build FormData
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('body', body);
+            formData.append('date', date || new Date().toISOString().split('T')[0]);
+            formData.append('evidence_status', evidence_status);
+            
+            // Optional fields
+            if (slug) formData.append('slug', slug);
+            if (summary) formData.append('summary', summary);
+            if (location) formData.append('location', location);
+            if (wp_tag) formData.append('wp_tag', wp_tag);
+            if (activity_type) formData.append('activity_type', activity_type);
+            if (audience) formData.append('audience', audience);
+            if (author) formData.append('author', author);
+            
+            // ✅ Auto-generate slug if not provided
+            if (!slug) {
+                const autoSlug = slugify(title);
+                if (autoSlug) {
+                    formData.set('slug', autoSlug);
+                }
+            }
+            
+            // ✅ Handle featured image upload
+            const fileInput = document.getElementById('form-featured-image');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('featured_image', fileInput.files[0]);
+            }
+            
+            // ✅ Handle existing image (for edit - keep current if no new image)
+            const existingImage = document.getElementById('form-existing-image');
+            if (existingImage && existingImage.value) {
+                formData.append('existing_image', existingImage.value);
+            }
+
+            const url = isEdit ? `${API_URL}${editingId}` : API_URL;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            console.log(`📤 Sending ${method} request to ${url}`);
+            console.log('📤 FormData entries:');
+            for (let pair of formData.entries()) {
+                console.log('  ', pair[0] + ':', pair[1]);
+            }
+
+            // ✅ Get CSRF token from global function in layout
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+            console.log('🔐 CSRF Token:', csrfToken);
+
+            // Disable save button
+            const saveBtn = document.getElementById('activitySaveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Saving...';
+
+            // ✅ Send as FormData (not JSON)
+            fetch(url, {
+                method: method,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData  // ✅ FormData automatically sets multipart/form-data
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                return response.text().then(text => {
+                    console.log('📥 Raw response:', text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('❌ Failed to parse JSON:', text);
+                        throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                    }
+                });
+            })
+            .then(result => {
+                console.log('📥 Parsed result:', result);
+                if (result.success) {
+                    showToast('success', `Activity ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeActivityModal();
+                    loadActivities();
+                } else {
+                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} activity`);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Fetch error:', error);
+                showToast('error', `Error: ${error.message}`);
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save';
+            });
+        };
+
+        // ================================================================
+        // DELETE ACTIVITY
+        // ================================================================
+
+        window.deleteActivity = function(id) {
+            const item = activities.find(a => a.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            console.log(`🗑️ Deleting activity ${id}`);
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+            fetch(`${API_URL}${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Activity deleted successfully!');
+                    loadActivities();
+                } else {
+                    showToast('error', result.error || 'Failed to delete activity');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Delete error:', error);
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // CLOSE MODAL ON OVERLAY CLICK
+        // ================================================================
+
+        document.getElementById('activityModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeActivityModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeActivityModal();
+            }
+        });
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr.substring(0, 10);
+            }
+        }
+
+        function slugify(text) {
+            return text.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function updateCounts(count) {
+            const countEl = document.getElementById('count-activities');
+            const tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = `${count} items`;
+            if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // INITIALIZE
+        // ================================================================
+
+        loadActivities();
+
+        console.log('✅ BRIDGE-AI Kenya Admin Activities page initialized');
+
+    })();
+</script>
+{% endblock %}

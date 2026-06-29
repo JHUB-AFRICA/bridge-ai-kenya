@@ -1,0 +1,579 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - MANAGE EVENTS                                 -->
+<!-- ================================================================ -->
+
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Events - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📅 Manage <span class="highlight">Events</span>{% endblock %}
+
+{% block page_subtitle %}Create, edit, and delete training events, workshops, bootcamps, and webinars{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-events">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ Add Event
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search events..." onkeyup="filterTable()">
+            <select id="filterStatus" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="filterAudience" onchange="filterTable()">
+                <option value="">All Audiences</option>
+                <option value="farmers">Farmers</option>
+                <option value="youth">Youth</option>
+                <option value="women">Women</option>
+                <option value="students">Students</option>
+                <option value="developers">Developers</option>
+                <option value="smes">SMEs</option>
+                <option value="researchers">Researchers</option>
+                <option value="policymakers">Policymakers</option>
+                <option value="media">Media</option>
+                <option value="public">Public</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:25%;">Title</th>
+                <th style="width:12%;">Date</th>
+                <th style="width:18%;">Location</th>
+                <th style="width:10%;">Audience</th>
+                <th style="width:10%;">Capacity</th>
+                <th style="width:12%;">Status</th>
+                <th style="width:13%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No events found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Event" to create your first training event.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="eventModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="eventModalTitle">Add New Event</h3>
+            <button class="modal-close" onclick="closeEventModal()">✕</button>
+        </div>
+        <div class="modal-body" id="eventModalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeEventModal()">Cancel</button>
+            <button class="btn btn-primary" id="eventSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CREATE FORM TEMPLATE                                         -->
+<!-- ============================================================ -->
+<div style="display:none;">
+    <div id="createFormHtml">
+        <div class="form-group">
+            <label>Event Title <span class="required">*</span></label>
+            <input type="text" id="form-title" placeholder="e.g. BRIDGE-AI Kenya Smart Mushroom Bootcamp">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="form-slug" placeholder="URL-friendly version (auto-generated)">
+            <small style="color:var(--text-light);font-size:0.7rem;">Leave blank to auto-generate from title</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date <span class="required">*</span></label>
+                <input type="date" id="form-date">
+            </div>
+            <div class="form-group">
+                <label>Location <span class="required">*</span></label>
+                <input type="text" id="form-location" placeholder="e.g. JKUAT Smart Farm Zone, Juja, Kenya">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Agenda / Schedule</label>
+            <textarea id="form-agenda" rows="4" placeholder="Detailed agenda, sessions, and schedule of the event"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Audience <span class="required">*</span></label>
+                <select id="form-audience">
+                    <option value="">Select audience</option>
+                    <option value="farmers">Farmers</option>
+                    <option value="youth">Youth</option>
+                    <option value="women">Women</option>
+                    <option value="students">Students</option>
+                    <option value="developers">Developers</option>
+                    <option value="smes">SMEs</option>
+                    <option value="researchers">Researchers</option>
+                    <option value="policymakers">Policymakers</option>
+                    <option value="media">Media</option>
+                    <option value="public">Public</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Capacity</label>
+                <input type="number" id="form-capacity" placeholder="Maximum participants" min="1">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Speakers / Facilitators</label>
+            <input type="text" id="form-speakers" placeholder="Dr. Jane Mwangi, Dr. Peter Ochieng, ...">
+            <small style="color:var(--text-light);font-size:0.7rem;">Comma-separated list of speakers</small>
+        </div>
+        <div class="form-group">
+            <label>Status <span class="required">*</span></label>
+            <select id="form-status">
+                <option value="upcoming">Upcoming</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Post-Event Report</label>
+            <textarea id="form-post-report" rows="3" placeholder="Summary of what happened, key outcomes, lessons learned... (for completed events)"></textarea>
+            <small style="color:var(--text-light);font-size:0.7rem;">Fill this after the event is completed</small>
+        </div>
+        <div class="form-group">
+            <label>Feedback Summary</label>
+            <textarea id="form-feedback" rows="2" placeholder="Participant feedback summary, ratings, testimonials... (for completed events)"></textarea>
+            <small style="color:var(--text-light);font-size:0.7rem;">Aggregated feedback from participants</small>
+        </div>
+        <input type="hidden" id="form-edit-id" value="">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // STATE
+        // ================================================================
+
+        let events = [];
+        let editingId = null;
+        const API_URL = '/api/events/';
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+
+        function loadEvents() {
+            console.log('🔄 Loading events...');
+            fetch(API_URL, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('📥 Data received:', data);
+                events = data || [];
+                renderTable(events);
+                updateCounts(events.length);
+            })
+            .catch(error => {
+                console.error('❌ Error loading events:', error);
+                showToast('error', 'Failed to load events: ' + error.message);
+            });
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            <span class="empty-icon">📭</span>
+                            <h4>No events found</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Event" to create your first training event.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                    <td>${item.date ? formatDate(item.date) : '-'}</td>
+                    <td>${escapeHtml(item.location || '-')}</td>
+                    <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.audience || '-')}</span></td>
+                    <td>${item.capacity || '-'}</td>
+                    <td><span class="status-badge ${item.status || 'upcoming'}">${escapeHtml(item.status || 'upcoming')}</span></td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deleteEvent(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateCounts(data.length);
+        }
+
+        // ================================================================
+        // FILTER TABLE
+        // ================================================================
+
+        window.filterTable = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            const audienceFilter = document.getElementById('filterAudience').value;
+
+            let filtered = events;
+
+            if (search) {
+                filtered = filtered.filter(item => {
+                    const searchable = [
+                        item.title,
+                        item.location,
+                        item.agenda,
+                        item.speakers,
+                        item.audience
+                    ].join(' ').toLowerCase();
+                    return searchable.includes(search);
+                });
+            }
+
+            if (statusFilter) {
+                filtered = filtered.filter(item => item.status === statusFilter);
+            }
+
+            if (audienceFilter) {
+                filtered = filtered.filter(item => item.audience === audienceFilter);
+            }
+
+            renderTable(filtered);
+        };
+
+        // ================================================================
+        // MODAL FUNCTIONS
+        // ================================================================
+
+        function getFormHtml() {
+            return document.getElementById('createFormHtml').innerHTML;
+        }
+
+        function getFormData() {
+            return {
+                title: document.getElementById('form-title').value.trim(),
+                slug: document.getElementById('form-slug').value.trim(),
+                date: document.getElementById('form-date').value,
+                location: document.getElementById('form-location').value.trim(),
+                agenda: document.getElementById('form-agenda').value.trim(),
+                audience: document.getElementById('form-audience').value,
+                capacity: document.getElementById('form-capacity').value ? parseInt(document.getElementById('form-capacity').value) : null,
+                speakers: document.getElementById('form-speakers').value.trim(),
+                status: document.getElementById('form-status').value,
+                post_event_report: document.getElementById('form-post-report').value.trim(),
+                feedback_summary: document.getElementById('form-feedback').value.trim()
+            };
+        }
+
+        function populateForm(data) {
+            document.getElementById('form-title').value = data.title || '';
+            document.getElementById('form-slug').value = data.slug || '';
+            document.getElementById('form-date').value = data.date || '';
+            document.getElementById('form-location').value = data.location || '';
+            document.getElementById('form-agenda').value = data.agenda || '';
+            document.getElementById('form-audience').value = data.audience || '';
+            document.getElementById('form-capacity').value = data.capacity || '';
+            document.getElementById('form-speakers').value = data.speakers || '';
+            document.getElementById('form-status').value = data.status || 'upcoming';
+            document.getElementById('form-post-report').value = data.post_event_report || '';
+            document.getElementById('form-feedback').value = data.feedback_summary || '';
+            document.getElementById('form-edit-id').value = data.id || '';
+        }
+
+        function openEventModal(title, editData) {
+            const modal = document.getElementById('eventModal');
+            const modalTitle = document.getElementById('eventModalTitle');
+            const modalBody = document.getElementById('eventModalBody');
+            const saveBtn = document.getElementById('eventSaveBtn');
+
+            modalTitle.textContent = title;
+            modalBody.innerHTML = getFormHtml();
+
+            if (editData) {
+                populateForm(editData);
+                editingId = editData.id;
+            } else {
+                editingId = null;
+                populateForm({});
+            }
+
+            saveBtn.onclick = saveEvent;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeEventModal = function() {
+            const modal = document.getElementById('eventModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            editingId = null;
+        };
+
+        window.openCreateModal = function() {
+            openEventModal('Add New Event', null);
+        };
+
+        window.openEditModal = function(id) {
+            const item = events.find(e => e.id === id);
+            if (!item) {
+                showToast('error', 'Event not found');
+                return;
+            }
+            openEventModal('Edit Event', item);
+        };
+
+        // ================================================================
+        // SAVE EVENT - WITH CSRF TOKEN
+        // ================================================================
+
+        window.saveEvent = function() {
+            const isEdit = !!editingId;
+            const data = getFormData();
+
+            console.log('📝 Form Data:', data);
+
+            // Validate required fields
+            if (!data.title) {
+                showToast('warning', 'Event title is required');
+                return;
+            }
+            if (!data.date) {
+                showToast('warning', 'Date is required');
+                return;
+            }
+            if (!data.location) {
+                showToast('warning', 'Location is required');
+                return;
+            }
+            if (!data.audience) {
+                showToast('warning', 'Audience is required');
+                return;
+            }
+
+            // Auto-generate slug if not provided
+            if (!data.slug) {
+                data.slug = slugify(data.title);
+            }
+
+            // Clean up data - remove empty fields
+            Object.keys(data).forEach(key => {
+                if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                    delete data[key];
+                }
+            });
+
+            const url = isEdit ? `${API_URL}${editingId}` : API_URL;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            console.log(`📤 Sending ${method} request to ${url}`);
+            console.log('📤 Data:', JSON.stringify(data, null, 2));
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+            console.log('🔐 CSRF Token:', csrfToken);
+
+            const saveBtn = document.getElementById('eventSaveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Saving...';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                return response.text().then(text => {
+                    console.log('📥 Raw response:', text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('❌ Failed to parse JSON:', text);
+                        throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                    }
+                });
+            })
+            .then(result => {
+                console.log('📥 Parsed result:', result);
+                if (result.success) {
+                    showToast('success', `Event ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeEventModal();
+                    loadEvents();
+                } else {
+                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} event`);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Fetch error:', error);
+                showToast('error', `Error: ${error.message}`);
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save';
+            });
+        };
+
+        // ================================================================
+        // DELETE EVENT - WITH CSRF TOKEN
+        // ================================================================
+
+        window.deleteEvent = function(id) {
+            const item = events.find(e => e.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            console.log(`🗑️ Deleting event ${id}`);
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+            fetch(`${API_URL}${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    showToast('success', 'Event deleted successfully!');
+                    loadEvents();
+                } else {
+                    showToast('error', result.error || 'Failed to delete event');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Delete error:', error);
+                showToast('error', `Error: ${error.message}`);
+            });
+        };
+
+        // ================================================================
+        // CLOSE MODAL ON OVERLAY CLICK
+        // ================================================================
+
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEventModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEventModal();
+            }
+        });
+
+        // ================================================================
+        // UTILITY FUNCTIONS
+        // ================================================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr.substring(0, 10);
+            }
+        }
+
+        function slugify(text) {
+            return text.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function updateCounts(count) {
+            const countEl = document.getElementById('count-events');
+            const tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = `${count} items`;
+            if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // INITIALIZE
+        // ================================================================
+
+        loadEvents();
+
+        console.log('✅ BRIDGE-AI Kenya Admin Events page initialized');
+
+    })();
+</script>
+{% endblock %}

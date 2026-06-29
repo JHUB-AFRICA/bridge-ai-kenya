@@ -1,0 +1,1228 @@
+<!-- ================================================================ -->
+<!-- BRIDGE-AI KENYA - TRAINING EVENTS PAGE                         -->
+<!-- ================================================================ -->
+<!-- Displays all training events from events.json with filtering   -->
+<!-- by status, audience, and search. Each event card links to      -->
+<!-- the event detail page: /training-and-wp5/events/{slug}/        -->
+<!-- Modern glassmorphism design, fully responsive.                 -->
+<!-- ================================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Events - BRIDGE-AI Kenya</title>
+    <meta name="description" content="Upcoming bootcamps, workshops, and training events hosted by JKUAT's Smart Farm Zone under BRIDGE-AI Kenya.">
+    <meta name="robots" content="index, follow">
+
+    <style>
+        /* ================================================================ */
+        /* CSS VARIABLES & RESET                                           */
+        /* ================================================================ */
+        :root {
+            --primary-dark: #081a28;
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --primary-lighter: #2a6a8b;
+            --accent: #1a8a6a;
+            --accent-light: #7ad4b8;
+            --gold: #c8922a;
+            --gold-light: #e8b55a;
+            --text-dark: #081a28;
+            --text-body: #1a2a3a;
+            --text-muted: #5a6a7a;
+            --text-light: #8a9aaa;
+            --bg-white: #ffffff;
+            --bg-light: #f5f8fa;
+            --bg-lighter: #fafcfe;
+            --border-light: #e4eaf0;
+            --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.10);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.14);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --error: #e74c3c;
+            --success: #28a745;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-body);
+            background: var(--bg-white);
+            line-height: 1.7;
+            padding-top: 72px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ================================================================ */
+        /* ANIMATIONS                                                      */
+        /* ================================================================ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(26, 138, 106, 0.25); }
+            50% { box-shadow: 0 0 45px rgba(26, 138, 106, 0.5); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================================================================ */
+        /* BREADCRUMB                                                      */
+        /* ================================================================ */
+        .breadcrumb-bar {
+            background: var(--bg-white);
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 72px;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .breadcrumb-bar .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color var(--transition);
+            font-weight: 500;
+        }
+
+        .breadcrumb-bar .breadcrumb-container a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb-bar .breadcrumb-container .sep {
+            color: var(--text-light);
+            opacity: 0.4;
+        }
+
+        .breadcrumb-bar .breadcrumb-container .current {
+            color: var(--text-body);
+            font-weight: 600;
+        }
+
+        /* ================================================================ */
+        /* HERO SECTION                                                    */
+        /* ================================================================ */
+        .hero-events {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px 50px;
+            overflow: hidden;
+        }
+
+        .hero-events .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=1600&h=800&fit=crop&crop=center&auto=format');
+            background-size: cover;
+            background-position: center;
+            animation: slowZoom 20s ease-in-out forwards;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .hero-events .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                rgba(8, 26, 40, 0.92) 0%,
+                rgba(15, 43, 61, 0.78) 40%,
+                rgba(26, 74, 107, 0.65) 70%,
+                rgba(26, 138, 106, 0.25) 100%
+            );
+            z-index: 1;
+        }
+
+        .hero-events .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            text-align: center;
+            animation: fadeInUp 0.9s ease forwards;
+        }
+
+        .hero-events .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .hero-events .hero-badge .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            display: inline-block;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .hero-events h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+            margin-bottom: 12px;
+        }
+
+        .hero-events h1 .gradient-text {
+            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-events .hero-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 650px;
+            margin: 0 auto 20px;
+            line-height: 1.8;
+        }
+
+        .hero-events .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 16px 30px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .hero-events .hero-stats .stat-item {
+            text-align: center;
+        }
+
+        .hero-events .hero-stats .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .hero-events .hero-stats .stat-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ================================================================ */
+        /* FILTER SECTION                                                  */
+        /* ================================================================ */
+        .filter-section {
+            background: var(--bg-white);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 72px;
+            z-index: 40;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .filter-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group .filter-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            flex-shrink: 0;
+            padding: 4px 12px 4px 0;
+        }
+
+        .filter-group select {
+            padding: 8px 40px 8px 16px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-body);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: all 0.3s var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a4a6b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            min-width: 140px;
+            max-width: 200px;
+            width: auto;
+            font-family: inherit;
+        }
+
+        .filter-group select:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(26, 74, 107, 0.06);
+        }
+
+        .filter-group select.has-value {
+            border-color: var(--primary-light);
+            background-color: #f5f9fc;
+        }
+
+        .filter-group .filter-clear {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-light);
+            border: 1.5px solid var(--border-light);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .filter-group .filter-clear:hover {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        /* ================================================================ */
+        /* EVENTS GRID                                                    */
+        /* ================================================================ */
+        .section-events {
+            padding: 40px 24px 60px;
+            background: var(--bg-light);
+        }
+
+        .events-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            border-radius: var(--radius-lg);
+            padding: 28px 28px 24px;
+            transition: all 0.4s var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-light), var(--accent));
+            opacity: 0;
+            transition: opacity 0.4s var(--transition);
+        }
+
+        .event-card:hover::before {
+            opacity: 1;
+        }
+
+        .event-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .event-card .event-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+
+        .event-card .event-status.upcoming {
+            background: var(--success);
+            color: #ffffff;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .event-card .event-status.ongoing {
+            background: var(--primary-light);
+            color: #ffffff;
+        }
+
+        .event-card .event-status.completed {
+            background: var(--bg-light);
+            color: var(--text-muted);
+        }
+
+        .event-card .event-status.cancelled {
+            background: var(--error);
+            color: #ffffff;
+        }
+
+        .event-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .event-card h3 a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .event-card h3 a:hover {
+            color: var(--primary-light);
+        }
+
+        .event-card .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .event-card .event-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .event-card .event-meta .meta-item svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .event-card .event-speakers {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .event-card .event-speakers strong {
+            color: var(--text-body);
+        }
+
+        .event-card .event-agenda {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .event-card .event-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            margin-top: 4px;
+        }
+
+        .event-card .event-capacity {
+            font-size: 0.78rem;
+            color: var(--text-light);
+        }
+
+        .event-card .btn-detail {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            background: rgba(26, 74, 107, 0.06);
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+        }
+
+        .event-card .btn-detail:hover {
+            background: var(--primary-light);
+            color: #ffffff;
+            gap: 12px;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 74, 107, 0.15);
+        }
+
+        .event-card .btn-detail .arrow {
+            transition: transform 0.3s var(--transition);
+        }
+
+        .event-card .btn-detail:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ================================================================ */
+        /* EMPTY STATE                                                     */
+        /* ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.50);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border-light);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .empty-state .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            text-decoration: none;
+            transition: all 0.3s var(--transition);
+        }
+
+        .empty-state .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(26, 74, 107, 0.2);
+            gap: 12px;
+        }
+
+        /* ================================================================ */
+        /* BACK TO TRAINING                                                */
+        /* ================================================================ */
+        .back-section {
+            padding: 30px 24px 60px;
+            text-align: center;
+            background: var(--bg-white);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .back-section .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-light);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s var(--transition);
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-section .back-link:hover {
+            gap: 16px;
+            color: var(--accent);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .back-section .back-link svg {
+            transition: transform 0.3s var(--transition);
+        }
+
+        .back-section .back-link:hover svg {
+            transform: translateX(-4px);
+        }
+
+        /* ================================================================ */
+        /* RESPONSIVE                                                      */
+        /* ================================================================ */
+        @media (max-width: 1024px) {
+            .hero-events h1 {
+                font-size: 2.6rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 64px;
+            }
+
+            .breadcrumb-bar {
+                top: 64px;
+                padding: 10px 16px;
+            }
+
+            .hero-events {
+                min-height: 45vh;
+                padding: 50px 20px 40px;
+            }
+
+            .hero-events h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-events .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-events .hero-stats {
+                gap: 20px;
+                padding: 14px 20px;
+                flex-wrap: wrap;
+            }
+
+            .hero-events .hero-stats .stat-number {
+                font-size: 1.4rem;
+            }
+
+            .filter-section {
+                top: 64px;
+            }
+
+            .filter-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding: 0 16px;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .filter-group select {
+                min-width: 120px;
+                flex: 1;
+                max-width: 100%;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .event-card {
+                padding: 22px 20px 20px;
+            }
+
+            .section-events {
+                padding: 30px 16px 40px;
+            }
+
+            .back-section {
+                padding: 30px 16px 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-events h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-events .hero-badge {
+                font-size: 0.55rem;
+                padding: 6px 16px;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .filter-group select {
+                width: 100%;
+                min-width: unset;
+                max-width: 100%;
+            }
+
+            .filter-group .filter-label {
+                width: 100%;
+            }
+
+            .filter-group .filter-clear {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .event-card .event-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .event-card .btn-detail {
+                justify-content: center;
+            }
+
+            .empty-state {
+                padding: 40px 16px;
+            }
+
+            .empty-state .empty-icon {
+                font-size: 3rem;
+            }
+
+            .empty-state h3 {
+                font-size: 1.1rem;
+            }
+
+            .back-section .back-link {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .events-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ================================================================ */
+        /* REDUCED MOTION                                                  */
+        /* ================================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ================================================================ */
+        /* SCROLLBAR                                                       */
+        /* ================================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'header.html' %}
+
+    <!-- ================================================================ -->
+    <!-- BREADCRUMB                                                      -->
+    <!-- ================================================================ -->
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <a href="{{ url_for('public.index') }}">Home</a>
+            <span class="sep">/</span>
+            <a href="{{ url_for('public.training_wp5') }}">Training &amp; WP5</a>
+            <span class="sep">/</span>
+            <span class="current">Training Events</span>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- HERO SECTION                                                    -->
+    <!-- ================================================================ -->
+    <section class="hero-events">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                T5.2 — Local Training Bootcamps
+            </div>
+            <h1>
+                Training <span class="gradient-text">Events</span>
+            </h1>
+            <p class="hero-subtitle">
+                Upcoming bootcamps, workshops, and training sessions hosted by JKUAT's Smart Farm Zone.
+                Discover opportunities to build your skills in AI, IoT, and smart agriculture.
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-upcoming">0</span>
+                    <span class="stat-label">Upcoming</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-ongoing">0</span>
+                    <span class="stat-label">Ongoing</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-completed">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-total">0</span>
+                    <span class="stat-label">Total Events</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- FILTER SECTION                                                  -->
+    <!-- ================================================================ -->
+    <div class="filter-section" id="filters">
+        <div class="filter-container">
+            <div class="filter-group">
+                <span class="filter-label">🔍 Filter by:</span>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select id="filterAudience" onchange="applyFilters()">
+                    <option value="">All Audiences</option>
+                    <option value="farmers">Farmers</option>
+                    <option value="youth">Youth</option>
+                    <option value="women">Women</option>
+                    <option value="students">Students</option>
+                    <option value="developers">Developers</option>
+                    <option value="smes">SMEs</option>
+                    <option value="researchers">Researchers</option>
+                    <option value="policymakers">Policymakers</option>
+                    <option value="media">Media</option>
+                    <option value="public">Public</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button class="filter-clear" onclick="clearFilters()">
+                    ✕ Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- EVENTS GRID                                                     -->
+    <!-- ================================================================ -->
+    <section class="section-events">
+        <div class="events-container">
+            <div class="events-grid" id="eventsGrid">
+                <!-- Rendered by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- BACK TO TRAINING                                                -->
+    <!-- ================================================================ -->
+    <section class="back-section">
+        <a href="{{ url_for('public.training_wp5') }}" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Back to Training &amp; WP5
+        </a>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                          -->
+    <!-- ================================================================ -->
+    {% include 'footer.html' %}
+
+    <!-- ================================================================ -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            // STATE
+            // ================================================================
+
+            let allEvents = [];
+            let filteredEvents = [];
+
+            // ================================================================
+            // LOAD EVENTS
+            // ================================================================
+
+            function loadEvents() {
+                console.log('🔄 Loading events...');
+                fetch('/api/events/', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📥 Events loaded:', data);
+                    allEvents = data || [];
+                    updateStats(allEvents);
+                    filteredEvents = [...allEvents];
+                    renderEvents(filteredEvents);
+                })
+                .catch(error => {
+                    console.error('❌ Error loading events:', error);
+                    allEvents = [];
+                    filteredEvents = [];
+                    renderEvents([]);
+                });
+            }
+
+            // ================================================================
+            // UPDATE STATS
+            // ================================================================
+
+            function updateStats(events) {
+                const upcoming = events.filter(e => e.status === 'upcoming' || e.status === 'ongoing');
+                const ongoing = events.filter(e => e.status === 'ongoing');
+                const completed = events.filter(e => e.status === 'completed');
+
+                document.getElementById('stat-upcoming').textContent = upcoming.length;
+                document.getElementById('stat-ongoing').textContent = ongoing.length;
+                document.getElementById('stat-completed').textContent = completed.length;
+                document.getElementById('stat-total').textContent = events.length;
+            }
+
+            // ================================================================
+            // RENDER EVENTS
+            // ================================================================
+
+            function renderEvents(events) {
+                const container = document.getElementById('eventsGrid');
+
+                if (!events || events.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <span class="empty-icon">📭</span>
+                            <h3>No Events Found</h3>
+                            <p>There are no events matching your filters. Try clearing the filters or check back later.</p>
+                            <a href="{{ url_for('public.training_wp5') }}" class="btn-back">
+                                Back to Training
+                                <span>→</span>
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = events.map(event => `
+                    <div class="event-card animate-on-scroll">
+                        <span class="event-status ${event.status || 'upcoming'}">
+                            ${event.status === 'upcoming' ? '📅 Upcoming' :
+                              event.status === 'ongoing' ? '🔄 Ongoing' :
+                              event.status === 'completed' ? '✅ Completed' :
+                              event.status === 'cancelled' ? '❌ Cancelled' : '📅 Upcoming'}
+                        </span>
+                        <h3>
+                            <a href="/training-and-wp5/events/${event.slug}">
+                                ${escapeHtml(event.title)}
+                            </a>
+                        </h3>
+                        <div class="event-meta">
+                            <span class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                ${formatDate(event.date)}
+                            </span>
+                            <span class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                ${escapeHtml(event.location || 'Location TBD')}
+                            </span>
+                            <span class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                ${event.audience ? escapeHtml(event.audience).charAt(0).toUpperCase() + escapeHtml(event.audience).slice(1) : 'All Audiences'}
+                            </span>
+                        </div>
+                        ${event.speakers ? `
+                            <div class="event-speakers">
+                                <strong>🎤 Speakers:</strong> ${escapeHtml(event.speakers)}
+                            </div>
+                        ` : ''}
+                        ${event.agenda ? `
+                            <div class="event-agenda">${escapeHtml(event.agenda)}</div>
+                        ` : ''}
+                        <div class="event-footer">
+                            <span class="event-capacity">${event.capacity ? `👤 Capacity: ${event.capacity}` : ''}</span>
+                            <a href="/training-and-wp5/events/${event.slug}" class="btn-detail">
+                                View Details
+                                <span class="arrow">→</span>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Trigger scroll animations
+                setTimeout(observeElements, 100);
+            }
+
+            // ================================================================
+            // FILTER FUNCTIONS
+            // ================================================================
+
+            window.applyFilters = function() {
+                const status = document.getElementById('filterStatus').value;
+                const audience = document.getElementById('filterAudience').value;
+
+                filteredEvents = allEvents.filter(event => {
+                    let match = true;
+
+                    if (status && event.status !== status) {
+                        match = false;
+                    }
+
+                    if (audience && event.audience !== audience) {
+                        match = false;
+                    }
+
+                    return match;
+                });
+
+                renderEvents(filteredEvents);
+                updateActiveFilters();
+            };
+
+            window.clearFilters = function() {
+                document.getElementById('filterStatus').value = '';
+                document.getElementById('filterAudience').value = '';
+                filteredEvents = [...allEvents];
+                renderEvents(filteredEvents);
+                updateActiveFilters();
+            };
+
+            function updateActiveFilters() {
+                document.querySelectorAll('.filter-group select').forEach(select => {
+                    if (select.value) {
+                        select.classList.add('has-value');
+                    } else {
+                        select.classList.remove('has-value');
+                    }
+                });
+            }
+
+            // ================================================================
+            // SCROLL ANIMATIONS
+            // ================================================================
+
+            function observeElements() {
+                const elements = document.querySelectorAll('.animate-on-scroll:not(.visible)');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+
+                elements.forEach(el => observer.observe(el));
+            }
+
+            // ================================================================
+            // UTILITY FUNCTIONS
+            // ================================================================
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return 'Date TBD';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch {
+                    return dateStr.substring(0, 10);
+                }
+            }
+
+            // ================================================================
+            // KEYBOARD SUPPORT
+            // ================================================================
+
+            document.querySelectorAll('.filter-group select').forEach(function(select) {
+                select.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        window.applyFilters();
+                    }
+                });
+            });
+
+            // ================================================================
+            // INIT
+            // ================================================================
+
+            loadEvents();
+            observeElements();
+
+            console.log('✅ BRIDGE-AI Kenya Training Events page initialized');
+
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+[
+  {
+    "id": 1,
+    "title": "GenAI for Agriculture",
+    "slug": "genai-for-agriculture",
+    "description": "Foundational module on Generative AI applications in farming. Covers AI basics, use cases in agriculture, and practical implementation strategies for smallholder farmers and agri-SMEs.",
+    "level": "beginner",
+    "duration": "2 hours",
+    "image": "images/modules/genai.jpg",
+    "tags": [
+      "GenAI",
+      "Agriculture",
+      "Fundamentals"
+    ],
+    "download_url": "uploads/guides/genai-for-agriculture.pdf",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "repository_url": "https://github.com/bridge-ai/genai-agriculture",
+    "created_at": "2026-06-27T10:00:00",
+    "updated_at": "2026-06-27T10:00:00"
+  },
+  {
+    "id": 2,
+    "title": "Smart Mushroom Farming",
+    "slug": "smart-mushroom-farming",
+    "description": "Comprehensive module on IoT sensors, AI monitoring, automated climate control, and digital shadow technology for sustainable mushroom cultivation in Kenya.",
+    "level": "intermediate",
+    "duration": "3 hours",
+    "image": "images/modules/mushroom-farming.jpg",
+    "tags": [
+      "Smart Farming",
+      "IoT",
+      "Mushroom Cultivation"
+    ],
+    "download_url": "uploads/guides/smart-mushroom-farming.pdf",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "repository_url": "https://github.com/bridge-ai/smart-mushroom",
+    "created_at": "2026-06-27T10:00:00",
+    "updated_at": "2026-06-27T10:00:00"
+  },
+  {
+    "id": 3,
+    "title": "IoT & Sensor Integration",
+    "slug": "iot-sensor-integration",
+    "description": "Deploying and managing IoT sensors for agricultural data collection. Covers sensor types, data transmission, edge computing, and integration with AI models.",
+    "level": "intermediate",
+    "duration": "2.5 hours",
+    "image": "images/modules/iot-sensors.jpg",
+    "tags": [
+      "IoT",
+      "Sensors",
+      "Data Collection"
+    ],
+    "download_url": "uploads/guides/iot-sensor-integration.pdf",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "repository_url": "https://github.com/bridge-ai/iot-sensors",
+    "created_at": "2026-06-27T10:00:00",
+    "updated_at": "2026-06-27T10:00:00"
+  },
+  {
+    "id": 5,
+    "title": "SME Mentoring Guide",
+    "slug": "sme-mentoring-guide",
+    "description": "Supporting agri-SMEs in adopting digital agriculture solutions. Covers business modeling, technology adoption, scaling strategies, and impact measurement.",
+    "level": "advanced",
+    "duration": "3 hours",
+    "image": "images/modules/sme-mentoring.jpg",
+    "tags": [
+      "SME",
+      "Mentoring",
+      "Business Growth"
+    ],
+    "download_url": "uploads/guides/sme-mentoring-guide.pdf",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "repository_url": "https://github.com/bridge-ai/sme-mentoring",
+    "created_at": "2026-06-27T10:00:00",
+    "updated_at": "2026-06-27T10:00:00"
+  },
+  {
+    "id": 6,
+    "title": "AI Ethics & Responsible Agriculture",
+    "slug": "ai-ethics-agriculture",
+    "description": "Understanding ethical considerations when deploying AI in agricultural settings. Covers bias mitigation, data privacy, farmer consent, and inclusive design.",
+    "level": "advanced",
+    "duration": "1.5 hours",
+    "image": "images/modules/ai-ethics.jpg",
+    "tags": [
+      "Ethics",
+      "Responsible AI",
+      "Inclusion"
+    ],
+    "download_url": "uploads/guides/ai-ethics-agriculture.pdf",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "repository_url": "https://github.com/bridge-ai/ai-ethics",
+    "created_at": "2026-06-27T10:00:00",
+    "updated_at": "2026-06-27T10:00:00"
+  },
+  {
+    "title": "AI Fundamentals for Smart Agriculture",
+    "slug": "ai-fundamentals-smart-agriculture",
+    "description": "This introductory module explains Artificial Intelligence concepts and demonstrates how AI is transforming modern agriculture through precision farming, crop monitoring, disease prediction, and decision support systems. Learners will understand practical AI applications used within BRIDGE-AI Kenya.",
+    "level": "beginner",
+    "duration": "2 Hours",
+    "tags": [
+      "AI",
+      "Agriculture",
+      "Fundamentals",
+      "Machine Learning"
+    ],
+    "video_url": "https://www.youtube.com/embed/8mAITcNt710",
+    "download_url": "uploads/guides/ai-fundamentals-smart-agriculture.pdf",
+    "repository_url": "https://github.com/bridge-aiii-kenya/ai-fundamentals",
+    "created_at": "2026-06-27T03:51:12.380313",
+    "updated_at": "2026-06-27T03:51:12.380322",
+    "id": 7
+  }
+]
