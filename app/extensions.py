@@ -6,7 +6,7 @@ import os
 from flask_wtf import CSRFProtect
 from flask_login import LoginManager, UserMixin
 from flask_mail import Mail
-from flask_uploads import UploadSet, IMAGES, configure_uploads
+# ❌ REMOVED: from flask_uploads import UploadSet, IMAGES, configure_uploads
 from werkzeug.security import check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -20,7 +20,7 @@ csrf = CSRFProtect()
 
 
 # ================================================================
-# Rate Limiter - NEW
+# Rate Limiter
 # ================================================================
 
 limiter = Limiter(
@@ -49,20 +49,13 @@ mail = Mail()
 
 
 # ================================================================
-# File Uploads
+# ❌ REMOVED: File Uploads (flask_uploads)
 # ================================================================
-
-# Define upload sets
-photos = UploadSet('photos', IMAGES)
-documents = UploadSet('documents', ('pdf', 'doc', 'docx', 'txt', 'rtf'))
-videos = UploadSet('videos', ('mp4', 'webm', 'ogg', 'mov', 'avi'))
-
-# All uploads combined
-uploads = UploadSet('uploads', (
-    'png', 'jpg', 'jpeg', 'gif', 'svg', 
-    'pdf', 'doc', 'docx', 'txt', 'rtf',
-    'mp4', 'webm', 'ogg', 'mov', 'avi'
-))
+# The following has been removed:
+# - photos = UploadSet('photos', IMAGES)
+# - documents = UploadSet('documents', ('pdf', 'doc', 'docx', 'txt', 'rtf'))
+# - videos = UploadSet('videos', ('mp4', 'webm', 'ogg', 'mov', 'avi'))
+# - uploads = UploadSet('uploads', (...))
 
 
 # ================================================================
@@ -154,13 +147,12 @@ def init_extensions(app):
     csrf.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
-    limiter.init_app(app)  # ✅ NEW
+    limiter.init_app(app)
     
-    # Configure uploads
-    configure_uploads(app, uploads)
-    configure_uploads(app, photos)
-    configure_uploads(app, documents)
-    configure_uploads(app, videos)
+    # ❌ REMOVED: configure_uploads(app, uploads)
+    # ❌ REMOVED: configure_uploads(app, photos)
+    # ❌ REMOVED: configure_uploads(app, documents)
+    # ❌ REMOVED: configure_uploads(app, videos)
     
     # Create upload directories if they don't exist
     upload_dirs = [
@@ -186,13 +178,10 @@ def init_extensions(app):
 
 __all__ = [
     'csrf',
-    'limiter',  # ✅ NEW
+    'limiter',
     'login_manager',
     'mail',
-    'uploads',
-    'photos',
-    'documents',
-    'videos',
+    # ❌ REMOVED: 'uploads', 'photos', 'documents', 'videos'
     'User',
     'load_user',
     'init_extensions'
