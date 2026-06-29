@@ -2050,31 +2050,60 @@ def api_delete_training_material(id):
 # API - Submissions
 # ================================================================
 
+# ================================================================
+# API - Submissions
+# ================================================================
+
 @api_bp.route('/submissions/', methods=['GET'])
 @login_required
 def api_get_submissions():
-    submissions = json_service.get_all('submissions.json')
-    sorted_submissions = sorted(submissions, key=lambda x: x.get('submitted_at', ''), reverse=True)
-    return jsonify(sorted_submissions)
+    """Get all form submissions."""
+    try:
+        submissions = json_service.get_all('submissions.json')
+        # Sort by submitted_at descending (newest first)
+        sorted_submissions = sorted(submissions, key=lambda x: x.get('submitted_at', ''), reverse=True)
+        return jsonify(sorted_submissions)
+    except Exception as e:
+        print(f"❌ Error getting submissions: {e}")
+        return jsonify([])
 
 
 @api_bp.route('/submissions/<int:id>/', methods=['PUT'])
 @limiter.limit("30 per minute")
 @login_required
 def api_update_submission(id):
-    data = request.get_json()
+    """Update a submission (e.g., mark as read)."""
     try:
-        result = json_service.update('submissions.json', id, data)
-        if not result:
-            return jsonify({'error': 'Not found'}), 404
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
         
-        audit.log_action(
-            user=current_user.username,
-            action='UPDATE_SUBMISSION',
-            details={'id': id, 'is_read': data.get('is_read')}
-        )
-        return jsonify({'success': True, 'message': 'Submission updated successfully'})
+        # Get existing submission
+        existing = json_service.get_by_id('submissions.json', id)
+        if not existing:
+            return jsonify({'success': False, 'error': 'Submission not found'}), 404
+        
+        # Update only the fields provided
+        if 'is_read' in data:
+            existing['is_read'] = data['is_read']
+        if 'is_responded' in data:
+            existing['is_responded'] = data['is_responded']
+        
+        # Save back to JSON
+        result = json_service.update('submissions.json', id, existing)
+        
+        if result:
+            audit.log_action(
+                user=current_user.username,
+                action='UPDATE_SUBMISSION',
+                details={'id': id, 'is_read': existing.get('is_read')}
+            )
+            return jsonify({'success': True, 'message': 'Submission updated successfully'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to update submission'}), 400
+            
     except Exception as e:
+        print(f"❌ Error updating submission: {e}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
 
@@ -2082,6 +2111,7 @@ def api_update_submission(id):
 @limiter.limit("10 per minute")
 @login_required
 def api_delete_submission(id):
+    """Delete a submission."""
     try:
         submission = json_service.get_by_id('submissions.json', id)
         if submission:
@@ -2090,14 +2120,15 @@ def api_delete_submission(id):
                 action='DELETE_SUBMISSION',
                 details={'id': id}
             )
+        
         result = json_service.delete('submissions.json', id)
         if not result:
-            return jsonify({'error': 'Not found'}), 404
+            return jsonify({'success': False, 'error': 'Submission not found'}), 404
+        
         return jsonify({'success': True, 'message': 'Submission deleted successfully'})
     except Exception as e:
+        print(f"❌ Error deleting submission: {e}")
         return jsonify({'success': False, 'error': str(e)}), 400
-
-
 
 # ================================================================
 # API - SME Challenges
