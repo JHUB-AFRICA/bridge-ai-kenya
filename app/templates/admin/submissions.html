@@ -558,7 +558,7 @@
             })
             .catch(error => {
                 console.error('Error loading submissions:', error);
-                showToast('error', 'Failed to load submissions');
+                showToast('error', '❌ Failed to load submissions');
             });
     }
 
@@ -692,7 +692,7 @@
     window.viewSubmission = function(id) {
         const item = submissions.find(s => s.id === id);
         if (!item) {
-            showToast('error', 'Submission not found');
+            showToast('error', '❌ Submission not found');
             return;
         }
 
@@ -816,6 +816,7 @@
         }
 
         openModal('📄 Submission Details', detailHtml);
+        showToast('info', '📄 Viewing submission details');
 
         // Mark as read if unread
         if (!item.is_read) {
@@ -829,7 +830,17 @@
 
     window.markRead = function(id) {
         const item = submissions.find(s => s.id === id);
-        if (!item || item.is_read) return;
+        if (!item) {
+            showToast('error', '❌ Submission not found');
+            return;
+        }
+        if (item.is_read) {
+            showToast('info', '📖 Already marked as read');
+            return;
+        }
+
+        // Show loading toast
+        showToast('info', '⏳ Marking as read...');
 
         fetch(`${API_URL}${id}/`, {
             method: 'PUT',
@@ -842,14 +853,15 @@
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                showToast('success', '✅ Marked as read');
+                showToast('success', '✅ Marked as read successfully!');
                 loadSubmissions();
             } else {
-                showToast('error', 'Failed to mark as read');
+                showToast('error', '❌ Failed to mark as read: ' + (result.error || 'Unknown error'));
             }
         })
         .catch(error => {
-            showToast('error', `Error: ${error.message}`);
+            console.error('Error marking as read:', error);
+            showToast('error', '❌ Error: ' + error.message);
         });
     };
 
@@ -859,14 +871,21 @@
 
     window.deleteSubmission = function(id) {
         const item = submissions.find(s => s.id === id);
-        if (!item) return;
+        if (!item) {
+            showToast('error', '❌ Submission not found');
+            return;
+        }
 
         const formData = item.data || {};
         const name = formData.name || 'Untitled';
 
         if (!confirm(`Are you sure you want to delete submission from "${name}"? This action cannot be undone.`)) {
+            showToast('info', '❌ Deletion cancelled');
             return;
         }
+
+        // Show loading toast
+        showToast('info', '⏳ Deleting submission...');
 
         fetch(`${API_URL}${id}/`, {
             method: 'DELETE',
@@ -877,14 +896,15 @@
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                showToast('success', '🗑️ Submission deleted!');
+                showToast('success', '🗑️ Submission deleted successfully!');
                 loadSubmissions();
             } else {
-                showToast('error', result.error || 'Failed to delete');
+                showToast('error', '❌ Failed to delete: ' + (result.error || 'Unknown error'));
             }
         })
         .catch(error => {
-            showToast('error', `Error: ${error.message}`);
+            console.error('Error deleting submission:', error);
+            showToast('error', '❌ Error: ' + error.message);
         });
     };
 
@@ -894,17 +914,25 @@
 
     window.clearAllSubmissions = function() {
         if (submissions.length === 0) {
-            showToast('info', 'No submissions to clear');
+            showToast('info', '📭 No submissions to clear');
             return;
         }
 
         if (!confirm(`⚠️ Delete ALL ${submissions.length} submissions? This cannot be undone!`)) {
+            showToast('info', '❌ Clear all cancelled');
             return;
         }
-        if (!confirm('Are you absolutely sure?')) return;
+        if (!confirm('Are you absolutely sure?')) {
+            showToast('info', '❌ Clear all cancelled');
+            return;
+        }
+
+        // Show loading toast
+        showToast('info', '⏳ Deleting all submissions...');
 
         let deleted = 0;
         const total = submissions.length;
+        let hasError = false;
 
         submissions.forEach(item => {
             fetch(`${API_URL}${item.id}/`, {
@@ -915,14 +943,28 @@
             .then(result => {
                 if (result.success) {
                     deleted++;
-                    if (deleted === total) {
-                        showToast('success', `✅ All ${total} submissions deleted!`);
+                    if (deleted === total && !hasError) {
+                        showToast('success', `✅ All ${total} submissions deleted successfully!`);
                         loadSubmissions();
                     }
+                } else {
+                    hasError = true;
+                    showToast('error', `❌ Failed to delete submission ${item.id}`);
                 }
             })
-            .catch(() => {});
+            .catch(error => {
+                hasError = true;
+                console.error('Error deleting submission:', error);
+                showToast('error', `❌ Error deleting submission ${item.id}`);
+            });
         });
+
+        // If no submissions were successfully deleted after timeout
+        setTimeout(() => {
+            if (deleted === 0 && total > 0) {
+                showToast('error', '❌ Failed to delete any submissions. Please try again.');
+            }
+        }, 5000);
     };
 
     // ================================================================
@@ -930,8 +972,12 @@
     // ================================================================
 
     window.refreshSubmissions = function() {
+        showToast('info', '🔄 Refreshing submissions...');
         loadSubmissions();
-        showToast('success', '🔄 Refreshed');
+        // Toast will be shown after load completes
+        setTimeout(() => {
+            showToast('success', '✅ Submissions refreshed!');
+        }, 500);
     };
 
     // ================================================================

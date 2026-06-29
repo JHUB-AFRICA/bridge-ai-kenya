@@ -807,7 +807,7 @@
 
                                 <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="formGeneral" novalidate>
                                     {{ contact_form.csrf_token() }}
-                                    <input type="hidden" name="contact_submit" value="1">
+                                    <input type="hidden" name="form_type" value="contact">
 
                                     <div class="form-group">
                                         <label for="general_name">Full Name <span class="required">*</span></label>
@@ -862,7 +862,7 @@
 
                                 <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="formTraining" novalidate>
                                     {{ training_form.csrf_token() }}
-                                    <input type="hidden" name="training_submit" value="1">
+                                    <input type="hidden" name="form_type" value="training">
 
                                     <div class="form-group">
                                         <label for="training_name">Full Name <span class="required">*</span></label>
@@ -922,12 +922,12 @@
                                 <p class="tab-desc">Media professionals — request interviews, press information, or site visits.</p>
 
                                 <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="formMedia" novalidate>
-                                    {{ media_form.csrf_token if media_form.csrf_token else '' }}
-                                    <input type="hidden" name="media_submit" value="1">
+                                    {{ media_form.csrf_token() }}
+                                    <input type="hidden" name="form_type" value="media">
 
                                     <div class="form-group">
                                         <label for="media_name">Full Name <span class="required">*</span></label>
-                                        {{ media_form.csrf_token() }}
+                                        {{ media_form.name(class="form-control", placeholder="Enter your full name", id="media_name") }}
                                         <div class="error-message" id="media_name_error">Please enter your name.</div>
                                     </div>
 
