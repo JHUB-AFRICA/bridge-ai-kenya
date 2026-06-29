@@ -1,1181 +1,997 @@
 <!-- ================================================================ -->
-<!-- BRIDGE-AI KENYA - CONTACT PAGE                                  -->
-<!-- ================================================================ -->
-<!-- This page displays contact forms for general enquiries,         -->
-<!-- training interest, and media requests.                         -->
+<!-- BRIDGE-AI KENYA - VIEW SUBMISSIONS                              -->
 <!-- ================================================================ -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - BRIDGE-AI Kenya</title>
-    <meta name="description" content="Contact the BRIDGE-AI Kenya team at JKUAT. Send enquiries, express interest in training, or make media requests.">
+{% extends "admin/layout.html" %}
 
-    <style>
-        /* ================================================================ */
-        /* CSS VARIABLES                                                   */
-        /* ================================================================ */
-        :root {
-            --primary-dark: #081a28;
-            --primary: #0f2b3d;
-            --primary-light: #1a4a6b;
-            --accent: #1a8a6a;
-            --accent-light: #d4edda;
-            --gold: #d4a843;
-            --gold-light: #fef8e7;
-            --text-dark: #081a28;
-            --text-body: #1a2a3a;
-            --text-muted: #5a6a7a;
-            --text-light: #8a9aaa;
-            --bg-white: #ffffff;
-            --bg-light: #f5f8fa;
-            --border-light: #e4eaf0;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
-            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --error: #e74c3c;
-            --error-light: #fde8e8;
-            --success: #28a745;
-            --success-light: #d4edda;
+{% block title %}View Submissions - BRIDGE-AI Kenya Admin{% endblock %}
+
+{% block page_title %}📩 View <span class="highlight">Submissions</span>{% endblock %}
+
+{% block page_subtitle %}View and manage form submissions from contact, training, and media requests{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- SECTION HEADER                                              -->
+<!-- ============================================================ -->
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-submissions">0 items</span>
+    </div>
+    <div class="section-actions">
+        <button class="btn btn-outline" onclick="refreshSubmissions()">
+            🔄 Refresh
+        </button>
+        <button class="btn btn-danger" onclick="clearAllSubmissions()" id="clearAllBtn" style="display:none;">
+            🗑️ Clear All
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE CONTAINER                                             -->
+<!-- ============================================================ -->
+<div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="🔍 Search submissions..." onkeyup="filterTable()">
+            <select id="filterType" onchange="filterTable()">
+                <option value="">All Types</option>
+                <option value="contact">📧 Contact</option>
+                <option value="training">🎓 Training</option>
+                <option value="media">📢 Media</option>
+            </select>
+            <select id="filterRead" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="false">🟡 Unread</option>
+                <option value="true">✅ Read</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:8%;">Type</th>
+                <th style="width:15%;">Name</th>
+                <th style="width:15%;">Email</th>
+                <th style="width:12%;">Submitted</th>
+                <th style="width:8%;">Status</th>
+                <th style="width:22%;">Message / Details</th>
+                <th style="width:20%;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <span class="empty-icon">📭</span>
+                    <h4>No submissions found</h4>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Form submissions will appear here when users fill out contact forms.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL - View full submission details                         -->
+<!-- ============================================================ -->
+<div id="submissionModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modalTitle">📄 Submission Details</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamically populated -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" id="modalSaveBtn" onclick="closeModal()">✅ Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TOAST NOTIFICATIONS                                         -->
+<!-- ============================================================ -->
+<div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;"></div>
+
+<style>
+    /* ================================================================ */
+    /* TABLE STYLES                                                    */
+    /* ================================================================ */
+    .table-container {
+        background: var(--bg-white);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: var(--bg-light);
+        border-bottom: 1px solid var(--border-light);
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .table-search {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .table-search input,
+    .table-search select {
+        padding: 6px 12px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        background: white;
+        min-width: 140px;
+    }
+    .table-search input:focus,
+    .table-search select:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    .table-count {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+    table thead {
+        background: var(--bg-light);
+        border-bottom: 2px solid var(--border-light);
+    }
+    table thead th {
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    table tbody tr {
+        border-bottom: 1px solid var(--border-light);
+        transition: background 0.2s;
+    }
+    table tbody tr:hover {
+        background: #f5f8fa;
+    }
+    table tbody tr.unread-row {
+        background: #fef9e7;
+    }
+    table tbody tr.unread-row:hover {
+        background: #fdf5d0;
+    }
+    table tbody td {
+        padding: 10px 14px;
+        vertical-align: middle;
+        color: var(--text-body);
+    }
+    .table-empty {
+        text-align: center;
+        padding: 48px 20px !important;
+        color: var(--text-muted);
+    }
+    .table-empty .empty-icon {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .table-empty h4 {
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+
+    /* ================================================================ */
+    /* BADGES                                                          */
+    /* ================================================================ */
+    .status-badge {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+    }
+    .status-badge.published {
+        background: #d4edda;
+        color: #155724;
+    }
+    .status-badge.draft {
+        background: #fef8e7;
+        color: #8a6d0c;
+    }
+    .status-badge.archived {
+        background: #e4eaf0;
+        color: #5a6a7a;
+    }
+
+    /* ================================================================ */
+    /* ACTION BUTTONS                                                  */
+    /* ================================================================ */
+    .actions-cell {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+    }
+    .action-icon {
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        opacity: 0.6;
+    }
+    .action-icon:hover {
+        background: #e4eaf0;
+        opacity: 1;
+    }
+    .action-icon.delete:hover {
+        background: #fde8e8;
+    }
+
+    /* ================================================================ */
+    /* SECTION HEADER                                                  */
+    /* ================================================================ */
+    .section-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .section-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .section-count {
+        color: var(--text-muted);
+        font-weight: 400;
+        font-size: 0.85rem;
+    }
+    .section-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .btn {
+        padding: 6px 16px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border-light);
+        color: var(--text-body);
+    }
+    .btn-outline:hover {
+        background: var(--bg-light);
+        border-color: var(--text-muted);
+    }
+    .btn-danger {
+        background: #e74c3c;
+        color: white;
+    }
+    .btn-danger:hover {
+        background: #c0392b;
+    }
+    .btn-primary {
+        background: var(--primary-light);
+        color: white;
+    }
+    .btn-primary:hover {
+        background: var(--primary);
+    }
+
+    /* ================================================================ */
+    /* MODAL                                                          */
+    /* ================================================================ */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.2s ease;
+    }
+    .modal-box {
+        background: white;
+        border-radius: var(--radius-md);
+        max-width: 640px;
+        width: 92%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s ease;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    .modal-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.6rem;
+        cursor: pointer;
+        color: var(--text-muted);
+        padding: 0 4px;
+        line-height: 1;
+        transition: color 0.2s;
+    }
+    .modal-close:hover {
+        color: var(--text-dark);
+    }
+    .modal-body {
+        padding: 20px 24px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    .modal-body .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 16px;
+    }
+    .modal-body .detail-grid .full {
+        grid-column: span 2;
+    }
+    .modal-body .detail-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-light);
+        margin-bottom: 2px;
+    }
+    .modal-body .detail-value {
+        font-size: 0.92rem;
+        color: var(--text-dark);
+        word-break: break-word;
+    }
+    .modal-body .detail-value.message {
+        background: var(--bg-light);
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        white-space: pre-wrap;
+        font-size: 0.88rem;
+        border: 1px solid var(--border-light);
+    }
+    .modal-footer {
+        padding: 12px 24px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+    hr {
+        border: none;
+        border-top: 1px solid var(--border-light);
+        margin: 12px 0;
+    }
+
+    /* ================================================================ */
+    /* TOAST                                                          */
+    /* ================================================================ */
+    .toast {
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease;
+        min-width: 240px;
+    }
+    .toast-success { background: #28a745; }
+    .toast-error { background: #e74c3c; }
+    .toast-info { background: #1a4a6b; }
+
+    /* ================================================================ */
+    /* ANIMATIONS                                                     */
+    /* ================================================================ */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideIn {
+        from { transform: translateX(20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ================================================================ */
+    /* RESPONSIVE                                                     */
+    /* ================================================================ */
+    @media (max-width: 768px) {
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .table-search {
+            flex-direction: column;
         }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: var(--text-body);
-            background: var(--bg-white);
-            line-height: 1.7;
-            padding-top: 72px;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* ================================================================ */
-        /* PAGE HERO                                                       */
-        /* ================================================================ */
-        .page-hero {
-            background: linear-gradient(160deg, #061420 0%, #0f2b3d 40%, #1a4a6b 100%);
-            padding: 70px 24px 60px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page-hero::before {
-            content: '✉️';
-            position: absolute;
-            font-size: 18rem;
-            opacity: 0.03;
-            right: -5%;
-            bottom: -20%;
-            transform: rotate(-8deg);
-        }
-
-        .page-hero h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -1px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-hero h1 .highlight {
-            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .page-hero p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 10px auto 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-hero .breadcrumb {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-hero .breadcrumb a {
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            transition: color var(--transition);
-        }
-
-        .page-hero .breadcrumb a:hover {
-            color: #ffffff;
-        }
-
-        .page-hero .breadcrumb .sep {
-            color: rgba(255, 255, 255, 0.15);
-        }
-
-        /* ================================================================ */
-        /* FLASH MESSAGES                                                  */
-        /* ================================================================ */
-        .flash-messages {
-            max-width: 900px;
-            margin: 24px auto 0;
-            padding: 0 24px;
-        }
-
-        .flash-message {
-            padding: 16px 20px;
-            border-radius: var(--radius-sm);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideDown 0.4s ease;
-        }
-
-        .flash-message.success {
-            background: var(--success-light);
-            color: #155724;
-            border-left: 4px solid var(--success);
-        }
-
-        .flash-message.error {
-            background: var(--error-light);
-            color: #721c24;
-            border-left: 4px solid var(--error);
-        }
-
-        .flash-message .flash-icon {
-            font-size: 1.2rem;
-        }
-
-        .flash-message .flash-close {
-            margin-left: auto;
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: inherit;
-            opacity: 0.6;
-            transition: opacity var(--transition);
-        }
-
-        .flash-message .flash-close:hover {
-            opacity: 1;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-16px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ================================================================ */
-        /* CONTACT SECTION                                                 */
-        /* ================================================================ */
-        .contact-section {
-            padding: 50px 24px 60px;
-        }
-
-        .contact-container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 50px;
-            align-items: start;
-        }
-
-        /* ================================================================ */
-        /* CONTACT INFO                                                    */
-        /* ================================================================ */
-        .contact-info h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            letter-spacing: -0.5px;
-            margin-bottom: 12px;
-        }
-
-        .contact-info .info-sub {
-            color: var(--text-muted);
-            font-size: 0.98rem;
-            margin-bottom: 24px;
-        }
-
-        .contact-info .info-item {
-            display: flex;
-            gap: 14px;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .contact-info .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .contact-info .info-item .info-icon {
-            font-size: 1.4rem;
-            flex-shrink: 0;
-            width: 36px;
-            text-align: center;
-        }
-
-        .contact-info .info-item .info-content h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 2px;
-        }
-
-        .contact-info .info-item .info-content p {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        .contact-info .info-item .info-content a {
-            color: var(--primary-light);
-            text-decoration: none;
-            transition: color var(--transition);
-        }
-
-        .contact-info .info-item .info-content a:hover {
-            color: var(--accent);
-        }
-
-        /* ================================================================ */
-        /* FORM TABS                                                       */
-        /* ================================================================ */
-        .form-tabs {
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .form-tabs .tab-headers {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            border-bottom: 1px solid var(--border-light);
-            background: var(--bg-light);
-        }
-
-        .form-tabs .tab-headers .tab-btn {
-            padding: 14px 12px;
-            text-align: center;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            transition: all var(--transition);
-            position: relative;
-        }
-
-        .form-tabs .tab-headers .tab-btn:hover {
-            color: var(--text-dark);
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .form-tabs .tab-headers .tab-btn.active {
-            color: var(--primary-light);
-            background: var(--bg-white);
-        }
-
-        .form-tabs .tab-headers .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary-light);
-            border-radius: 3px 3px 0 0;
-        }
-
-        .form-tabs .tab-headers .tab-btn .tab-icon {
-            display: block;
-            font-size: 1.2rem;
-            margin-bottom: 2px;
-        }
-
-        .form-tabs .tab-panels {
-            padding: 28px 30px 32px;
-        }
-
-        .form-tabs .tab-panel {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .form-tabs .tab-panel.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-tabs .tab-panel h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-
-        .form-tabs .tab-panel .tab-desc {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            margin-bottom: 18px;
-        }
-
-        /* ================================================================ */
-        /* FORM STYLES                                                     */
-        /* ================================================================ */
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-
-        .form-group label .required {
-            color: var(--error);
-            margin-left: 2px;
-        }
-
-        .form-group .help-text {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .table-search input,
+        .table-search select {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-sm);
-            font-size: 0.92rem;
-            font-family: inherit;
-            color: var(--text-body);
-            background: var(--bg-white);
-            transition: all var(--transition);
+            min-width: unset;
         }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(26, 74, 107, 0.08);
+        table {
+            font-size: 0.75rem;
         }
-
-        .form-group input.error,
-        .form-group select.error,
-        .form-group textarea.error {
-            border-color: var(--error);
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+        table thead th,
+        table tbody td {
+            padding: 6px 8px;
         }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
+        .modal-box {
+            width: 96%;
+            max-height: 95vh;
         }
-
-        .form-group .error-message {
-            font-size: 0.78rem;
-            color: var(--error);
-            margin-top: 4px;
-            display: none;
+        .modal-body .detail-grid {
+            grid-template-columns: 1fr;
         }
-
-        .form-group .error-message.visible {
-            display: block;
+        .modal-body .detail-grid .full {
+            grid-column: span 1;
         }
-
-        /* ================================================================ */
-        /* CHECKBOX                                                        */
-        /* ================================================================ */
-        .form-group.checkbox {
-            display: flex;
+        .section-header-content {
+            flex-direction: column;
             align-items: flex-start;
-            gap: 12px;
+        }
+        .section-actions {
+            width: 100%;
+        }
+        .section-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+(function() {
+    'use strict';
+
+    // ================================================================
+    // STATE
+    // ================================================================
+
+    let submissions = [];
+    const API_URL = '/api/submissions/';
+
+    // ================================================================
+    // TOAST NOTIFICATIONS
+    // ================================================================
+
+    function showToast(type, message) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // ================================================================
+    // MODAL
+    // ================================================================
+
+    function openModal(title, content, onSave) {
+        const modal = document.getElementById('submissionModal');
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = content;
+        modal.style.display = 'flex';
+        if (onSave) {
+            document.getElementById('modalSaveBtn').onclick = onSave;
+        } else {
+            document.getElementById('modalSaveBtn').onclick = closeModal;
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('submissionModal').style.display = 'none';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('submissionModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ================================================================
+    // LOAD DATA
+    // ================================================================
+
+    function loadSubmissions() {
+        fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+                submissions = data || [];
+                renderTable(submissions);
+                updateCounts(submissions.length);
+                updateClearAllButton();
+            })
+            .catch(error => {
+                console.error('Error loading submissions:', error);
+                showToast('error', 'Failed to load submissions');
+            });
+    }
+
+    // ================================================================
+    // RENDER TABLE
+    // ================================================================
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="table-empty">
+                        <span class="empty-icon">📭</span>
+                        <h4>No submissions found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Form submissions will appear here when users fill out contact forms.</p>
+                    </td>
+                </tr>
+            `;
+            return;
         }
 
-        .form-group.checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-top: 3px;
-            flex-shrink: 0;
-            accent-color: var(--primary-light);
-            cursor: pointer;
-        }
+        tbody.innerHTML = data.map(item => {
+            const formData = item.data || {};
+            const type = item.form_type || 'contact';
+            const typeLabel = formatType(type);
+            const typeColor = getTypeColor(type);
+            const statusLabel = item.is_read ? 'Read' : 'Unread';
+            const statusClass = item.is_read ? 'published' : 'draft';
+            const rowClass = item.is_read ? '' : 'unread-row';
 
-        .form-group.checkbox label {
-            font-weight: 400;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        .form-group.checkbox label .required {
-            color: var(--error);
-        }
-
-        .form-group.checkbox .error-message {
-            margin-top: 2px;
-        }
-
-        /* ================================================================ */
-        /* SUBMIT BUTTON                                                   */
-        /* ================================================================ */
-        .submit-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 36px;
-            background: var(--primary-light);
-            color: #ffffff;
-            border: none;
-            border-radius: 50px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all var(--transition);
-        }
-
-        .submit-btn:hover {
-            background: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(26, 74, 107, 0.2);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .submit-btn .spinner {
-            display: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        .submit-btn.loading .spinner {
-            display: inline-block;
-        }
-
-        .submit-btn.loading .btn-text {
-            display: none;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* ================================================================ */
-        /* PRIVACY NOTE                                                    */
-        /* ================================================================ */
-        .privacy-note {
-            background: var(--bg-light);
-            border-radius: var(--radius-sm);
-            padding: 14px 18px;
-            margin-top: 18px;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            border: 1px solid var(--border-light);
-        }
-
-        .privacy-note strong {
-            color: var(--text-dark);
-        }
-
-        .privacy-note a {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
-
-        .privacy-note a:hover {
-            text-decoration: underline;
-        }
-
-        /* ================================================================ */
-        /* SUCCESS STATE                                                   */
-        /* ================================================================ */
-        .form-success {
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        .form-success .success-icon {
-            font-size: 3.6rem;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .form-success h3 {
-            font-size: 1.3rem;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-
-        .form-success p {
-            color: var(--text-muted);
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        /* ================================================================ */
-        /* RESPONSIVE                                                      */
-        /* ================================================================ */
-        @media (max-width: 1024px) {
-            .contact-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding-top: 64px;
-            }
-
-            .page-hero {
-                padding: 50px 20px 40px;
-            }
-
-            .page-hero h1 {
-                font-size: 2.2rem;
-            }
-
-            .page-hero p {
-                font-size: 1rem;
-            }
-
-            .contact-section {
-                padding: 30px 16px 40px;
-            }
-
-            .form-tabs .tab-headers {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .form-tabs .tab-headers .tab-btn {
-                font-size: 0.7rem;
-                padding: 10px 6px;
-            }
-
-            .form-tabs .tab-headers .tab-btn .tab-icon {
-                font-size: 1rem;
-            }
-
-            .form-tabs .tab-panels {
-                padding: 20px 16px 24px;
-            }
-
-            .contact-info .info-item {
-                padding: 12px 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .form-tabs .tab-headers {
-                grid-template-columns: 1fr;
-            }
-
-            .form-tabs .tab-headers .tab-btn {
-                padding: 10px 12px;
-                border-bottom: 1px solid var(--border-light);
-            }
-
-            .form-tabs .tab-headers .tab-btn:last-child {
-                border-bottom: none;
-            }
-
-            .form-tabs .tab-headers .tab-btn.active::after {
-                bottom: -1px;
-            }
-
-            .form-group.checkbox {
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .submit-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* ================================================================ */
-        /* SCROLLBAR                                                       */
-        /* ================================================================ */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-light);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-light);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-    </style>
-</head>
-<body>
-
-    <!-- ================================================================ -->
-    <!-- HEADER                                                          -->
-    <!-- ================================================================ -->
-    {% include 'header.html' %}
-
-    <!-- ================================================================ -->
-    <!-- MAIN CONTENT                                                    -->
-    <!-- ================================================================ -->
-    <main>
-
-        <!-- ============================================================ -->
-        <!-- PAGE HERO                                                    -->
-        <!-- ============================================================ -->
-        <section class="page-hero">
-            <div class="breadcrumb">
-                <a href="{{ url_for('public.index') }}">Home</a>
-                <span class="sep">/</span>
-                <span>Contact</span>
-            </div>
-            <h1>Get in <span class="highlight">Touch</span></h1>
-            <p>Reach out to the BRIDGE-AI Kenya team at JKUAT — we'd love to hear from you</p>
-        </section>
-
-        <!-- ============================================================ -->
-        <!-- FLASH MESSAGES                                               -->
-        <!-- ============================================================ -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash-message {{ category }}">
-                            <span class="flash-icon">
-                                {% if category == 'success' %}✅{% else %}⚠️{% endif %}
-                            </span>
-                            {{ message }}
-                            <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+            return `
+                <tr class="${rowClass}">
+                    <td><span class="status-badge" style="background:${typeColor};color:#ffffff;">${typeLabel}</span></td>
+                    <td><strong>${escapeHtml(formData.name || '-')}</strong></td>
+                    <td><a href="mailto:${escapeHtml(formData.email || '')}" style="color:var(--primary-light);text-decoration:none;">${escapeHtml(formData.email || '-')}</a></td>
+                    <td>${item.submitted_at ? formatDate(item.submitted_at) : '-'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                    <td>${escapeHtml(getMessagePreview(formData, type))}</td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon" onclick="viewSubmission(${item.id})" title="View Details">📄</button>
+                            <button class="action-icon" onclick="markRead(${item.id})" title="Mark Read" style="${item.is_read ? 'opacity:0.3;' : ''}">📖</button>
+                            <button class="action-icon delete" onclick="deleteSubmission(${item.id})" title="Delete">🗑️</button>
                         </div>
-                    {% endfor %}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        updateCounts(data.length);
+    }
+
+    // ================================================================
+    // FORMAT HELPERS
+    // ================================================================
+
+    function formatType(type) {
+        const map = {
+            'contact': '📧 Contact',
+            'training': '🎓 Training',
+            'media': '📢 Media'
+        };
+        return map[type] || type;
+    }
+
+    function getTypeColor(type) {
+        const map = {
+            'contact': '#1a4a6b',
+            'training': '#28a745',
+            'media': '#d4a843'
+        };
+        return map[type] || '#5a6a7a';
+    }
+
+    function getMessagePreview(data, type) {
+        if (type === 'contact' && data.message) {
+            return data.message.length > 50 ? data.message.substring(0, 50) + '...' : data.message;
+        } else if (type === 'training' && data.training_interest) {
+            return data.training_interest.length > 50 ? data.training_interest.substring(0, 50) + '...' : data.training_interest;
+        } else if (type === 'media' && data.message) {
+            return data.message.length > 50 ? data.message.substring(0, 50) + '...' : data.message;
+        }
+        return 'No message';
+    }
+
+    // ================================================================
+    // FILTER TABLE
+    // ================================================================
+
+    window.filterTable = function() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const typeFilter = document.getElementById('filterType').value;
+        const readFilter = document.getElementById('filterRead').value;
+
+        let filtered = submissions;
+
+        if (search) {
+            filtered = filtered.filter(item => {
+                const formData = item.data || {};
+                const searchable = [
+                    formData.name,
+                    formData.email,
+                    formData.message,
+                    formData.training_interest,
+                    formData.outlet,
+                    formData.organisation,
+                    formData.county
+                ].join(' ').toLowerCase();
+                return searchable.includes(search);
+            });
+        }
+
+        if (typeFilter) {
+            filtered = filtered.filter(item => item.form_type === typeFilter);
+        }
+
+        if (readFilter) {
+            const isRead = readFilter === 'true';
+            filtered = filtered.filter(item => item.is_read === isRead);
+        }
+
+        renderTable(filtered);
+    };
+
+    // ================================================================
+    // VIEW SUBMISSION DETAILS
+    // ================================================================
+
+    window.viewSubmission = function(id) {
+        const item = submissions.find(s => s.id === id);
+        if (!item) {
+            showToast('error', 'Submission not found');
+            return;
+        }
+
+        const formData = item.data || {};
+        const type = item.form_type || 'contact';
+        const typeLabel = formatType(type);
+        const submitted = item.submitted_at ? new Date(item.submitted_at).toLocaleString() : '-';
+
+        let detailHtml = `
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-label">Type</div>
+                    <div class="detail-value"><span class="status-badge" style="background:${getTypeColor(type)};color:#ffffff;">${typeLabel}</span></div>
                 </div>
-            {% endif %}
-        {% endwith %}
+                <div>
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value"><span class="status-badge ${item.is_read ? 'published' : 'draft'}">${item.is_read ? '✅ Read' : '🟡 Unread'}</span></div>
+                </div>
+                <div>
+                    <div class="detail-label">Submitted</div>
+                    <div class="detail-value">${submitted}</div>
+                </div>
+                <div>
+                    <div class="detail-label">IP Address</div>
+                    <div class="detail-value">${item.ip_address || '-'}</div>
+                </div>
+            </div>
+            <hr>
+            <div class="detail-grid">
+        `;
 
-        <!-- ============================================================ -->
-        <!-- CONTACT SECTION                                              -->
-        <!-- ============================================================ -->
-        <section class="contact-section">
-            <div class="contact-container">
+        if (type === 'contact') {
+            detailHtml += `
+                <div class="full">
+                    <div class="detail-label">Name</div>
+                    <div class="detail-value">${escapeHtml(formData.name || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value"><a href="mailto:${escapeHtml(formData.email || '')}">${escapeHtml(formData.email || '-')}</a></div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Organisation</div>
+                    <div class="detail-value">${escapeHtml(formData.organisation || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Audience</div>
+                    <div class="detail-value">${escapeHtml(formData.audience || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Message</div>
+                    <div class="detail-value message">${escapeHtml(formData.message || '-')}</div>
+                </div>
+            `;
+        } else if (type === 'training') {
+            detailHtml += `
+                <div class="full">
+                    <div class="detail-label">Name</div>
+                    <div class="detail-value">${escapeHtml(formData.name || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value"><a href="mailto:${escapeHtml(formData.email || '')}">${escapeHtml(formData.email || '-')}</a></div>
+                </div>
+                <div>
+                    <div class="detail-label">Phone</div>
+                    <div class="detail-value">${escapeHtml(formData.phone || '-')}</div>
+                </div>
+                <div>
+                    <div class="detail-label">County</div>
+                    <div class="detail-value">${escapeHtml(formData.county || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Audience</div>
+                    <div class="detail-value">${escapeHtml(formData.audience || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Training Interest</div>
+                    <div class="detail-value">${escapeHtml(formData.training_interest || '-')}</div>
+                </div>
+            `;
+        } else if (type === 'media') {
+            detailHtml += `
+                <div class="full">
+                    <div class="detail-label">Name</div>
+                    <div class="detail-value">${escapeHtml(formData.name || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value"><a href="mailto:${escapeHtml(formData.email || '')}">${escapeHtml(formData.email || '-')}</a></div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Outlet</div>
+                    <div class="detail-value">${escapeHtml(formData.outlet || '-')}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Request Type</div>
+                    <div class="detail-value">${escapeHtml(formData.request_type || '-')}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Deadline</div>
+                    <div class="detail-value">${escapeHtml(formData.deadline || '-')}</div>
+                </div>
+                <div class="full">
+                    <div class="detail-label">Message</div>
+                    <div class="detail-value message">${escapeHtml(formData.message || '-')}</div>
+                </div>
+            `;
+        }
 
-                <div class="contact-grid">
+        detailHtml += `</div>`;
 
-                    <!-- ======================================================== -->
-                    <!-- CONTACT INFO                                               -->
-                    <!-- ======================================================== -->
-                    <div class="contact-info">
-                        <h2>📬 Contact Us</h2>
-                        <p class="info-sub">Have questions about BRIDGE-AI Kenya? Want to participate in training or partner with us? Reach out through any of the channels below.</p>
+        if (item.user_agent) {
+            detailHtml += `
+                <hr>
+                <div>
+                    <div class="detail-label">User Agent</div>
+                    <div class="detail-value" style="font-size:0.75rem;color:var(--text-light);word-break:break-all;">${escapeHtml(item.user_agent)}</div>
+                </div>
+            `;
+        }
 
-                        <div class="info-item">
-                            <span class="info-icon">📍</span>
-                            <div class="info-content">
-                                <h4>Visit Us</h4>
-                                <p>JKUAT Smart Farm Zone<br>Juja, Kenya</p>
-                            </div>
-                        </div>
+        openModal('📄 Submission Details', detailHtml);
 
-                        <div class="info-item">
-                            <span class="info-icon">✉️</span>
-                            <div class="info-content">
-                                <h4>Email</h4>
-                                <p><a href="mailto:bridge-ai@jkuat.ac.ke">bridge-ai@jkuat.ac.ke</a></p>
-                            </div>
-                        </div>
+        // Mark as read if unread
+        if (!item.is_read) {
+            markRead(id);
+        }
+    };
 
-                        <div class="info-item">
-                            <span class="info-icon">📞</span>
-                            <div class="info-content">
-                                <h4>Phone</h4>
-                                <p><a href="tel:+254123456789">+254 (0) 123 456 789</a></p>
-                            </div>
-                        </div>
+    // ================================================================
+    // MARK AS READ
+    // ================================================================
 
-                        <div class="info-item">
-                            <span class="info-icon">🌐</span>
-                            <div class="info-content">
-                                <h4>Connect</h4>
-                                <p>
-                                    <a href="#" target="_blank" rel="noopener">LinkedIn</a> •
-                                    <a href="#" target="_blank" rel="noopener">YouTube</a> •
-                                    <a href="#" target="_blank" rel="noopener">Twitter</a>
-                                </p>
-                            </div>
-                        </div>
+    window.markRead = function(id) {
+        const item = submissions.find(s => s.id === id);
+        if (!item || item.is_read) return;
 
-                        <div style="margin-top: 20px; padding: 16px 20px; background: var(--bg-light); border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                            <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">
-                                <strong style="color: var(--text-dark);">🕐 Office Hours:</strong><br>
-                                Monday – Friday: 8:00 AM – 5:00 PM EAT
-                            </p>
-                        </div>
-                    </div>
+        fetch(`${API_URL}${id}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ is_read: true })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showToast('success', '✅ Marked as read');
+                loadSubmissions();
+            } else {
+                showToast('error', 'Failed to mark as read');
+            }
+        })
+        .catch(error => {
+            showToast('error', `Error: ${error.message}`);
+        });
+    };
 
-                    <!-- ======================================================== -->
-                    <!-- FORM TABS                                                 -->
-                    <!-- ======================================================== -->
-                    <div class="form-tabs">
+    // ================================================================
+    // DELETE SUBMISSION
+    // ================================================================
 
-                        <!-- Tab Headers -->
-                        <div class="tab-headers" role="tablist">
-                            <button class="tab-btn active" data-tab="general" role="tab" aria-selected="true">
-                                <span class="tab-icon">✉️</span>
-                                General Enquiry
-                            </button>
-                            <button class="tab-btn" data-tab="training" role="tab" aria-selected="false">
-                                <span class="tab-icon">🎓</span>
-                                Training Interest
-                            </button>
-                            <button class="tab-btn" data-tab="media" role="tab" aria-selected="false">
-                                <span class="tab-icon">📢</span>
-                                Media Request
-                            </button>
-                        </div>
+    window.deleteSubmission = function(id) {
+        const item = submissions.find(s => s.id === id);
+        if (!item) return;
 
-                        <!-- ======================================================== -->
-                        <!-- TAB 1: GENERAL ENQUIRY                                   -->
-                        <!-- ======================================================== -->
-                        <div class="tab-panels">
-                            <div class="tab-panel active" id="panel-general" role="tabpanel">
-                                <h3>General Enquiry</h3>
-                                <p class="tab-desc">Have a question about BRIDGE-AI Kenya? Send us a message and we'll get back to you.</p>
+        const formData = item.data || {};
+        const name = formData.name || 'Untitled';
 
-                                <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="formGeneral" novalidate>
-                                    {{ contact_form.csrf_token() }}
-                                    <input type="hidden" name="contact_submit" value="1">
+        if (!confirm(`Are you sure you want to delete submission from "${name}"? This action cannot be undone.`)) {
+            return;
+        }
 
-                                    <div class="form-group">
-                                        <label for="general_name">Full Name <span class="required">*</span></label>
-                                        {{ contact_form.name(class="form-control", placeholder="Enter your full name", id="general_name") }}
-                                        <div class="error-message" id="general_name_error">Please enter your name.</div>
-                                    </div>
+        fetch(`${API_URL}${id}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showToast('success', '🗑️ Submission deleted!');
+                loadSubmissions();
+            } else {
+                showToast('error', result.error || 'Failed to delete');
+            }
+        })
+        .catch(error => {
+            showToast('error', `Error: ${error.message}`);
+        });
+    };
 
-                                    <div class="form-group">
-                                        <label for="general_email">Email Address <span class="required">*</span></label>
-                                        {{ contact_form.email(class="form-control", placeholder="your@email.com", id="general_email") }}
-                                        <div class="error-message" id="general_email_error">Please enter a valid email.</div>
-                                    </div>
+    // ================================================================
+    // CLEAR ALL SUBMISSIONS
+    // ================================================================
 
-                                    <div class="form-group">
-                                        <label for="general_organisation">Organisation (Optional)</label>
-                                        {{ contact_form.organisation(class="form-control", placeholder="Your organisation", id="general_organisation") }}
-                                    </div>
+    window.clearAllSubmissions = function() {
+        if (submissions.length === 0) {
+            showToast('info', 'No submissions to clear');
+            return;
+        }
 
-                                    <div class="form-group">
-                                        <label for="general_audience">I am a... <span class="required">*</span></label>
-                                        {{ contact_form.audience(class="form-control", id="general_audience") }}
-                                        <div class="error-message" id="general_audience_error">Please select your category.</div>
-                                    </div>
+        if (!confirm(`⚠️ Delete ALL ${submissions.length} submissions? This cannot be undone!`)) {
+            return;
+        }
+        if (!confirm('Are you absolutely sure?')) return;
 
-                                    <div class="form-group">
-                                        <label for="general_message">Message <span class="required">*</span></label>
-                                        {{ contact_form.message(class="form-control", placeholder="Write your message here...", id="general_message", rows="4") }}
-                                        <div class="error-message" id="general_message_error">Please enter your message (minimum 10 characters).</div>
-                                    </div>
+        let deleted = 0;
+        const total = submissions.length;
 
-                                    <div class="form-group checkbox">
-                                        {{ contact_form.consent(id="general_consent") }}
-                                        <label for="general_consent">
-                                            I consent to my data being used to respond to my enquiry. <span class="required">*</span>
-                                        </label>
-                                        <div class="error-message" id="general_consent_error">You must consent to submit this form.</div>
-                                    </div>
-
-                                    <button type="submit" class="submit-btn" id="generalSubmit">
-                                        <span class="btn-text">Send Message</span>
-                                        <span class="spinner"></span>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <!-- ======================================================== -->
-                            <!-- TAB 2: TRAINING INTEREST                                 -->
-                            <!-- ======================================================== -->
-                            <div class="tab-panel" id="panel-training" role="tabpanel">
-                                <h3>Training Interest</h3>
-                                <p class="tab-desc">Interested in BRIDGE-AI Kenya training programs? Express your interest and we'll keep you updated.</p>
-
-                                <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="formTraining" novalidate>
-                                    {{ training_form.csrf_token() }}
-                                    <input type="hidden" name="training_submit" value="1">
-
-                                    <div class="form-group">
-                                        <label for="training_name">Full Name <span class="required">*</span></label>
-                                        {{ training_form.name(class="form-control", placeholder="Enter your full name", id="training_name") }}
-                                        <div class="error-message" id="training_name_error">Please enter your name.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="training_email">Email Address <span class="required">*</span></label>
-                                        {{ training_form.email(class="form-control", placeholder="your@email.com", id="training_email") }}
-                                        <div class="error-message" id="training_email_error">Please enter a valid email.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="training_phone">Phone Number (Optional)</label>
-                                        {{ training_form.phone(class="form-control", placeholder="+254 7XX XXX XXX", id="training_phone") }}
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="training_county">County/Location <span class="required">*</span></label>
-                                        {{ training_form.county(class="form-control", placeholder="e.g., Kiambu", id="training_county") }}
-                                        <div class="error-message" id="training_county_error">Please enter your county/location.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="training_audience">I am a... <span class="required">*</span></label>
-                                        {{ training_form.audience(class="form-control", id="training_audience") }}
-                                        <div class="error-message" id="training_audience_error">Please select your category.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="training_interest">Training Interest <span class="required">*</span></label>
-                                        {{ training_form.training_interest(class="form-control", id="training_interest") }}
-                                        <div class="error-message" id="training_interest_error">Please select your training interest.</div>
-                                    </div>
-
-                                    <div class="form-group checkbox">
-                                        {{ training_form.consent(id="training_consent") }}
-                                        <label for="training_consent">
-                                            I consent to be contacted about training opportunities. <span class="required">*</span>
-                                        </label>
-                                        <div class="error-message" id="training_consent_error">You must consent to submit this form.</div>
-                                    </div>
-
-                                    <button type="submit" class="submit-btn" id="trainingSubmit">
-                                        <span class="btn-text">Register Interest</span>
-                                        <span class="spinner"></span>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <!-- ======================================================== -->
-                            <!-- TAB 3: MEDIA REQUEST                                    -->
-                            <!-- ======================================================== -->
-                            <div class="tab-panel" id="panel-media" role="tabpanel">
-                                <h3>Media Request</h3>
-                                <p class="tab-desc">Media professionals — request interviews, press information, or site visits.</p>
-
-                                <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="formMedia" novalidate>
-                                    {{ media_form.csrf_token() }}
-                                    <input type="hidden" name="media_submit" value="1">
-
-                                    <div class="form-group">
-                                        <label for="media_name">Full Name <span class="required">*</span></label>
-                                        {{ media_form.name(class="form-control", placeholder="Enter your full name", id="media_name") }}
-                                        <div class="error-message" id="media_name_error">Please enter your name.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="media_email">Email Address <span class="required">*</span></label>
-                                        {{ media_form.email(class="form-control", placeholder="your@email.com", id="media_email") }}
-                                        <div class="error-message" id="media_email_error">Please enter a valid email.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="media_outlet">Media Outlet/Organisation <span class="required">*</span></label>
-                                        {{ media_form.outlet(class="form-control", placeholder="e.g., Daily Nation", id="media_outlet") }}
-                                        <div class="error-message" id="media_outlet_error">Please enter your media outlet.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="media_request_type">Request Type <span class="required">*</span></label>
-                                        {{ media_form.request_type(class="form-control", id="media_request_type") }}
-                                        <div class="error-message" id="media_request_type_error">Please select a request type.</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="media_deadline">Deadline (Optional)</label>
-                                        {{ media_form.deadline(class="form-control", placeholder="e.g., 15 Dec 2026", id="media_deadline") }}
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="media_message">Request Details <span class="required">*</span></label>
-                                        {{ media_form.message(class="form-control", placeholder="Please describe your request in detail...", id="media_message", rows="4") }}
-                                        <div class="error-message" id="media_message_error">Please provide details of your request.</div>
-                                    </div>
-
-                                    <div class="form-group checkbox">
-                                        {{ media_form.consent(id="media_consent") }}
-                                        <label for="media_consent">
-                                            I consent to my data being used to respond to my request. <span class="required">*</span>
-                                        </label>
-                                        <div class="error-message" id="media_consent_error">You must consent to submit this form.</div>
-                                    </div>
-
-                                    <button type="submit" class="submit-btn" id="mediaSubmit">
-                                        <span class="btn-text">Submit Request</span>
-                                        <span class="spinner"></span>
-                                    </button>
-                                </form>
-                            </div>
-
-                            <!-- ======================================================== -->
-                            <!-- PRIVACY NOTE                                                -->
-                            <!-- ======================================================== -->
-                            <div class="privacy-note">
-                                <strong>🔒 Privacy Notice:</strong>
-                                The information you submit will be used only to respond to your enquiry or manage your participation in BRIDGE-AI activities.
-                                It will not be published publicly without your consent.
-                                <a href="{{ url_for('public.privacy_ethics') }}">Read our full privacy policy →</a>
-                            </div>
-
-                        </div><!-- /tab-panels -->
-
-                    </div><!-- /form-tabs -->
-
-                </div><!-- /contact-grid -->
-
-            </div><!-- /contact-container -->
-        </section>
-
-    </main>
-
-    <!-- ================================================================ -->
-    <!-- FOOTER                                                          -->
-    <!-- ================================================================ -->
-    {% include 'footer.html' %}
-
-    <!-- ================================================================ -->
-    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
-    <!-- ================================================================ -->
-    <script>
-        (function() {
-            'use strict';
-
-            // ================================================================
-            // TAB SWITCHING
-            // ================================================================
-
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabPanels = {
-                general: document.getElementById('panel-general'),
-                training: document.getElementById('panel-training'),
-                media: document.getElementById('panel-media')
-            };
-
-            tabButtons.forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    // Remove active from all buttons
-                    tabButtons.forEach(function(b) {
-                        b.classList.remove('active');
-                        b.setAttribute('aria-selected', 'false');
-                    });
-
-                    // Add active to clicked button
-                    this.classList.add('active');
-                    this.setAttribute('aria-selected', 'true');
-
-                    // Hide all panels
-                    Object.values(tabPanels).forEach(function(panel) {
-                        if (panel) panel.classList.remove('active');
-                    });
-
-                    // Show selected panel
-                    const tabId = this.getAttribute('data-tab');
-                    if (tabId && tabPanels[tabId]) {
-                        tabPanels[tabId].classList.add('active');
+        submissions.forEach(item => {
+            fetch(`${API_URL}${item.id}/`, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    deleted++;
+                    if (deleted === total) {
+                        showToast('success', `✅ All ${total} submissions deleted!`);
+                        loadSubmissions();
                     }
-                });
+                }
+            })
+            .catch(() => {});
+        });
+    };
+
+    // ================================================================
+    // REFRESH SUBMISSIONS
+    // ================================================================
+
+    window.refreshSubmissions = function() {
+        loadSubmissions();
+        showToast('success', '🔄 Refreshed');
+    };
+
+    // ================================================================
+    // UPDATE UI ELEMENTS
+    // ================================================================
+
+    function updateCounts(count) {
+        const countEl = document.getElementById('count-submissions');
+        const tableCount = document.getElementById('tableCount');
+        if (countEl) countEl.textContent = `${count} items`;
+        if (tableCount) tableCount.textContent = `${count} items`;
+    }
+
+    function updateClearAllButton() {
+        const btn = document.getElementById('clearAllBtn');
+        if (btn) {
+            btn.style.display = submissions.length > 0 ? 'inline-flex' : 'none';
+        }
+    }
+
+    // ================================================================
+    // UTILITY FUNCTIONS
+    // ================================================================
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
             });
+        } catch {
+            return dateStr.substring(0, 10);
+        }
+    }
 
-            // ================================================================
-            // FORM VALIDATION & SUBMISSION
-            // ================================================================
+    // ================================================================
+    // INITIALIZE
+    // ================================================================
 
-            const forms = document.querySelectorAll('.contact-form');
+    loadSubmissions();
 
-            forms.forEach(function(form) {
-                form.addEventListener('submit', function(e) {
-                    let isValid = true;
+    // Auto-refresh every 60 seconds
+    setInterval(() => {
+        loadSubmissions();
+    }, 60000);
 
-                    // Validate all required fields in this form
-                    const requiredFields = form.querySelectorAll('[required]');
-                    requiredFields.forEach(function(field) {
-                        const errorEl = field.parentElement.querySelector('.error-message');
-                        const value = field.value.trim();
+    console.log('✅ BRIDGE-AI Kenya Submissions Viewer initialized');
 
-                        if (!value) {
-                            isValid = false;
-                            field.classList.add('error');
-                            if (errorEl) errorEl.classList.add('visible');
-                        } else {
-                            field.classList.remove('error');
-                            if (errorEl) errorEl.classList.remove('visible');
-                        }
-
-                        // Email validation
-                        if (field.type === 'email' && value) {
-                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                            if (!emailRegex.test(value)) {
-                                isValid = false;
-                                field.classList.add('error');
-                                if (errorEl) errorEl.classList.add('visible');
-                            }
-                        }
-                    });
-
-                    // Validate checkboxes
-                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-                    checkboxes.forEach(function(cb) {
-                        const errorEl = cb.closest('.form-group').querySelector('.error-message');
-                        if (!cb.checked) {
-                            isValid = false;
-                            if (errorEl) errorEl.classList.add('visible');
-                        } else {
-                            if (errorEl) errorEl.classList.remove('visible');
-                        }
-                    });
-
-                    if (!isValid) {
-                        e.preventDefault();
-                        // Scroll to first error
-                        const firstError = form.querySelector('.error');
-                        if (firstError) {
-                            firstError.focus();
-                        }
-                    } else {
-                        // Show loading state
-                        const submitBtn = form.querySelector('.submit-btn');
-                        if (submitBtn) {
-                            submitBtn.classList.add('loading');
-                            submitBtn.disabled = true;
-                        }
-                    }
-                });
-
-                // Clear errors on input
-                form.querySelectorAll('input, select, textarea').forEach(function(field) {
-                    field.addEventListener('input', function() {
-                        const errorEl = this.parentElement.querySelector('.error-message');
-                        this.classList.remove('error');
-                        if (errorEl) errorEl.classList.remove('visible');
-                    });
-
-                    field.addEventListener('change', function() {
-                        const errorEl = this.parentElement.querySelector('.error-message');
-                        this.classList.remove('error');
-                        if (errorEl) errorEl.classList.remove('visible');
-                    });
-                });
-
-                // Clear checkbox errors on change
-                form.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
-                    cb.addEventListener('change', function() {
-                        const errorEl = this.closest('.form-group').querySelector('.error-message');
-                        if (this.checked) {
-                            if (errorEl) errorEl.classList.remove('visible');
-                        }
-                    });
-                });
-            });
-
-            // ================================================================
-            // FLASH MESSAGE AUTO-DISMISS
-            // ================================================================
-
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(function(msg) {
-                setTimeout(function() {
-                    msg.style.opacity = '0';
-                    msg.style.transform = 'translateY(-10px)';
-                    setTimeout(function() {
-                        msg.remove();
-                    }, 400);
-                }, 6000);
-            });
-
-            // ================================================================
-            // SMOOTH SCROLL FOR INTERNAL LINKS
-            // ================================================================
-
-            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
-                link.addEventListener('click', function(e) {
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        e.preventDefault();
-                        const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
-                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
-
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-
-            console.log('✅ BRIDGE-AI Kenya Contact page initialized');
-
-        })();
-    </script>
-</body>
-</html>
+})();
+</script>
+{% endblock %}
