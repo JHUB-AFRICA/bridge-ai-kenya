@@ -236,7 +236,7 @@ config = {
 }
 
 
+# ✅ Fixed - returns INSTANCE
 def get_config():
-    """Get configuration based on FLASK_ENV environment variable."""
     env = os.environ.get('FLASK_ENV', 'development')
-    return config.get(env, DevelopmentConfig)
+    return config.get(env, DevelopmentConfig)()  # ADD ()
