@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "form_type": "contact",
+    "data": {
+      "name": "Dr. Jane Muthoni",
+      "email": "jane.muthoni@jkuat.ac.ke",
+      "organisation": "JKUAT - Department of Agricultural Engineering",
+      "audience": "researcher",
+      "message": "I am a researcher at JKUAT interested in the Smart Mushroom pilot project. I would like to know more about the IoT sensors being used and how we can collaborate on the data collection and analysis. I have been following the BRIDGE-AI project and I'm particularly interested in the GenAI predictive analytics component. Could we schedule a meeting to discuss potential synergies with our ongoing research on mushroom cultivation? I look forward to hearing from you."
+    },
+    "ip_address": "192.168.1.100",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T14:30:00.000",
+    "created_at": "2026-06-30T14:30:00.000",
+    "updated_at": "2026-06-30T14:30:00.000"
+  },
+  {
+    "id": 2,
+    "form_type": "contact",
+    "data": {
+      "name": "Peter Ochieng",
+      "email": "peter.ochieng@gmail.com",
+      "organisation": "Kiambu Mushroom Growers Cooperative",
+      "audience": "farmer",
+      "message": "I am a mushroom farmer from Kiambu county. I have heard about the Smart Mushroom project through our cooperative. I am interested in learning more about how the technology can help us improve our yields. Currently we are struggling with temperature control during the hot season and we often lose entire batches. Is there any training available for farmers? I would like to visit the demonstration farm at JKUAT if possible. Please let me know how I can get involved."
+    },
+    "ip_address": "192.168.1.101",
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T15:45:00.000",
+    "created_at": "2026-06-30T15:45:00.000",
+    "updated_at": "2026-06-30T15:45:00.000"
+  },
+  {
+    "id": 3,
+    "form_type": "training",
+    "data": {
+      "name": "Sarah Wanjiru",
+      "email": "sarah.wanjiru@techhub.co.ke",
+      "phone": "+254712345678",
+      "county": "Nairobi",
+      "audience": "entrepreneur",
+      "training_interest": "smart_mushroom"
+    },
+    "ip_address": "192.168.1.102",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "is_read": true,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T16:20:00.000",
+    "created_at": "2026-06-30T16:20:00.000",
+    "updated_at": "2026-06-30T16:20:00.000"
+  },
+  {
+    "id": 4,
+    "form_type": "training",
+    "data": {
+      "name": "David Kamau",
+      "email": "david.kamau@student.jkuat.ac.ke",
+      "phone": "+254723456789",
+      "county": "Kiambu",
+      "audience": "student",
+      "training_interest": "genai"
+    },
+    "ip_address": "192.168.1.103",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T17:10:00.000",
+    "created_at": "2026-06-30T17:10:00.000",
+    "updated_at": "2026-06-30T17:10:00.000"
+  },
+  {
+    "id": 5,
+    "form_type": "media",
+    "data": {
+      "name": "Grace Akinyi",
+      "email": "grace.akinyi@dailynation.co.ke",
+      "outlet": "Daily Nation",
+      "request_type": "interview",
+      "deadline": "15 Jul 2026",
+      "message": "I am a journalist with the Daily Nation. I am writing a feature article on how AI and IoT technologies are transforming agriculture in Kenya. I would like to request an interview with the BRIDGE-AI project team and a visit to the JKUAT Smart Farm Zone to see the Smart Mushroom pilot in action. I am available next week. Please let me know if you can accommodate this request."
+    },
+    "ip_address": "192.168.1.104",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T18:30:00.000",
+    "created_at": "2026-06-30T18:30:00.000",
+    "updated_at": "2026-06-30T18:30:00.000"
+  },
+  {
+    "id": 6,
+    "form_type": "media",
+    "data": {
+      "name": "James Omondi",
+      "email": "james.omondi@citizen.co.ke",
+      "outlet": "Citizen TV",
+      "request_type": "site_visit",
+      "deadline": "20 Jul 2026",
+      "message": "We are producing a documentary on agritech innovations in Kenya and would like to feature the Smart Mushroom project. We would like to do a site visit and film the demonstration farm operations. We can bring our own production team and equipment. Please let us know when would be a good time for us to come and what permissions are required."
+    },
+    "ip_address": "192.168.1.105",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T19:15:00.000",
+    "created_at": "2026-06-30T19:15:00.000",
+    "updated_at": "2026-06-30T19:15:00.000"
+  }
+]
