@@ -1,10 +1,6 @@
 # ================================================================
 # BRIDGE-AI Kenya - Application Factory (JSON Version)
 # ================================================================
-# This file contains the Flask application factory function.
-# All application initialization happens here.
-# Uses JSON file storage instead of database.
-# ================================================================
 
 import os
 import logging
@@ -13,8 +9,11 @@ from flask import Flask, render_template, request, redirect
 
 from app.config import get_config
 from app.extensions import (
-    csrf, limiter, login_manager, mail,  # ✅ Added limiter
-    uploads, photos, documents, videos,
+    csrf,
+    limiter,
+    login_manager,
+    mail,
+    # ❌ REMOVED: uploads, photos, documents, videos
     init_extensions
 )
 from app.services.json_service import JSONService
@@ -24,13 +23,6 @@ def create_app(config_name=None):
     """
     Application factory function.
     Creates and configures the Flask application.
-    
-    Args:
-        config_name: Configuration environment (development, production, testing)
-                     If None, uses FLASK_ENV environment variable.
-    
-    Returns:
-        Configured Flask application instance.
     """
     
     # Create Flask app
@@ -55,30 +47,26 @@ def create_app(config_name=None):
     except OSError:
         pass
     
-    # Initialize extensions
+    # Initialize extensions (NO flask_uploads)
     init_extensions(app)
     
     # ============================================================
     # Register Blueprints / Routes
     # ============================================================
     
-    # Import and register routes
     from app.routes import public_bp, admin_bp, api_bp
     app.register_blueprint(public_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(api_bp, url_prefix='/api')
     
-
-    
     # ============================================================
-    # HTTPS Redirect (Production) - NEW
+    # HTTPS Redirect (Production)
     # ============================================================
     
     @app.before_request
     def before_request():
         """Force HTTPS in production."""
         if app.config.get('FLASK_ENV') == 'production':
-            # Check if the request came from HTTP
             if request.headers.get('X-Forwarded-Proto') == 'http':
                 return redirect(request.url.replace('http://', 'https://'), 301)
     
@@ -91,7 +79,6 @@ def create_app(config_name=None):
         """Inject global variables into all templates."""
         json_service = JSONService()
         
-        # Get statistics for admin sidebar
         stats = {
             'activities': len(json_service.get_all('activities.json')),
             'published_activities': len([a for a in json_service.get_all('activities.json') if a.get('evidence_status') == 'published']),
@@ -115,7 +102,6 @@ def create_app(config_name=None):
             'replication_resources': len(json_service.get_all('replication_resources.json')),
             'replication_templates': len(json_service.get_all('replication_templates.json')),
             'replication_lessons': len(json_service.get_all('replication_lessons.json')),
-
         }
         
         return {
@@ -127,7 +113,7 @@ def create_app(config_name=None):
             'PARTNERS': app.config.get('PARTNERS', []),
             'COUNTRIES': app.config.get('COUNTRIES', []),
             'KENYA_SITE': app.config.get('KENYA_SITE', ''),
-            'stats': stats,  # ✅ Now available in ALL templates
+            'stats': stats,
         }
     
     # ============================================================
@@ -136,17 +122,14 @@ def create_app(config_name=None):
     
     @app.errorhandler(404)
     def page_not_found(error):
-        """Handle 404 errors."""
         return render_template('404.html'), 404
     
     @app.errorhandler(403)
     def forbidden(error):
-        """Handle 403 errors."""
         return render_template('403.html'), 403
     
     @app.errorhandler(500)
     def internal_error(error):
-        """Handle 500 errors."""
         return render_template('500.html'), 500
     
     # ============================================================
@@ -186,8 +169,8 @@ def create_app(config_name=None):
                 'role': 'admin',
                 'is_active': True,
                 'last_login': None,
-                'created_at': '2026-06-25T10:00:00',
-                'updated_at': '2026-06-25T10:00:00'
+                'created_at': datetime.now().isoformat(),
+                'updated_at': datetime.now().isoformat()
             }
             json_service.create('users.json', admin_user)
             print(f"✅ Admin user '{admin_username}' created.")
@@ -376,7 +359,7 @@ def create_app(config_name=None):
         
         settings = json_service.get_settings()
         if not settings:
-            # Create default settings
+            import json
             default_settings = {
                 'site_title': 'BRIDGE-AI Kenya',
                 'site_description': 'AI for African Agriculture - GenAI, IoT and digital skills for climate-smart mushroom farming',
@@ -403,11 +386,9 @@ def create_app(config_name=None):
                     'phone': '+254-XXX-XXXX',
                     'address': 'JKUAT Smart Farm Zone, Juja, Kenya'
                 },
-                'updated_at': '2026-06-25T10:00:00'
+                'updated_at': datetime.now().isoformat()
             }
             
-            # Write settings to file
-            import json
             settings_file = os.path.join(app.config.get('DATA_FOLDER', 'app/data'), 'settings.json')
             with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump({'settings': default_settings}, f, indent=2, ensure_ascii=False)
@@ -422,28 +403,24 @@ def create_app(config_name=None):
     # ============================================================
     
     if not app.debug and not app.testing:
-        # Create logs directory if it doesn't exist
         log_dir = os.path.dirname(app.config.get('LOG_FILE', 'logs/app.log'))
         try:
             os.makedirs(log_dir, exist_ok=True)
         except OSError:
             pass
         
-        # Setup file handler
         file_handler = RotatingFileHandler(
             app.config.get('LOG_FILE', 'logs/app.log'),
-            maxBytes=10485760,  # 10MB
+            maxBytes=10485760,
             backupCount=10
         )
         file_handler.setLevel(logging.INFO)
         
-        # Setup formatter
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
         file_handler.setFormatter(formatter)
         
-        # Add handler to app logger
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
         app.logger.info('Application startup')
