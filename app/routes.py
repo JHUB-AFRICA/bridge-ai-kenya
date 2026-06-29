@@ -399,104 +399,127 @@ def gallery_album(slug):
     return render_template('gallery_album.html', album=album, images=sorted_images)
 
 
+# app/routes.py - Replace the entire contact() function
+
 @public_bp.route('/contact/', methods=['GET', 'POST'])
 def contact():
+    # Import forms
+    from app.forms import ContactForm, TrainingInterestForm, MediaRequestForm
+    
+    # Create form instances
+    contact_form = ContactForm()
+    training_form = TrainingInterestForm()
+    media_form = MediaRequestForm()
+    
     if request.method == 'POST':
         form_type = request.form.get('form_type', 'contact')
         
         if form_type == 'contact':
-            name = request.form.get('name', '')
-            email = request.form.get('email', '')
-            organisation = request.form.get('organisation', '')
-            audience = request.form.get('audience', '')
-            message = request.form.get('message', '')
-            
-            if name and email and message:
-                submission = {
-                    'form_type': 'contact',
-                    'data': {
-                        'name': name,
-                        'email': email,
-                        'organisation': organisation,
-                        'audience': audience,
-                        'message': message
-                    },
-                    'ip_address': request.remote_addr,
-                    'user_agent': request.headers.get('User-Agent', ''),
-                    'is_read': False,
-                    'is_responded': False,
-                    'submitted_at': datetime.now().isoformat()
-                }
-                json_service.create('submissions.json', submission)
-                flash('Your message has been sent successfully. We will respond shortly.', 'success')
-                return redirect(url_for('public.contact'))
+            if contact_form.validate_on_submit():
+                name = request.form.get('name', '')
+                email = request.form.get('email', '')
+                organisation = request.form.get('organisation', '')
+                audience = request.form.get('audience', '')
+                message = request.form.get('message', '')
+                
+                if name and email and message:
+                    submission = {
+                        'form_type': 'contact',
+                        'data': {
+                            'name': name,
+                            'email': email,
+                            'organisation': organisation,
+                            'audience': audience,
+                            'message': message
+                        },
+                        'ip_address': request.remote_addr,
+                        'user_agent': request.headers.get('User-Agent', ''),
+                        'is_read': False,
+                        'is_responded': False,
+                        'submitted_at': datetime.now().isoformat()
+                    }
+                    json_service.create('submissions.json', submission)
+                    flash('Your message has been sent successfully. We will respond shortly.', 'success')
+                    return redirect(url_for('public.contact'))
+                else:
+                    flash('Please fill in all required fields.', 'danger')
             else:
-                flash('Please fill in all required fields.', 'danger')
+                flash('Please fill in all required fields correctly.', 'danger')
         
         elif form_type == 'training':
-            name = request.form.get('name', '')
-            email = request.form.get('email', '')
-            phone = request.form.get('phone', '')
-            county = request.form.get('county', '')
-            audience = request.form.get('audience', '')
-            training_interest = request.form.get('training_interest', '')
-            
-            if name and email:
-                submission = {
-                    'form_type': 'training',
-                    'data': {
-                        'name': name,
-                        'email': email,
-                        'phone': phone,
-                        'county': county,
-                        'audience': audience,
-                        'training_interest': training_interest
-                    },
-                    'ip_address': request.remote_addr,
-                    'user_agent': request.headers.get('User-Agent', ''),
-                    'is_read': False,
-                    'is_responded': False,
-                    'submitted_at': datetime.now().isoformat()
-                }
-                json_service.create('submissions.json', submission)
-                flash('Your training interest has been registered. We will contact you about upcoming opportunities.', 'success')
-                return redirect(url_for('public.contact'))
+            if training_form.validate_on_submit():
+                name = request.form.get('name', '')
+                email = request.form.get('email', '')
+                phone = request.form.get('phone', '')
+                county = request.form.get('county', '')
+                audience = request.form.get('audience', '')
+                training_interest = request.form.get('training_interest', '')
+                
+                if name and email:
+                    submission = {
+                        'form_type': 'training',
+                        'data': {
+                            'name': name,
+                            'email': email,
+                            'phone': phone,
+                            'county': county,
+                            'audience': audience,
+                            'training_interest': training_interest
+                        },
+                        'ip_address': request.remote_addr,
+                        'user_agent': request.headers.get('User-Agent', ''),
+                        'is_read': False,
+                        'is_responded': False,
+                        'submitted_at': datetime.now().isoformat()
+                    }
+                    json_service.create('submissions.json', submission)
+                    flash('Your training interest has been registered. We will contact you about upcoming opportunities.', 'success')
+                    return redirect(url_for('public.contact'))
+                else:
+                    flash('Please fill in all required fields.', 'danger')
             else:
-                flash('Please fill in all required fields.', 'danger')
+                flash('Please fill in all required fields correctly.', 'danger')
         
         elif form_type == 'media':
-            name = request.form.get('name', '')
-            email = request.form.get('email', '')
-            outlet = request.form.get('outlet', '')
-            request_type = request.form.get('request_type', '')
-            deadline = request.form.get('deadline', '')
-            message = request.form.get('message', '')
-            
-            if name and email and message:
-                submission = {
-                    'form_type': 'media',
-                    'data': {
-                        'name': name,
-                        'email': email,
-                        'outlet': outlet,
-                        'request_type': request_type,
-                        'deadline': deadline,
-                        'message': message
-                    },
-                    'ip_address': request.remote_addr,
-                    'user_agent': request.headers.get('User-Agent', ''),
-                    'is_read': False,
-                    'is_responded': False,
-                    'submitted_at': datetime.now().isoformat()
-                }
-                json_service.create('submissions.json', submission)
-                flash('Your media request has been submitted. Our team will contact you shortly.', 'success')
-                return redirect(url_for('public.contact'))
+            if media_form.validate_on_submit():
+                name = request.form.get('name', '')
+                email = request.form.get('email', '')
+                outlet = request.form.get('outlet', '')
+                request_type = request.form.get('request_type', '')
+                deadline = request.form.get('deadline', '')
+                message = request.form.get('message', '')
+                
+                if name and email and message:
+                    submission = {
+                        'form_type': 'media',
+                        'data': {
+                            'name': name,
+                            'email': email,
+                            'outlet': outlet,
+                            'request_type': request_type,
+                            'deadline': deadline,
+                            'message': message
+                        },
+                        'ip_address': request.remote_addr,
+                        'user_agent': request.headers.get('User-Agent', ''),
+                        'is_read': False,
+                        'is_responded': False,
+                        'submitted_at': datetime.now().isoformat()
+                    }
+                    json_service.create('submissions.json', submission)
+                    flash('Your media request has been submitted. Our team will contact you shortly.', 'success')
+                    return redirect(url_for('public.contact'))
+                else:
+                    flash('Please fill in all required fields.', 'danger')
             else:
-                flash('Please fill in all required fields.', 'danger')
+                flash('Please fill in all required fields correctly.', 'danger')
     
-    return render_template('contact.html')
-
+    return render_template(
+        'contact.html',
+        contact_form=contact_form,
+        training_form=training_form,
+        media_form=media_form
+    )
 
 @public_bp.route('/privacy-and-ethics/')
 def privacy_ethics():
