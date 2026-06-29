@@ -70,11 +70,13 @@ limit_request_field_size = int(os.environ.get('GUNICORN_LIMIT_REQUEST_FIELD_SIZE
 # do_handshake_on_connect = False
 
 # ================================================================
-# Server Mechanics
+# Server Mechanics ✅ FIXED
 # ================================================================
 
 preload_app = os.environ.get('GUNICORN_PRELOAD_APP', 'False').lower() == 'true'
-chdir = os.environ.get('GUNICORN_CHDIR', None)
+
+# ✅ FIX: Set default chdir to '/app' if not provided
+chdir = os.environ.get('GUNICORN_CHDIR', '/app')
 
 # ================================================================
 # Environment Variables (JSON Version - No Database!)
@@ -116,6 +118,7 @@ def on_starting(server):
     server.log.info(f"  Bind: {bind}")
     server.log.info(f"  Log Level: {loglevel}")
     server.log.info(f"  Data Folder: {os.environ.get('DATA_FOLDER', 'app/data')}")
+    server.log.info(f"  Working Directory: {chdir}")
     server.log.info("=" * 60)
 
 def worker_int(worker):

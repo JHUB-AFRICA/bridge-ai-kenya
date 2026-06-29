@@ -25,7 +25,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     FLASK_APP=run.py \
     FLASK_ENV=production \
-    PYTHONPATH=/app
+    PYTHONPATH=/app \
+    TZ=Africa/Nairobi
 
 # ================================================================
 # Install System Dependencies
@@ -92,4 +93,4 @@ EXPOSE 5000
 # Run the Application
 # ================================================================
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "--chdir", "/app", "wsgi:app"]
