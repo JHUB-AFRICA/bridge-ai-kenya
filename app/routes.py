@@ -439,12 +439,13 @@ def contact():
                         'submitted_at': datetime.now().isoformat()
                     }
                     json_service.create('submissions.json', submission)
-                    flash('Your message has been sent successfully. We will respond shortly.', 'success')
+                    # ✅ Use custom category for contact messages
+                    flash('Your message has been sent successfully. We will respond shortly.', 'contact_success')
                     return redirect(url_for('public.contact'))
                 else:
-                    flash('Please fill in all required fields.', 'danger')
+                    flash('Please fill in all required fields.', 'contact_error')
             else:
-                flash('Please fill in all required fields correctly.', 'danger')
+                flash('Please fill in all required fields correctly.', 'contact_error')
         
         elif form_type == 'training':
             if training_form.validate_on_submit():
@@ -473,12 +474,13 @@ def contact():
                         'submitted_at': datetime.now().isoformat()
                     }
                     json_service.create('submissions.json', submission)
-                    flash('Your training interest has been registered. We will contact you about upcoming opportunities.', 'success')
+                    # ✅ Use custom category for training messages
+                    flash('Your training interest has been registered. We will contact you about upcoming opportunities.', 'training_success')
                     return redirect(url_for('public.contact'))
                 else:
-                    flash('Please fill in all required fields.', 'danger')
+                    flash('Please fill in all required fields.', 'training_error')
             else:
-                flash('Please fill in all required fields correctly.', 'danger')
+                flash('Please fill in all required fields correctly.', 'training_error')
         
         elif form_type == 'media':
             if media_form.validate_on_submit():
@@ -507,12 +509,13 @@ def contact():
                         'submitted_at': datetime.now().isoformat()
                     }
                     json_service.create('submissions.json', submission)
-                    flash('Your media request has been submitted. Our team will contact you shortly.', 'success')
+                    # ✅ Use custom category for media messages
+                    flash('Your media request has been submitted. Our team will contact you shortly.', 'media_success')
                     return redirect(url_for('public.contact'))
                 else:
-                    flash('Please fill in all required fields.', 'danger')
+                    flash('Please fill in all required fields.', 'media_error')
             else:
-                flash('Please fill in all required fields correctly.', 'danger')
+                flash('Please fill in all required fields correctly.', 'media_error')
     
     return render_template(
         'contact.html',
@@ -2050,17 +2053,12 @@ def api_delete_training_material(id):
 # API - Submissions
 # ================================================================
 
-# ================================================================
-# API - Submissions
-# ================================================================
-
 @api_bp.route('/submissions/', methods=['GET'])
 @login_required
 def api_get_submissions():
     """Get all form submissions."""
     try:
         submissions = json_service.get_all('submissions.json')
-        # Sort by submitted_at descending (newest first)
         sorted_submissions = sorted(submissions, key=lambda x: x.get('submitted_at', ''), reverse=True)
         return jsonify(sorted_submissions)
     except Exception as e:
@@ -2078,18 +2076,18 @@ def api_update_submission(id):
         if not data:
             return jsonify({'success': False, 'error': 'No data provided'}), 400
         
-        # Get existing submission
+        # ✅ Get existing submission first
         existing = json_service.get_by_id('submissions.json', id)
         if not existing:
             return jsonify({'success': False, 'error': 'Submission not found'}), 404
         
-        # Update only the fields provided
+        # ✅ Update only the fields provided
         if 'is_read' in data:
             existing['is_read'] = data['is_read']
         if 'is_responded' in data:
             existing['is_responded'] = data['is_responded']
         
-        # Save back to JSON
+        # ✅ Save back to JSON
         result = json_service.update('submissions.json', id, existing)
         
         if result:
@@ -2129,6 +2127,8 @@ def api_delete_submission(id):
     except Exception as e:
         print(f"❌ Error deleting submission: {e}")
         return jsonify({'success': False, 'error': str(e)}), 400
+
+
 
 # ================================================================
 # API - SME Challenges

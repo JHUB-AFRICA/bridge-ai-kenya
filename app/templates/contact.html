@@ -699,23 +699,26 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- FLASH MESSAGES                                               -->
-        <!-- ============================================================ -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash-message {{ category }}">
-                            <span class="flash-icon">
-                                {% if category == 'success' %}✅{% else %}⚠️{% endif %}
-                            </span>
-                            {{ message }}
-                            <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+            <!-- FLASH MESSAGES                                               -->
+            <!-- ============================================================ -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            {# ✅ Only show contact-related flash messages #}
+                            {% if category in ['contact_success', 'contact_error', 'training_success', 'training_error', 'media_success', 'media_error'] %}
+                                <div class="flash-message {% if 'success' in category %}success{% else %}error{% endif %}">
+                                    <span class="flash-icon">
+                                        {% if 'success' in category %}✅{% else %}⚠️{% endif %}
+                                    </span>
+                                    {{ message }}
+                                    <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
         <!-- ============================================================ -->
         <!-- CONTACT SECTION                                              -->

@@ -6,9 +6,9 @@
     "full_name": "Admin User",
     "role": "admin",
     "is_active": true,
-    "last_login": "2026-06-29T12:06:02.929052",
+    "last_login": "2026-06-30T01:43:58.710406",
     "created_at": "2026-06-25T10:00:00",
-    "updated_at": "2026-06-29T12:06:02.929394",
+    "updated_at": "2026-06-30T01:43:58.710754",
     "id": 1
   }
 ]
