@@ -50,11 +50,25 @@ class JSONService:
                 if not content:
                     return [] if filename != 'settings.json' else {}
                 data = json.loads(content)
+                
                 # For settings.json, extract the settings dict
                 if filename == 'settings.json':
                     if isinstance(data, dict) and 'settings' in data:
                         return data['settings']
                     return data if isinstance(data, dict) else {}
+                
+                # ✅ FIX: Convert object with numeric keys to list
+                if isinstance(data, dict):
+                    # Check if keys are numeric (like "1", "2", etc.)
+                    keys = list(data.keys())
+                    if keys and all(k.isdigit() for k in keys):
+                        # Convert to list sorted by key
+                        items = [data[k] for k in sorted(keys, key=lambda x: int(x))]
+                        return items
+                    # If it's a single object with an 'id' field, wrap in list
+                    if 'id' in data:
+                        return [data]
+                
                 return data if isinstance(data, list) else []
         except (json.JSONDecodeError, ValueError) as e:
             print(f"⚠️ Error reading {filename}: {e}")
@@ -63,6 +77,20 @@ class JSONService:
     def _write_file(self, filename, data):
         """Write data to JSON file."""
         filepath = self._get_filepath(filename)
+        
+        # ✅ FIX: Always write non-settings files as lists
+        if filename != 'settings.json':
+            if not isinstance(data, list):
+                # If data is a dict with numeric keys, convert to list
+                if isinstance(data, dict):
+                    # Check if keys are numeric
+                    keys = list(data.keys())
+                    if keys and all(k.isdigit() for k in keys):
+                        data = [data[k] for k in sorted(keys, key=lambda x: int(x))]
+                    else:
+                        data = [data]
+                else:
+                    data = []
         
         # For settings.json, wrap in 'settings' key
         if filename == 'settings.json':
@@ -199,3 +227,12 @@ class JSONService:
         current.update(data)
         self._write_file('settings.json', current)
         return current
+    
+    def clear_all(self, filename):
+        """Delete all records from a file."""
+        if filename == 'settings.json':
+            self._write_file(filename, {})
+            return True
+        # For all other files, write an empty list
+        self._write_file(filename, [])
+        return True
