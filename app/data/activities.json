@@ -32,5 +32,22 @@
     "author": "Dr. Jane Mwangi",
     "featured_image": "uploads/activities/20260626_212933_hero-main.jpg",
     "id": 3
+  },
+  {
+    "title": "Precision Agriculture Field Demonstration",
+    "slug": "precision-agriculture-field-demonstration",
+    "body": "Farmers attended a live field demonstration showcasing precision irrigation systems, soil moisture sensors, weather forecasting tools, and AI-powered crop monitoring. Participants interacted with real-time dashboards and learned how smart farming technologies improve productivity while reducing water consumption.",
+    "date": "2026-07-04",
+    "created_at": "2026-06-30T20:40:23.348651",
+    "updated_at": "2026-06-30T20:40:23.348669",
+    "evidence_status": "published",
+    "summary": "Demonstration of AI-powered irrigation and crop monitoring technologies.",
+    "location": "University Demonstration Farm",
+    "wp_tag": "WP3",
+    "activity_type": "field_demo",
+    "audience": "farmers",
+    "author": "BRIDGE-AI Field Operations Team",
+    "featured_image": "uploads/activities/20260630_204023_precision-agriculture-technology-stockcake.jpg",
+    "id": 4
   }
 ]

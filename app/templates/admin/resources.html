@@ -1,11 +1,6 @@
 <!-- ================================================================ -->
 <!-- BRIDGE-AI KENYA - MANAGE RESOURCES                              -->
 <!-- ================================================================ -->
-<!-- Full CRUD for Resource content type.                           -->
-<!-- Fields: title, type, language, version, file/link, WP,         -->
-<!-- licence, public/private status, accessibility notes.          -->
-<!-- Uses JSON file storage - no database required.                -->
-<!-- ================================================================ -->
 
 {% extends "admin/layout.html" %}
 
@@ -16,6 +11,73 @@
 {% block page_subtitle %}Create, edit, and delete public deliverables, slides, guides, videos, training kits, policy briefs, and publications{% endblock %}
 
 {% block content %}
+
+<!-- ============================================================ -->
+<!-- STATS ROW                                                    -->
+<!-- ============================================================ -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card type-public">
+        <div class="stat-number" id="publicCount">0</div>
+        <div class="stat-label">Public</div>
+    </div>
+    <div class="stat-card type-private">
+        <div class="stat-number" id="privateCount">0</div>
+        <div class="stat-label">Private</div>
+    </div>
+    <div class="stat-card type-wp5">
+        <div class="stat-number" id="wp5Count">0</div>
+        <div class="stat-label">WP5 Resources</div>
+    </div>
+    <div class="stat-card type-wp6">
+        <div class="stat-number" id="wp6Count">0</div>
+        <div class="stat-label">WP6 Resources</div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FILTER BAR                                                   -->
+<!-- ============================================================ -->
+<div class="filter-bar">
+    <div class="filter-group">
+        <span class="filter-label">Type</span>
+        <div class="filter-pills" id="typePills">
+            <button class="pill active" data-type="all">All</button>
+            <button class="pill" data-type="deliverable">Deliverable</button>
+            <button class="pill" data-type="policy_brief">Policy Brief</button>
+            <button class="pill" data-type="video">Video</button>
+            <button class="pill" data-type="presentation">Presentation</button>
+            <button class="pill" data-type="training_kit">Training Kit</button>
+            <button class="pill" data-type="publication">Publication</button>
+            <button class="pill" data-type="guide">Guide</button>
+        </div>
+    </div>
+    
+    <div class="filter-group">
+        <span class="filter-label">WP</span>
+        <div class="filter-pills" id="wpPills">
+            <button class="pill active" data-wp="all">All</button>
+            <button class="pill" data-wp="WP1">WP1</button>
+            <button class="pill" data-wp="WP2">WP2</button>
+            <button class="pill" data-wp="WP3">WP3</button>
+            <button class="pill" data-wp="WP4">WP4</button>
+            <button class="pill" data-wp="WP5">WP5</button>
+            <button class="pill" data-wp="WP6">WP6</button>
+        </div>
+    </div>
+    
+    <div class="filter-group">
+        <span class="filter-label">Status</span>
+        <div class="filter-pills" id="statusPills">
+            <button class="pill active" data-status="all">All</button>
+            <button class="pill" data-status="public">Public</button>
+            <button class="pill" data-status="private">Private</button>
+        </div>
+    </div>
+</div>
 
 <!-- ============================================================ -->
 <!-- SECTION HEADER                                              -->
@@ -92,19 +154,40 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- HIDDEN FORM TEMPLATES FOR MODAL                              -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="resourceModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="resourceModalTitle">Add New Resource</h3>
+            <button class="modal-close" onclick="closeResourceModal()">✕</button>
+        </div>
+        <div class="modal-body" id="resourceModalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeResourceModal()">Cancel</button>
+            <button class="btn btn-primary" id="resourceSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CREATE FORM TEMPLATE                                         -->
 <!-- ============================================================ -->
 <div style="display:none;">
-    <!-- Create Form Template -->
-    <div id="createFormTemplate">
+    <div id="createFormHtml">
+        <input type="hidden" id="form-id">
+        
         <div class="form-group">
             <label>Title <span class="required">*</span></label>
             <input type="text" id="form-title" placeholder="Enter resource title">
         </div>
+        
         <div class="form-row">
             <div class="form-group">
                 <label>Resource Type <span class="required">*</span></label>
-                <select id="form-resource-type">
+                <select id="form-type">
                     <option value="">Select type</option>
                     <option value="deliverable">Deliverable</option>
                     <option value="policy_brief">Policy Brief</option>
@@ -129,6 +212,7 @@
                 </select>
             </div>
         </div>
+        
         <div class="form-row">
             <div class="form-group">
                 <label>Version</label>
@@ -147,10 +231,12 @@
                 </select>
             </div>
         </div>
+        
         <div class="form-group">
             <label>Description</label>
             <textarea id="form-description" rows="2" placeholder="Brief description of the resource"></textarea>
         </div>
+        
         <div class="form-row">
             <div class="form-group">
                 <label>File Path</label>
@@ -163,6 +249,7 @@
                 <small style="color:var(--text-light);font-size:0.7rem;">URL if hosted externally</small>
             </div>
         </div>
+        
         <div class="form-group">
             <label>License</label>
             <select id="form-license">
@@ -174,105 +261,258 @@
                 <option value="Open Access">Open Access</option>
             </select>
         </div>
-        <div class="form-group">
-            <label><input type="checkbox" id="form-is-public" checked> Publicly Available</label>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="form-is-public" checked>
+            <label for="form-is-public">Publicly Available</label>
         </div>
-        <div class="form-group">
-            <label>Accessibility Notes</label>
-            <textarea id="form-accessibility-notes" rows="2" placeholder="e.g. PDF with alt text and structured headings"></textarea>
-        </div>
-    </div>
-
-    <!-- Edit Form Template -->
-    <div id="editFormTemplate">
-        <div class="form-group">
-            <label>Title <span class="required">*</span></label>
-            <input type="text" id="edit-form-title" placeholder="Enter resource title">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Resource Type <span class="required">*</span></label>
-                <select id="edit-form-resource-type">
-                    <option value="">Select type</option>
-                    <option value="deliverable">Deliverable</option>
-                    <option value="policy_brief">Policy Brief</option>
-                    <option value="video">Video</option>
-                    <option value="presentation">Presentation</option>
-                    <option value="training_kit">Training Kit</option>
-                    <option value="publication">Publication</option>
-                    <option value="guide">Guide</option>
-                    <option value="repository">Repository</option>
-                    <option value="article">Article</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Language</label>
-                <select id="edit-form-language">
-                    <option value="English">English</option>
-                    <option value="French">French</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Swahili">Swahili</option>
-                    <option value="Kikuyu">Kikuyu</option>
-                    <option value="Luo">Luo</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Version</label>
-                <input type="text" id="edit-form-version" placeholder="e.g. 1.0">
-            </div>
-            <div class="form-group">
-                <label>Work Package</label>
-                <select id="edit-form-wp">
-                    <option value="">Select WP</option>
-                    <option value="WP1">WP1</option>
-                    <option value="WP2">WP2</option>
-                    <option value="WP3">WP3</option>
-                    <option value="WP4">WP4</option>
-                    <option value="WP5">WP5</option>
-                    <option value="WP6">WP6</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <textarea id="edit-form-description" rows="2" placeholder="Brief description of the resource"></textarea>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>File Path</label>
-                <input type="text" id="edit-form-file-path" placeholder="uploads/resources/filename.pdf">
-                <small style="color:var(--text-light);font-size:0.7rem;">Path to the uploaded file</small>
-            </div>
-            <div class="form-group">
-                <label>External Link</label>
-                <input type="url" id="edit-form-external-link" placeholder="https://...">
-                <small style="color:var(--text-light);font-size:0.7rem;">URL if hosted externally</small>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>License</label>
-            <select id="edit-form-license">
-                <option value="All rights reserved">All rights reserved</option>
-                <option value="Creative Commons BY-NC-SA 4.0">Creative Commons BY-NC-SA 4.0</option>
-                <option value="Creative Commons BY-SA 4.0">Creative Commons BY-SA 4.0</option>
-                <option value="Creative Commons BY-NC 4.0">Creative Commons BY-NC 4.0</option>
-                <option value="MIT License">MIT License</option>
-                <option value="Open Access">Open Access</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label><input type="checkbox" id="edit-form-is-public"> Publicly Available</label>
-        </div>
+        
         <div class="form-group">
             <label>Accessibility Notes</label>
-            <textarea id="edit-form-accessibility-notes" rows="2" placeholder="e.g. PDF with alt text and structured headings"></textarea>
+            <textarea id="form-accessibility" rows="2" placeholder="e.g. PDF with alt text and structured headings"></textarea>
         </div>
-        <!-- Hidden ID field -->
-        <input type="hidden" id="edit-form-id">
     </div>
 </div>
+
+<!-- ============================================================ -->
+<!-- STYLES                                                       -->
+<!-- ============================================================ -->
+<style>
+    /* ================================================================ */
+    /* STATS ROW                                                       */
+    /* ================================================================ */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-light);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+    }
+    
+    .stat-card.type-public .stat-number { color: #28a745; }
+    .stat-card.type-private .stat-number { color: #e74c3c; }
+    .stat-card.type-wp5 .stat-number { color: #1a4a6b; }
+    .stat-card.type-wp6 .stat-number { color: #d4a843; }
+    
+    /* ================================================================ */
+    /* FILTER BAR                                                      */
+    /* ================================================================ */
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 32px;
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 16px 24px;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+    
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        margin-right: 4px;
+    }
+    
+    .filter-pills {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+    
+    .pill {
+        padding: 4px 14px;
+        border: none;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        font-family: inherit;
+        background: var(--bg-light);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .pill:hover {
+        background: #e4eaf0;
+        color: var(--text-dark);
+    }
+    
+    .pill.active {
+        background: var(--primary-light);
+        color: #ffffff;
+    }
+    
+    /* ================================================================ */
+    /* ACTION BAR                                                      */
+    /* ================================================================ */
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 400px;
+    }
+    
+    .search-wrapper .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 1rem;
+        pointer-events: none;
+    }
+    
+    .search-wrapper input {
+        width: 100%;
+        padding: 8px 12px 8px 36px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-family: inherit;
+        background: var(--bg-white);
+        transition: all 0.3s ease;
+        color: var(--text-body);
+    }
+    
+    .search-wrapper input:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    
+    .search-wrapper input::placeholder {
+        color: var(--text-light);
+    }
+    
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    @media (max-width: 1024px) {
+        .stats-row {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            padding: 16px;
+        }
+        
+        .filter-group {
+            flex-wrap: wrap;
+        }
+        
+        .filter-pills {
+            flex-wrap: wrap;
+        }
+        
+        .action-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-wrapper {
+            max-width: none;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .stat-card {
+            padding: 12px 16px;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.4rem;
+        }
+        
+        .pill {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+        }
+    }
+</style>
 
 {% endblock %}
 
@@ -294,17 +534,30 @@
         // ================================================================
 
         function loadResources() {
-            fetch(API_URL)
-                .then(response => response.json())
-                .then(data => {
-                    resources = data || [];
-                    renderTable(resources);
-                    updateCounts(resources.length);
-                })
-                .catch(error => {
-                    console.error('Error loading resources:', error);
-                    showToast('error', 'Failed to load resources');
-                });
+            console.log('🔄 Loading resources...');
+            fetch(API_URL, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('📥 Data received:', data);
+                resources = data || [];
+                renderTable(resources);
+                updateStats(resources);
+                updateCounts(resources.length);
+            })
+            .catch(error => {
+                console.error('❌ Error loading resources:', error);
+                showToast('error', 'Failed to load resources: ' + error.message);
+            });
         }
 
         // ================================================================
@@ -327,43 +580,49 @@
                 return;
             }
 
-            tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(formatResourceType(item.resource_type || '-'))}</span></td>
-                    <td>${escapeHtml(item.language || 'English')}</td>
-                    <td>${escapeHtml(item.version || '-')}</td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.wp_tag || '-')}</span></td>
-                    <td>${item.is_public ? '✅ Yes' : '❌ No'}</td>
-                    <td style="text-align:right;">
-                        <div class="actions-cell">
-                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
-                            <button class="action-icon delete" onclick="deleteResource(${item.id})" title="Delete">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = data.map(item => {
+                const typeLabel = formatResourceType(item.resource_type);
+                const statusLabel = item.is_public ? '✅ Yes' : '❌ No';
+                const statusClass = item.is_public ? 'published' : 'draft';
+                
+                return `
+                    <tr>
+                        <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                        <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(typeLabel)}</span></td>
+                        <td>${escapeHtml(item.language || 'English')}</td>
+                        <td>${escapeHtml(item.version || '-')}</td>
+                        <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.wp_tag || '-')}</span></td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                        <td style="text-align:right;">
+                            <div class="actions-cell">
+                                <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                                <button class="action-icon delete" onclick="deleteResource(${item.id})" title="Delete">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
+            updateStats(data);
             updateCounts(data.length);
         }
 
         // ================================================================
-        // FORMAT RESOURCE TYPE
+        // UPDATE STATS
         // ================================================================
 
-        function formatResourceType(type) {
-            const types = {
-                'deliverable': 'Deliverable',
-                'policy_brief': 'Policy Brief',
-                'video': 'Video',
-                'presentation': 'Presentation',
-                'training_kit': 'Training Kit',
-                'publication': 'Publication',
-                'guide': 'Guide',
-                'repository': 'Repository',
-                'article': 'Article'
-            };
-            return types[type] || type;
+        function updateStats(data) {
+            const total = data.length;
+            const publicCount = data.filter(item => item.is_public).length;
+            const privateCount = total - publicCount;
+            const wp5Count = data.filter(item => item.wp_tag === 'WP5').length;
+            const wp6Count = data.filter(item => item.wp_tag === 'WP6').length;
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('publicCount').textContent = publicCount;
+            document.getElementById('privateCount').textContent = privateCount;
+            document.getElementById('wp5Count').textContent = wp5Count;
+            document.getElementById('wp6Count').textContent = wp6Count;
         }
 
         // ================================================================
@@ -409,18 +668,77 @@
         };
 
         // ================================================================
-        // CREATE MODAL
+        // MODAL FUNCTIONS
         // ================================================================
 
-        window.openCreateModal = function() {
+        function getFormHtml() {
+            return document.getElementById('createFormHtml').innerHTML;
+        }
+
+        function getFormData() {
+            return {
+                id: document.getElementById('form-id').value ? parseInt(document.getElementById('form-id').value) : null,
+                title: document.getElementById('form-title').value.trim(),
+                resource_type: document.getElementById('form-type').value,
+                language: document.getElementById('form-language').value,
+                version: document.getElementById('form-version').value.trim(),
+                description: document.getElementById('form-description').value.trim(),
+                file_path: document.getElementById('form-file-path').value.trim(),
+                external_link: document.getElementById('form-external-link').value.trim(),
+                wp_tag: document.getElementById('form-wp').value,
+                license: document.getElementById('form-license').value,
+                is_public: document.getElementById('form-is-public').checked,
+                accessibility_notes: document.getElementById('form-accessibility').value.trim()
+            };
+        }
+
+        function populateForm(data) {
+            document.getElementById('form-id').value = data.id || '';
+            document.getElementById('form-title').value = data.title || '';
+            document.getElementById('form-type').value = data.resource_type || '';
+            document.getElementById('form-language').value = data.language || 'English';
+            document.getElementById('form-version').value = data.version || '';
+            document.getElementById('form-wp').value = data.wp_tag || '';
+            document.getElementById('form-description').value = data.description || '';
+            document.getElementById('form-file-path').value = data.file_path || '';
+            document.getElementById('form-external-link').value = data.external_link || '';
+            document.getElementById('form-license').value = data.license || 'All rights reserved';
+            document.getElementById('form-is-public').checked = data.is_public !== undefined ? data.is_public : true;
+            document.getElementById('form-accessibility').value = data.accessibility_notes || '';
+        }
+
+        function openResourceModal(title, editData) {
+            const modal = document.getElementById('resourceModal');
+            const modalTitle = document.getElementById('resourceModalTitle');
+            const modalBody = document.getElementById('resourceModalBody');
+            const saveBtn = document.getElementById('resourceSaveBtn');
+
+            modalTitle.textContent = title;
+            modalBody.innerHTML = getFormHtml();
+
+            if (editData) {
+                populateForm(editData);
+                editingId = editData.id;
+            } else {
+                editingId = null;
+                populateForm({});
+            }
+
+            saveBtn.onclick = saveResource;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeResourceModal = function() {
+            const modal = document.getElementById('resourceModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
             editingId = null;
-            const formHtml = document.getElementById('createFormTemplate').innerHTML;
-            openModal('Add New Resource', formHtml, saveResource);
         };
 
-        // ================================================================
-        // EDIT MODAL
-        // ================================================================
+        window.openCreateModal = function() {
+            openResourceModal('Add New Resource', null);
+        };
 
         window.openEditModal = function(id) {
             const item = resources.find(r => r.id === id);
@@ -428,67 +746,18 @@
                 showToast('error', 'Resource not found');
                 return;
             }
-
-            editingId = id;
-            const formHtml = document.getElementById('editFormTemplate').innerHTML;
-            openModal('Edit Resource', formHtml, saveResource);
-
-            // Populate form fields
-            setTimeout(() => {
-                document.getElementById('edit-form-id').value = item.id;
-                document.getElementById('edit-form-title').value = item.title || '';
-                document.getElementById('edit-form-resource-type').value = item.resource_type || '';
-                document.getElementById('edit-form-language').value = item.language || 'English';
-                document.getElementById('edit-form-version').value = item.version || '';
-                document.getElementById('edit-form-wp').value = item.wp_tag || '';
-                document.getElementById('edit-form-description').value = item.description || '';
-                document.getElementById('edit-form-file-path').value = item.file_path || '';
-                document.getElementById('edit-form-external-link').value = item.external_link || '';
-                document.getElementById('edit-form-license').value = item.license || 'All rights reserved';
-                document.getElementById('edit-form-is-public').checked = item.is_public !== undefined ? item.is_public : true;
-                document.getElementById('edit-form-accessibility-notes').value = item.accessibility_notes || '';
-            }, 100);
+            openResourceModal('Edit Resource', item);
         };
 
         // ================================================================
-        // SAVE RESOURCE
+        // SAVE RESOURCE - WITH CSRF TOKEN
         // ================================================================
 
         window.saveResource = function() {
             const isEdit = !!editingId;
+            const data = getFormData();
 
-            // Get form values based on mode
-            let data;
-            if (isEdit) {
-                data = {
-                    id: parseInt(document.getElementById('edit-form-id').value),
-                    title: document.getElementById('edit-form-title').value.trim(),
-                    resource_type: document.getElementById('edit-form-resource-type').value,
-                    language: document.getElementById('edit-form-language').value,
-                    version: document.getElementById('edit-form-version').value.trim(),
-                    description: document.getElementById('edit-form-description').value.trim(),
-                    file_path: document.getElementById('edit-form-file-path').value.trim(),
-                    external_link: document.getElementById('edit-form-external-link').value.trim(),
-                    wp_tag: document.getElementById('edit-form-wp').value,
-                    license: document.getElementById('edit-form-license').value,
-                    is_public: document.getElementById('edit-form-is-public').checked,
-                    accessibility_notes: document.getElementById('edit-form-accessibility-notes').value.trim()
-                };
-            } else {
-                data = {
-                    title: document.getElementById('form-title').value.trim(),
-                    resource_type: document.getElementById('form-resource-type').value,
-                    language: document.getElementById('form-language').value,
-                    version: document.getElementById('form-version').value.trim(),
-                    description: document.getElementById('form-description').value.trim(),
-                    file_path: document.getElementById('form-file-path').value.trim(),
-                    external_link: document.getElementById('form-external-link').value.trim(),
-                    wp_tag: document.getElementById('form-wp').value,
-                    license: document.getElementById('form-license').value,
-                    is_public: document.getElementById('form-is-public').checked,
-                    accessibility_notes: document.getElementById('form-accessibility-notes').value.trim()
-                };
-            }
+            console.log('📝 Form Data:', data);
 
             // Validate required fields
             if (!data.title) {
@@ -499,46 +768,79 @@
                 showToast('warning', 'Resource type is required');
                 return;
             }
-
-            // Ensure either file_path or external_link is provided
             if (!data.file_path && !data.external_link) {
                 showToast('warning', 'Please provide either a file path or an external link');
                 return;
             }
 
-            // Auto-generate slug (handled by backend)
+            // Auto-generate slug if not provided
             if (!data.slug) {
                 data.slug = slugify(data.title);
             }
 
-            const url = isEdit ? `${API_URL}${editingId}/` : API_URL;
+            // Clean up data - remove empty fields
+            Object.keys(data).forEach(key => {
+                if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                    delete data[key];
+                }
+            });
+
+            const url = isEdit ? `${API_URL}${editingId}` : API_URL;
             const method = isEdit ? 'PUT' : 'POST';
+
+            console.log(`📤 Sending ${method} request to ${url}`);
+            console.log('📤 Data:', JSON.stringify(data, null, 2));
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+            console.log('🔐 CSRF Token:', csrfToken);
+
+            const saveBtn = document.getElementById('resourceSaveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Saving...';
 
             fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                return response.text().then(text => {
+                    console.log('📥 Raw response:', text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('❌ Failed to parse JSON:', text);
+                        throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                    }
+                });
+            })
             .then(result => {
+                console.log('📥 Parsed result:', result);
                 if (result.success) {
                     showToast('success', `Resource ${isEdit ? 'updated' : 'created'} successfully!`);
-                    closeModal();
+                    closeResourceModal();
                     loadResources();
                 } else {
                     showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} resource`);
                 }
             })
             .catch(error => {
+                console.error('❌ Fetch error:', error);
                 showToast('error', `Error: ${error.message}`);
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save';
             });
         };
 
         // ================================================================
-        // DELETE RESOURCE
+        // DELETE RESOURCE - WITH CSRF TOKEN
         // ================================================================
 
         window.deleteResource = function(id) {
@@ -549,13 +851,23 @@
                 return;
             }
 
-            fetch(`${API_URL}${id}/`, {
+            console.log(`🗑️ Deleting resource ${id}`);
+
+            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+            fetch(`${API_URL}${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(result => {
                 if (result.success) {
                     showToast('success', 'Resource deleted successfully!');
@@ -565,9 +877,39 @@
                 }
             })
             .catch(error => {
+                console.error('❌ Delete error:', error);
                 showToast('error', `Error: ${error.message}`);
             });
         };
+
+        // ================================================================
+        // CLOSE MODAL ON OVERLAY CLICK
+        // ================================================================
+
+        document.getElementById('resourceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeResourceModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeResourceModal();
+            }
+        });
+
+        // ================================================================
+        // PILL CLICK HANDLERS
+        // ================================================================
+
+        document.querySelectorAll('#typePills .pill, #wpPills .pill, #statusPills .pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                filterTable();
+            });
+        });
 
         // ================================================================
         // UTILITY FUNCTIONS
@@ -578,6 +920,21 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function formatResourceType(type) {
+            const types = {
+                'deliverable': 'Deliverable',
+                'policy_brief': 'Policy Brief',
+                'video': 'Video',
+                'presentation': 'Presentation',
+                'training_kit': 'Training Kit',
+                'publication': 'Publication',
+                'guide': 'Guide',
+                'repository': 'Repository',
+                'article': 'Article'
+            };
+            return types[type] || type || '—';
         }
 
         function slugify(text) {
@@ -591,6 +948,23 @@
             const tableCount = document.getElementById('tableCount');
             if (countEl) countEl.textContent = `${count} items`;
             if (tableCount) tableCount.textContent = `${count} items`;
+        }
+
+        // ================================================================
+        // TOAST NOTIFICATIONS
+        // ================================================================
+
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
         }
 
         // ================================================================

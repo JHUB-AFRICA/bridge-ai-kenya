@@ -42,5 +42,19 @@
     "created_at": "2026-06-27T04:44:44.675931",
     "updated_at": "2026-06-27T04:44:44.675940",
     "id": 3
+  },
+  {
+    "title": "BRIDGE-AI Kenya Digital Agriculture Conference 2026",
+    "slug": "bridge-ai-digital-agriculture-conference-2026",
+    "date": "2026-07-11",
+    "location": "Kenyatta International Convention Centre (KICC), Nairobi",
+    "agenda": "Opening Ceremony • Keynote Speeches • Research Presentations • Startup Showcase • AI Demonstrations • Panel Discussions • Closing Ceremony.",
+    "audience": "public",
+    "capacity": 500,
+    "speakers": "Prof. Esther Maina, Dr. Kevin Ouma, Dr. Peter Ochieng, Ms. Faith Wambui",
+    "status": "upcoming",
+    "created_at": "2026-06-30T20:43:40.006029",
+    "updated_at": "2026-06-30T20:43:40.006039",
+    "id": 4
   }
 ]

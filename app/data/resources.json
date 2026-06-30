@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Smart Mushroom Farming Implementation Guide",
+    "resource_type": "guide",
+    "language": "English",
+    "version": "1.0",
+    "description": "A practical guide explaining how to establish and manage AI-enabled smart mushroom farming systems using IoT sensors, automated climate control, and digital monitoring tools.",
+    "file_path": "uploads/resources/smart-mushroom-farming-guide-v1.pdf",
+    "wp_tag": "WP2",
+    "license": "Creative Commons BY-NC-SA 4.0",
+    "is_public": true,
+    "accessibility_notes": "PDF is screen-reader compatible, searchable, includes alternative text for figures, and follows accessible formatting guidelines.",
+    "slug": "smart-mushroom-farming-implementation-guide",
+    "created_at": "2026-06-30T21:43:23.553186",
+    "updated_at": "2026-06-30T21:43:23.553194",
+    "id": 1
+  }
+]
