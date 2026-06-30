@@ -58,17 +58,5 @@
     "id": 5,
     "created_at": "2026-06-25T03:04:46.312330",
     "updated_at": "2026-06-25T03:04:46.312343"
-  },
-  {
-    "question": "How does BRIDGE-AI support capacity building?",
-    "answer": "JKUAT leads WP5 which focuses on capacity building through: (1) Hands-on bootcamps at JKUAT Smart Farm Zone, (2) SME mentoring programs, (3) Open training repositories, (4) Replication toolkits, and (5) Hackathons and innovation challenges.",
-    "audience_tag": "students",
-    "category": "wp5",
-    "display_order": 6,
-    "reviewer": "System",
-    "is_published": true,
-    "id": 6,
-    "created_at": "2026-06-25T03:04:46.324736",
-    "updated_at": "2026-06-25T03:04:46.324757"
   }
 ]

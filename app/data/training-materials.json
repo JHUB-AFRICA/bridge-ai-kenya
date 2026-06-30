@@ -93,24 +93,5 @@
     "repository_url": "https://github.com/bridge-ai/ai-ethics",
     "created_at": "2026-06-27T10:00:00",
     "updated_at": "2026-06-27T10:00:00"
-  },
-  {
-    "title": "AI Fundamentals for Smart Agriculture",
-    "slug": "ai-fundamentals-smart-agriculture",
-    "description": "This introductory module explains Artificial Intelligence concepts and demonstrates how AI is transforming modern agriculture through precision farming, crop monitoring, disease prediction, and decision support systems. Learners will understand practical AI applications used within BRIDGE-AI Kenya.",
-    "level": "beginner",
-    "duration": "2 Hours",
-    "tags": [
-      "AI",
-      "Agriculture",
-      "Fundamentals",
-      "Machine Learning"
-    ],
-    "video_url": "https://www.youtube.com/embed/8mAITcNt710",
-    "download_url": "uploads/guides/ai-fundamentals-smart-agriculture.pdf",
-    "repository_url": "https://github.com/bridge-aiii-kenya/ai-fundamentals",
-    "created_at": "2026-06-27T03:51:12.380313",
-    "updated_at": "2026-06-27T03:51:12.380322",
-    "id": 7
   }
 ]

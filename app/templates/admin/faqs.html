@@ -1,10 +1,5 @@
 <!-- ================================================================ -->
-<!-- BRIDGE-AI KENYA - MANAGE FAQS                                   -->
-<!-- ================================================================ -->
-<!-- Full CRUD for FAQ content type.                                 -->
-<!-- Fields: question, answer, audience_tag, category, reviewer,    -->
-<!-- display_order, is_published.                                   -->
-<!-- Uses JSON file storage - no database required.                -->
+<!-- BRIDGE-AI KENYA - MANAGE FAQS                                  -->
 <!-- ================================================================ -->
 
 {% extends "admin/layout.html" %}
@@ -13,9 +8,35 @@
 
 {% block page_title %}❓ Manage <span class="highlight">FAQs</span>{% endblock %}
 
-{% block page_subtitle %}Create, edit, and delete frequently asked questions for farmers, students, SMEs, and media{% endblock %}
+{% block page_subtitle %}Create, edit, and delete frequently asked questions for farmers, students, SMEs, and other audiences{% endblock %}
 
 {% block content %}
+
+<!-- ============================================================ -->
+<!-- STATS ROW                                                    -->
+<!-- ============================================================ -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Total FAQs</div>
+    </div>
+    <div class="stat-card type-published">
+        <div class="stat-number" id="publishedCount">0</div>
+        <div class="stat-label">Published</div>
+    </div>
+    <div class="stat-card type-draft">
+        <div class="stat-number" id="draftCount">0</div>
+        <div class="stat-label">Draft</div>
+    </div>
+    <div class="stat-card type-audience">
+        <div class="stat-number" id="audienceCount">0</div>
+        <div class="stat-label">Audiences</div>
+    </div>
+    <div class="stat-card type-reviewed">
+        <div class="stat-number" id="reviewedCount">0</div>
+        <div class="stat-label">Reviewed</div>
+    </div>
+</div>
 
 <!-- ============================================================ -->
 <!-- SECTION HEADER                                              -->
@@ -25,7 +46,7 @@
         <span class="section-count" id="count-faqs">0 items</span>
     </div>
     <div class="section-actions">
-        <button class="btn btn-primary" onclick="openCreateModal()">
+        <button class="btn btn-primary" id="addFaqBtn">
             ➕ Add FAQ
         </button>
     </div>
@@ -38,6 +59,12 @@
     <div class="table-header">
         <div class="table-search">
             <input type="text" id="searchInput" placeholder="Search FAQs..." onkeyup="filterTable()">
+            <select id="filterStatus" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+            </select>
             <select id="filterAudience" onchange="filterTable()">
                 <option value="">All Audiences</option>
                 <option value="farmers">Farmers</option>
@@ -50,68 +77,78 @@
                 <option value="policymakers">Policymakers</option>
                 <option value="media">Media</option>
                 <option value="public">Public</option>
-            </select>
-            <select id="filterCategory" onchange="filterTable()">
-                <option value="">All Categories</option>
-                <option value="general">General</option>
-                <option value="pilot">Smart Mushroom Pilot</option>
-                <option value="technology">Technology</option>
-                <option value="training">Training</option>
-                <option value="wp5">WP5 Capacity Building</option>
-                <option value="replication">Replication</option>
-                <option value="partners">Partners</option>
-            </select>
-            <select id="filterPublished" onchange="filterTable()">
-                <option value="">All Status</option>
-                <option value="true">Published</option>
-                <option value="false">Unpublished</option>
+                <option value="all">All Audiences</option>
             </select>
         </div>
         <div class="table-count" id="tableCount">0 items</div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width:30%;">Question</th>
-                <th style="width:12%;">Audience</th>
-                <th style="width:12%;">Category</th>
-                <th style="width:12%;">Reviewer</th>
-                <th style="width:10%;">Updated</th>
-                <th style="width:10%;">Published</th>
-                <th style="width:14%;text-align:right;">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            <tr>
-                <td colspan="7" class="table-empty">
-                    <span class="empty-icon">📭</span>
-                    <h4>No FAQs found</h4>
-                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add FAQ" to create your first frequently asked question.</p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:5%;">#</th>
+                    <th style="width:30%;">Question</th>
+                    <th style="width:12%;">Audience</th>
+                    <th style="width:10%;">Status</th>
+                    <th style="width:10%;">Reviewed</th>
+                    <th style="width:13%;">Last Updated</th>
+                    <th style="width:10%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td colspan="7" class="table-empty">
+                        <span class="empty-icon">❓</span>
+                        <h4>No FAQs found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add FAQ" to create your first frequently asked question.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- HIDDEN FORM TEMPLATES FOR MODAL                              -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="faqModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="faqModalTitle">Add New FAQ</h3>
+            <button class="modal-close" onclick="closeFaqModal()">✕</button>
+        </div>
+        <div class="modal-body" id="faqModalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeFaqModal()">Cancel</button>
+            <button class="btn btn-primary" id="faqSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CREATE FORM TEMPLATE                                         -->
 <!-- ============================================================ -->
 <div style="display:none;">
-    <!-- Create Form Template -->
-    <div id="createFormTemplate">
+    <div id="createFormHtml">
+        <input type="hidden" id="form-id">
+        
         <div class="form-group">
             <label>Question <span class="required">*</span></label>
-            <input type="text" id="form-question" placeholder="Enter the frequently asked question">
+            <input type="text" id="form-question" placeholder="e.g. What is BRIDGE-AI?">
         </div>
+        
         <div class="form-group">
             <label>Answer <span class="required">*</span></label>
-            <textarea id="form-answer" rows="4" placeholder="Provide a clear and concise answer"></textarea>
+            <textarea id="form-answer" rows="4" placeholder="Clear, concise answer to the question"></textarea>
         </div>
+        
         <div class="form-row">
             <div class="form-group">
-                <label>Audience</label>
+                <label>Audience <span class="required">*</span></label>
                 <select id="form-audience">
-                    <option value="public">Public</option>
+                    <option value="">Select audience</option>
                     <option value="farmers">Farmers</option>
                     <option value="youth">Youth</option>
                     <option value="women">Women</option>
@@ -121,160 +158,807 @@
                     <option value="researchers">Researchers</option>
                     <option value="policymakers">Policymakers</option>
                     <option value="media">Media</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="form-category">
-                    <option value="general">General</option>
-                    <option value="pilot">Smart Mushroom Pilot</option>
-                    <option value="technology">Technology</option>
-                    <option value="training">Training</option>
-                    <option value="wp5">WP5 Capacity Building</option>
-                    <option value="replication">Replication</option>
-                    <option value="partners">Partners</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Reviewer</label>
-                <input type="text" id="form-reviewer" placeholder="Name of the reviewer">
-            </div>
-            <div class="form-group">
-                <label>Display Order</label>
-                <input type="number" id="form-display-order" placeholder="0" value="0">
-                <small style="color:var(--text-light);font-size:0.7rem;">Lower numbers appear first</small>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>
-                <input type="checkbox" id="form-is-published" checked> Published
-            </label>
-        </div>
-    </div>
-
-    <!-- Edit Form Template -->
-    <div id="editFormTemplate">
-        <div class="form-group">
-            <label>Question <span class="required">*</span></label>
-            <input type="text" id="edit-form-question" placeholder="Enter the frequently asked question">
-        </div>
-        <div class="form-group">
-            <label>Answer <span class="required">*</span></label>
-            <textarea id="edit-form-answer" rows="4" placeholder="Provide a clear and concise answer"></textarea>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Audience</label>
-                <select id="edit-form-audience">
                     <option value="public">Public</option>
-                    <option value="farmers">Farmers</option>
-                    <option value="youth">Youth</option>
-                    <option value="women">Women</option>
-                    <option value="students">Students</option>
-                    <option value="developers">Developers</option>
-                    <option value="smes">SMEs</option>
-                    <option value="researchers">Researchers</option>
-                    <option value="policymakers">Policymakers</option>
-                    <option value="media">Media</option>
+                    <option value="all">All Audiences</option>
                 </select>
+                <small style="color:var(--text-light);font-size:0.7rem;">Which audience is this FAQ intended for?</small>
             </div>
             <div class="form-group">
-                <label>Category</label>
-                <select id="edit-form-category">
-                    <option value="general">General</option>
-                    <option value="pilot">Smart Mushroom Pilot</option>
-                    <option value="technology">Technology</option>
-                    <option value="training">Training</option>
-                    <option value="wp5">WP5 Capacity Building</option>
-                    <option value="replication">Replication</option>
-                    <option value="partners">Partners</option>
+                <label>Status <span class="required">*</span></label>
+                <select id="form-status">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
                 </select>
             </div>
         </div>
+        
         <div class="form-row">
             <div class="form-group">
-                <label>Reviewer</label>
-                <input type="text" id="edit-form-reviewer" placeholder="Name of the reviewer">
-            </div>
-            <div class="form-group">
                 <label>Display Order</label>
-                <input type="number" id="edit-form-display-order" placeholder="0">
+                <input type="number" id="form-display-order" placeholder="1" min="1" value="1">
                 <small style="color:var(--text-light);font-size:0.7rem;">Lower numbers appear first</small>
             </div>
+            <div class="form-group">
+                <label>Reviewer</label>
+                <input type="text" id="form-reviewer" placeholder="e.g. Dr. Jane Mwangi">
+                <small style="color:var(--text-light);font-size:0.7rem;">Who reviewed this FAQ?</small>
+            </div>
         </div>
+        
         <div class="form-group">
-            <label>
-                <input type="checkbox" id="edit-form-is-published"> Published
-            </label>
+            <label>Review Notes</label>
+            <textarea id="form-review-notes" rows="2" placeholder="Notes about review, changes made, or specific considerations"></textarea>
+            <small style="color:var(--text-light);font-size:0.7rem;">Internal notes about the review process</small>
         </div>
-        <!-- Hidden ID field -->
-        <input type="hidden" id="edit-form-id">
     </div>
 </div>
+
+<!-- ============================================================ -->
+<!-- TOAST CONTAINER                                              -->
+<!-- ============================================================ -->
+<div id="toastContainer"></div>
+
+<!-- ============================================================ -->
+<!-- STYLES                                                       -->
+<!-- ============================================================ -->
+<style>
+    /* ================================================================ */
+    /* CSS VARIABLES                                                   */
+    /* ================================================================ */
+    :root {
+        --bg-white: #ffffff;
+        --bg-light: #f5f8fa;
+        --bg-lighter: #fafbfc;
+        --primary: #0f2a3a;
+        --primary-light: #1a4a6b;
+        --text-dark: #1a2a3a;
+        --text-body: #2a3a4a;
+        --text-muted: #6b7a8a;
+        --text-light: #8a9aaa;
+        --border-light: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+        --shadow-xl: 0 8px 40px rgba(0,0,0,0.16);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --error: #e74c3c;
+        --success: #28a745;
+        --warning: #f39c12;
+    }
+
+    /* ================================================================ */
+    /* STATS ROW                                                       */
+    /* ================================================================ */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-light);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+    }
+    
+    .stat-card.type-published .stat-number { color: var(--success); }
+    .stat-card.type-draft .stat-number { color: var(--warning); }
+    .stat-card.type-audience .stat-number { color: #8e44ad; }
+    .stat-card.type-reviewed .stat-number { color: var(--primary-light); }
+    
+    /* ================================================================ */
+    /* SECTION HEADER                                                  */
+    /* ================================================================ */
+    .section-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .section-count {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    
+    .section-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    /* ================================================================ */
+    /* BUTTONS                                                         */
+    /* ================================================================ */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        background: var(--bg-light);
+        color: var(--text-body);
+    }
+    
+    .btn:hover {
+        background: #e4eaf0;
+    }
+    
+    .btn-primary {
+        background: var(--primary-light);
+        color: #ffffff;
+    }
+    
+    .btn-primary:hover {
+        background: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26,74,107,0.25);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border-light);
+    }
+    
+    .btn-outline:hover {
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+        background: rgba(26,74,107,0.04);
+    }
+    
+    /* ================================================================ */
+    /* TABLE                                                           */
+    /* ================================================================ */
+    .table-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-light);
+        background: var(--bg-light);
+    }
+    
+    .table-search {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 1;
+    }
+    
+    .table-search input,
+    .table-search select {
+        padding: 6px 10px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-family: inherit;
+        background: var(--bg-white);
+        color: var(--text-body);
+        transition: all 0.3s ease;
+    }
+    
+    .table-search input:focus,
+    .table-search select:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    
+    .table-search input {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .table-search select {
+        min-width: 120px;
+    }
+    
+    .table-count {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        font-weight: 500;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        min-width: 700px;
+    }
+    
+    table thead {
+        background: var(--bg-light);
+        border-bottom: 2px solid var(--border-light);
+    }
+    
+    table thead th {
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+    
+    table tbody tr {
+        border-bottom: 1px solid var(--border-light);
+        transition: background 0.2s ease;
+    }
+    
+    table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    table tbody tr:hover {
+        background: var(--bg-lighter);
+    }
+    
+    table tbody td {
+        padding: 10px 14px;
+        vertical-align: middle;
+        color: var(--text-body);
+    }
+    
+    /* ================================================================ */
+    /* BADGES                                                          */
+    /* ================================================================ */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .badge-published {
+        background: rgba(40,167,69,0.1);
+        color: #28a745;
+    }
+    
+    .badge-draft {
+        background: rgba(243,156,18,0.1);
+        color: #f39c12;
+    }
+    
+    .badge-archived {
+        background: rgba(107,122,138,0.1);
+        color: #6b7a8a;
+    }
+    
+    .badge-audience {
+        background: rgba(142,68,173,0.08);
+        color: #8e44ad;
+    }
+    
+    .badge-reviewed {
+        background: rgba(26,74,107,0.08);
+        color: #1a4a6b;
+    }
+    
+    .badge-unreviewed {
+        background: rgba(231,76,60,0.08);
+        color: #e74c3c;
+    }
+    
+    /* ================================================================ */
+    /* ACTIONS CELL                                                    */
+    /* ================================================================ */
+    .actions-cell {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+    }
+    
+    .action-icon {
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        background: transparent;
+        color: var(--text-muted);
+    }
+    
+    .action-icon:hover {
+        background: var(--bg-light);
+        color: var(--text-dark);
+    }
+    
+    .action-icon.edit:hover {
+        background: rgba(26,74,107,0.08);
+        color: var(--primary-light);
+    }
+    
+    .action-icon.delete:hover {
+        background: rgba(231,76,60,0.08);
+        color: var(--error);
+    }
+    
+    /* ================================================================ */
+    /* EMPTY STATE                                                     */
+    /* ================================================================ */
+    .table-empty {
+        text-align: center;
+        padding: 48px 20px !important;
+        color: var(--text-muted);
+    }
+    
+    .table-empty .empty-icon {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 12px;
+        opacity: 0.4;
+    }
+    
+    .table-empty h4 {
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+    
+    .table-empty p {
+        font-size: 0.85rem;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    /* ================================================================ */
+    /* MODAL                                                           */
+    /* ================================================================ */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .modal-overlay.active {
+        display: flex;
+    }
+    
+    .modal {
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        max-width: 640px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlide 0.3s ease;
+    }
+    
+    @keyframes modalSlide {
+        from { opacity: 0; transform: scale(0.95) translateY(20px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: var(--text-light);
+        padding: 4px;
+        line-height: 1;
+        transition: color 0.2s ease;
+    }
+    
+    .modal-close:hover {
+        color: var(--error);
+    }
+    
+    .modal-body {
+        padding: 20px 24px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .modal-footer {
+        padding: 12px 24px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    /* ================================================================ */
+    /* FORM                                                           */
+    /* ================================================================ */
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+    
+    .form-group label .required {
+        color: var(--error);
+        margin-left: 2px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.88rem;
+        font-family: inherit;
+        color: var(--text-body);
+        background: var(--bg-white);
+        transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 60px;
+    }
+    
+    .form-group small {
+        display: block;
+        margin-top: 4px;
+        color: var(--text-light);
+        font-size: 0.7rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    
+    /* ================================================================ */
+    /* TOAST                                                           */
+    /* ================================================================ */
+    #toastContainer {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none !important;
+    }
+    
+    #toastContainer .toast {
+        pointer-events: auto !important;
+    }
+    
+    .toast {
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        color: #ffffff;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        animation: toastSlide 0.3s ease;
+        min-width: 200px;
+    }
+    
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--error); }
+    .toast-warning { background: var(--warning); }
+    .toast-info { background: var(--primary-light); }
+    
+    @keyframes toastSlide {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* ================================================================ */
+    /* FIX: Add FAQ Button - Ensure clickable                          */
+    /* ================================================================ */
+    #addFaqBtn {
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    @media (max-width: 1024px) {
+        .stats-row {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .section-header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .section-actions {
+            justify-content: stretch;
+        }
+        
+        .section-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-search {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-search input {
+            min-width: auto;
+        }
+        
+        .table-search select {
+            min-width: auto;
+        }
+        
+        .table-count {
+            text-align: center;
+        }
+        
+        table {
+            font-size: 0.75rem;
+            min-width: 600px;
+        }
+        
+        table thead th,
+        table tbody td {
+            padding: 8px 10px;
+        }
+        
+        .modal {
+            max-width: 100%;
+            margin: 10px;
+            max-height: 95vh;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .stat-card {
+            padding: 12px 16px;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.4rem;
+        }
+        
+        .toast {
+            font-size: 0.8rem;
+            padding: 10px 16px;
+            min-width: 160px;
+        }
+    }
+</style>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    (function() {
-        'use strict';
+(function() {
+    'use strict';
 
-        // ================================================================
-        // STATE
-        // ================================================================
+    // ================================================================
+    // STATE
+    // ================================================================
 
-        let faqs = [];
-        let editingId = null;
-        const API_URL = '/api/faqs/';
+    let faqs = [];
+    let editingId = null;
+    const API_URL = '/api/faqs/';
 
-        // ================================================================
-        // LOAD DATA
-        // ================================================================
+    // ================================================================
+    // LOAD DATA
+    // ================================================================
 
-        function loadFaqs() {
-            fetch(API_URL)
-                .then(response => response.json())
-                .then(data => {
-                    faqs = data || [];
-                    renderTable(faqs);
-                    updateCounts(faqs.length);
-                })
-                .catch(error => {
-                    console.error('Error loading FAQs:', error);
-                    showToast('error', 'Failed to load FAQs');
-                });
+    function loadFaqs() {
+        console.log('🔄 Loading FAQs...');
+        fetch(API_URL, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('📥 Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('📥 Data received:', data);
+            faqs = data || [];
+            renderTable(faqs);
+            updateStats(faqs);
+            updateCounts(faqs.length);
+        })
+        .catch(error => {
+            console.error('❌ Error loading FAQs:', error);
+            showToast('error', 'Failed to load FAQs: ' + error.message);
+        });
+    }
+
+    // ================================================================
+    // RENDER TABLE
+    // ================================================================
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="table-empty">
+                        <span class="empty-icon">❓</span>
+                        <h4>No FAQs found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add FAQ" to create your first frequently asked question.</p>
+                    </td>
+                </tr>
+            `;
+            return;
         }
 
-        // ================================================================
-        // RENDER TABLE
-        // ================================================================
-
-        function renderTable(data) {
-            const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = data.map((item, index) => {
+            const displayOrder = item.display_order || index + 1;
+            const statusClass = item.status === 'published' ? 'badge-published' : 
+                               item.status === 'draft' ? 'badge-draft' : 'badge-archived';
+            const audienceLabel = item.audience === 'all' ? 'All Audiences' : (item.audience || '—');
+            const hasReviewer = item.reviewer ? 'badge-reviewed' : 'badge-unreviewed';
+            const reviewerLabel = item.reviewer ? 'Yes' : 'No';
+            const lastUpdated = item.last_updated || item.updated_at || item.created_at;
             
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="table-empty">
-                            <span class="empty-icon">📭</span>
-                            <h4>No FAQs found</h4>
-                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add FAQ" to create your first frequently asked question.</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
+            return `
                 <tr>
-                    <td><strong>${escapeHtml(item.question || 'Untitled')}</strong></td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(formatAudience(item.audience_tag || 'public'))}</span></td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(formatCategory(item.category || 'general'))}</span></td>
-                    <td>${escapeHtml(item.reviewer || '-')}</td>
-                    <td>${item.updated_at ? formatDate(item.updated_at) : (item.created_at ? formatDate(item.created_at) : '-')}</td>
-                    <td>${item.is_published ? '✅ Yes' : '❌ No'}</td>
+                    <td style="color:var(--text-muted);font-size:0.8rem;font-weight:500;">${displayOrder}</td>
+                    <td>
+                        <div>
+                            <div style="font-weight:600;font-size:0.9rem;">${escapeHtml(item.question || 'Untitled')}</div>
+                            <div style="font-size:0.7rem;color:var(--text-muted);">${escapeHtml((item.answer || '').substring(0, 80))}${(item.answer || '').length > 80 ? '…' : ''}</div>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-audience">${escapeHtml(audienceLabel)}</span></td>
+                    <td><span class="badge ${statusClass}">${escapeHtml(item.status || 'draft')}</span></td>
+                    <td><span class="badge ${hasReviewer}">${reviewerLabel}</span></td>
+                    <td style="font-size:0.8rem;color:var(--text-muted);">${lastUpdated ? formatDate(lastUpdated) : '-'}</td>
                     <td style="text-align:right;">
                         <div class="actions-cell">
                             <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
@@ -282,259 +966,367 @@
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `;
+        }).join('');
 
-            updateCounts(data.length);
+        updateStats(data);
+        updateCounts(data.length);
+    }
+
+    // ================================================================
+    // UPDATE STATS
+    // ================================================================
+
+    function updateStats(data) {
+        const total = data.length;
+        const published = data.filter(item => item.status === 'published').length;
+        const draft = data.filter(item => item.status === 'draft').length;
+        const audiences = [...new Set(data.map(item => item.audience).filter(Boolean))];
+        const reviewed = data.filter(item => item.reviewer && item.reviewer.trim() !== '').length;
+        
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('publishedCount').textContent = published;
+        document.getElementById('draftCount').textContent = draft;
+        document.getElementById('audienceCount').textContent = audiences.length;
+        document.getElementById('reviewedCount').textContent = reviewed;
+    }
+
+    // ================================================================
+    // FILTER TABLE
+    // ================================================================
+
+    window.filterTable = function() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('filterStatus').value;
+        const audienceFilter = document.getElementById('filterAudience').value;
+
+        let filtered = faqs;
+
+        if (search) {
+            filtered = filtered.filter(item => {
+                const searchable = [
+                    item.question,
+                    item.answer,
+                    item.audience,
+                    item.reviewer,
+                    item.review_notes
+                ].join(' ').toLowerCase();
+                return searchable.includes(search);
+            });
         }
 
-        // ================================================================
-        // FORMAT HELPERS
-        // ================================================================
-
-        function formatAudience(audience) {
-            const map = {
-                'farmers': 'Farmers',
-                'youth': 'Youth',
-                'women': 'Women',
-                'students': 'Students',
-                'developers': 'Developers',
-                'smes': 'SMEs',
-                'researchers': 'Researchers',
-                'policymakers': 'Policymakers',
-                'media': 'Media',
-                'public': 'Public'
-            };
-            return map[audience] || audience;
+        if (statusFilter) {
+            filtered = filtered.filter(item => item.status === statusFilter);
         }
 
-        function formatCategory(category) {
-            const map = {
-                'general': 'General',
-                'pilot': 'Smart Mushroom Pilot',
-                'technology': 'Technology',
-                'training': 'Training',
-                'wp5': 'WP5 Capacity Building',
-                'replication': 'Replication',
-                'partners': 'Partners'
-            };
-            return map[category] || category;
+        if (audienceFilter) {
+            filtered = filtered.filter(item => item.audience === audienceFilter);
         }
 
-        // ================================================================
-        // FILTER TABLE
-        // ================================================================
+        renderTable(filtered);
+    };
 
-        window.filterTable = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const audienceFilter = document.getElementById('filterAudience').value;
-            const categoryFilter = document.getElementById('filterCategory').value;
-            const publishedFilter = document.getElementById('filterPublished').value;
+    // ================================================================
+    // MODAL FUNCTIONS
+    // ================================================================
 
-            let filtered = faqs;
+    function getFormHtml() {
+        return document.getElementById('createFormHtml').innerHTML;
+    }
 
-            if (search) {
-                filtered = filtered.filter(item => {
-                    const searchable = [
-                        item.question,
-                        item.answer,
-                        item.reviewer,
-                        item.audience_tag,
-                        item.category
-                    ].join(' ').toLowerCase();
-                    return searchable.includes(search);
-                });
-            }
-
-            if (audienceFilter) {
-                filtered = filtered.filter(item => item.audience_tag === audienceFilter);
-            }
-
-            if (categoryFilter) {
-                filtered = filtered.filter(item => item.category === categoryFilter);
-            }
-
-            if (publishedFilter) {
-                const isPublished = publishedFilter === 'true';
-                filtered = filtered.filter(item => item.is_published === isPublished);
-            }
-
-            renderTable(filtered);
+    function getFormData() {
+        return {
+            id: document.getElementById('form-id').value ? parseInt(document.getElementById('form-id').value) : null,
+            question: document.getElementById('form-question').value.trim(),
+            answer: document.getElementById('form-answer').value.trim(),
+            audience: document.getElementById('form-audience').value,
+            status: document.getElementById('form-status').value,
+            display_order: document.getElementById('form-display-order').value ? parseInt(document.getElementById('form-display-order').value) : 1,
+            reviewer: document.getElementById('form-reviewer').value.trim(),
+            review_notes: document.getElementById('form-review-notes').value.trim()
         };
+    }
 
-        // ================================================================
-        // CREATE MODAL
-        // ================================================================
+    function populateForm(data) {
+        document.getElementById('form-id').value = data.id || '';
+        document.getElementById('form-question').value = data.question || '';
+        document.getElementById('form-answer').value = data.answer || '';
+        document.getElementById('form-audience').value = data.audience || '';
+        document.getElementById('form-status').value = data.status || 'draft';
+        document.getElementById('form-display-order').value = data.display_order || 1;
+        document.getElementById('form-reviewer').value = data.reviewer || '';
+        document.getElementById('form-review-notes').value = data.review_notes || '';
+    }
 
-        window.openCreateModal = function() {
+    function openFaqModal(title, editData) {
+        const modal = document.getElementById('faqModal');
+        const modalTitle = document.getElementById('faqModalTitle');
+        const modalBody = document.getElementById('faqModalBody');
+        const saveBtn = document.getElementById('faqSaveBtn');
+
+        modalTitle.textContent = title;
+        modalBody.innerHTML = getFormHtml();
+
+        if (editData) {
+            populateForm(editData);
+            editingId = editData.id;
+        } else {
             editingId = null;
-            const formHtml = document.getElementById('createFormTemplate').innerHTML;
-            openModal('Add New FAQ', formHtml, saveFaq);
-        };
+            populateForm({});
+        }
 
-        // ================================================================
-        // EDIT MODAL
-        // ================================================================
+        saveBtn.onclick = saveFaq;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
 
-        window.openEditModal = function(id) {
-            const item = faqs.find(f => f.id === id);
-            if (!item) {
-                showToast('error', 'FAQ not found');
-                return;
+    window.closeFaqModal = function() {
+        const modal = document.getElementById('faqModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        editingId = null;
+    };
+
+    window.openCreateModal = function() {
+        openFaqModal('Add New FAQ', null);
+    };
+
+    window.openEditModal = function(id) {
+        const item = faqs.find(f => f.id === id);
+        if (!item) {
+            showToast('error', 'FAQ not found');
+            return;
+        }
+        openFaqModal('Edit FAQ', item);
+    };
+
+    // ================================================================
+    // SAVE FAQ
+    // ================================================================
+
+    window.saveFaq = function() {
+        const isEdit = !!editingId;
+        const data = getFormData();
+
+        console.log('📝 Form Data:', data);
+
+        // Validate required fields
+        if (!data.question) {
+            showToast('warning', 'Question is required');
+            return;
+        }
+        if (!data.answer) {
+            showToast('warning', 'Answer is required');
+            return;
+        }
+        if (!data.audience) {
+            showToast('warning', 'Audience is required');
+            return;
+        }
+        if (!data.status) {
+            showToast('warning', 'Status is required');
+            return;
+        }
+
+        // Clean up data - remove empty fields
+        Object.keys(data).forEach(key => {
+            if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                delete data[key];
             }
+        });
 
-            editingId = id;
-            const formHtml = document.getElementById('editFormTemplate').innerHTML;
-            openModal('Edit FAQ', formHtml, saveFaq);
+        const url = isEdit ? `${API_URL}${editingId}` : API_URL;
+        const method = isEdit ? 'PUT' : 'POST';
 
-            // Populate form fields
-            setTimeout(() => {
-                document.getElementById('edit-form-id').value = item.id;
-                document.getElementById('edit-form-question').value = item.question || '';
-                document.getElementById('edit-form-answer').value = item.answer || '';
-                document.getElementById('edit-form-audience').value = item.audience_tag || 'public';
-                document.getElementById('edit-form-category').value = item.category || 'general';
-                document.getElementById('edit-form-reviewer').value = item.reviewer || '';
-                document.getElementById('edit-form-display-order').value = item.display_order || 0;
-                document.getElementById('edit-form-is-published').checked = item.is_published || false;
-            }, 100);
-        };
+        console.log(`📤 Sending ${method} request to ${url}`);
+        console.log('📤 Data:', JSON.stringify(data, null, 2));
 
-        // ================================================================
-        // SAVE FAQ
-        // ================================================================
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+        console.log('🔐 CSRF Token:', csrfToken);
 
-        window.saveFaq = function() {
-            const isEdit = !!editingId;
+        const saveBtn = document.getElementById('faqSaveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = '💾 Saving...';
 
-            // Get form values based on mode
-            let data;
-            if (isEdit) {
-                data = {
-                    id: parseInt(document.getElementById('edit-form-id').value),
-                    question: document.getElementById('edit-form-question').value.trim(),
-                    answer: document.getElementById('edit-form-answer').value.trim(),
-                    audience_tag: document.getElementById('edit-form-audience').value,
-                    category: document.getElementById('edit-form-category').value,
-                    reviewer: document.getElementById('edit-form-reviewer').value.trim(),
-                    display_order: parseInt(document.getElementById('edit-form-display-order').value) || 0,
-                    is_published: document.getElementById('edit-form-is-published').checked
-                };
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            console.log('📥 Response status:', response.status);
+            return response.text().then(text => {
+                console.log('📥 Raw response:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Failed to parse JSON:', text);
+                    throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                }
+            });
+        })
+        .then(result => {
+            console.log('📥 Parsed result:', result);
+            if (result.success) {
+                showToast('success', `FAQ ${isEdit ? 'updated' : 'created'} successfully!`);
+                window.closeFaqModal();
+                loadFaqs();
             } else {
-                data = {
-                    question: document.getElementById('form-question').value.trim(),
-                    answer: document.getElementById('form-answer').value.trim(),
-                    audience_tag: document.getElementById('form-audience').value,
-                    category: document.getElementById('form-category').value,
-                    reviewer: document.getElementById('form-reviewer').value.trim(),
-                    display_order: parseInt(document.getElementById('form-display-order').value) || 0,
-                    is_published: document.getElementById('form-is-published').checked
-                };
+                showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} FAQ`);
             }
+        })
+        .catch(error => {
+            console.error('❌ Fetch error:', error);
+            showToast('error', `Error: ${error.message}`);
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '💾 Save';
+        });
+    };
 
-            // Validate required fields
-            if (!data.question) {
-                showToast('warning', 'Question is required');
-                return;
+    // ================================================================
+    // DELETE FAQ
+    // ================================================================
+
+    window.deleteFaq = function(id) {
+        const item = faqs.find(f => f.id === id);
+        if (!item) return;
+
+        if (!confirm(`Are you sure you want to delete "${item.question}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        console.log(`🗑️ Deleting FAQ ${id}`);
+
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+        fetch(`${API_URL}${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
             }
-            if (!data.answer) {
-                showToast('warning', 'Answer is required');
-                return;
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                showToast('success', 'FAQ deleted successfully!');
+                loadFaqs();
+            } else {
+                showToast('error', result.error || 'Failed to delete FAQ');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Delete error:', error);
+            showToast('error', `Error: ${error.message}`);
+        });
+    };
 
-            const url = isEdit ? `${API_URL}${editingId}/` : API_URL;
-            const method = isEdit ? 'PUT' : 'POST';
+    // ================================================================
+    // CLOSE MODAL ON OVERLAY CLICK
+    // ================================================================
 
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    showToast('success', `FAQ ${isEdit ? 'updated' : 'created'} successfully!`);
-                    closeModal();
-                    loadFaqs();
-                } else {
-                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} FAQ`);
-                }
-            })
-            .catch(error => {
-                showToast('error', `Error: ${error.message}`);
+    document.getElementById('faqModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            window.closeFaqModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            window.closeFaqModal();
+        }
+    });
+
+    // ================================================================
+    // ✅ ADD EVENT LISTENER FOR ADD FAQ BUTTON
+    // ================================================================
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            const addBtn = document.getElementById('addFaqBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openFaqModal('Add New FAQ', null);
+                });
+                console.log('✅ Add FAQ button listener attached');
+            }
+        });
+    } else {
+        const addBtn = document.getElementById('addFaqBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openFaqModal('Add New FAQ', null);
             });
-        };
-
-        // ================================================================
-        // DELETE FAQ
-        // ================================================================
-
-        window.deleteFaq = function(id) {
-            const item = faqs.find(f => f.id === id);
-            if (!item) return;
-
-            if (!confirm(`Are you sure you want to delete "${item.question}"? This action cannot be undone.`)) {
-                return;
-            }
-
-            fetch(`${API_URL}${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    showToast('success', 'FAQ deleted successfully!');
-                    loadFaqs();
-                } else {
-                    showToast('error', result.error || 'Failed to delete FAQ');
-                }
-            })
-            .catch(error => {
-                showToast('error', `Error: ${error.message}`);
-            });
-        };
-
-        // ================================================================
-        // UTILITY FUNCTIONS
-        // ================================================================
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            console.log('✅ Add FAQ button listener attached');
         }
+    }
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            try {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            } catch {
-                return dateStr.substring(0, 10);
-            }
+    // ================================================================
+    // UTILITY FUNCTIONS
+    // ================================================================
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch {
+            return dateStr.substring(0, 10);
         }
+    }
 
-        function updateCounts(count) {
-            const countEl = document.getElementById('count-faqs');
-            const tableCount = document.getElementById('tableCount');
-            if (countEl) countEl.textContent = `${count} items`;
-            if (tableCount) tableCount.textContent = `${count} items`;
-        }
+    function updateCounts(count) {
+        const countEl = document.getElementById('count-faqs');
+        const tableCount = document.getElementById('tableCount');
+        if (countEl) countEl.textContent = `${count} items`;
+        if (tableCount) tableCount.textContent = `${count} items`;
+    }
 
-        // ================================================================
-        // INITIALIZE
-        // ================================================================
+    // ================================================================
+    // TOAST NOTIFICATIONS
+    // ================================================================
 
-        loadFaqs();
+    function showToast(type, message) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
 
-        console.log('✅ BRIDGE-AI Kenya Manage FAQs page initialized');
+    // ================================================================
+    // INITIALIZE
+    // ================================================================
 
-    })();
+    loadFaqs();
+
+    console.log('✅ BRIDGE-AI Kenya Manage FAQs page initialized');
+
+})();
 </script>
 {% endblock %}

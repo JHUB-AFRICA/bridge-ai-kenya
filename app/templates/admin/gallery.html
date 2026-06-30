@@ -1,31 +1,52 @@
 <!-- ================================================================ -->
-<!-- BRIDGE-AI KENYA - MANAGE GALLERY ALBUMS                         -->
-<!-- ================================================================ -->
-<!-- Full CRUD for Gallery Album content type.                       -->
-<!-- Fields: title, date, location, description, consent_confirmed, -->
-<!-- photographer_credit, is_published, images[].                   -->
-<!-- Uses JSON file storage - no database required.                -->
+<!-- BRIDGE-AI KENYA - MANAGE GALLERY                               -->
 <!-- ================================================================ -->
 
 {% extends "admin/layout.html" %}
 
 {% block title %}Manage Gallery - BRIDGE-AI Kenya Admin{% endblock %}
 
-{% block page_title %}🖼️ Manage <span class="highlight">Gallery Albums</span>{% endblock %}
+{% block page_title %}🖼️ Manage <span class="highlight">Gallery</span>{% endblock %}
 
-{% block page_subtitle %}Create, edit, and delete photo albums and manage album images{% endblock %}
+{% block page_subtitle %}Create, edit, and delete photo albums and images for BRIDGE-AI Kenya activities{% endblock %}
 
 {% block content %}
+
+<!-- ============================================================ -->
+<!-- STATS ROW                                                    -->
+<!-- ============================================================ -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Total Albums</div>
+    </div>
+    <div class="stat-card type-published">
+        <div class="stat-number" id="publishedCount">0</div>
+        <div class="stat-label">Published</div>
+    </div>
+    <div class="stat-card type-draft">
+        <div class="stat-number" id="draftCount">0</div>
+        <div class="stat-label">Draft</div>
+    </div>
+    <div class="stat-card type-images">
+        <div class="stat-number" id="imageCount">0</div>
+        <div class="stat-label">Total Images</div>
+    </div>
+    <div class="stat-card type-approved">
+        <div class="stat-number" id="approvedImageCount">0</div>
+        <div class="stat-label">Approved Images</div>
+    </div>
+</div>
 
 <!-- ============================================================ -->
 <!-- SECTION HEADER                                              -->
 <!-- ============================================================ -->
 <div class="section-header-content">
     <div class="section-title">
-        <span class="section-count" id="count-gallery">0 items</span>
+        <span class="section-count" id="count-albums">0 items</span>
     </div>
     <div class="section-actions">
-        <button class="btn btn-primary" onclick="openCreateModal()">
+        <button class="btn btn-primary" id="addAlbumBtn">
             ➕ Add Album
         </button>
     </div>
@@ -38,628 +59,1779 @@
     <div class="table-header">
         <div class="table-search">
             <input type="text" id="searchInput" placeholder="Search albums..." onkeyup="filterTable()">
-            <select id="filterPublished" onchange="filterTable()">
-                <option value="">All Albums</option>
-                <option value="true">Published</option>
-                <option value="false">Unpublished</option>
+            <select id="filterStatus" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
             </select>
             <select id="filterConsent" onchange="filterTable()">
                 <option value="">All Consent</option>
-                <option value="true">Consent Confirmed</option>
-                <option value="false">Consent Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="not_required">Not Required</option>
             </select>
         </div>
         <div class="table-count" id="tableCount">0 items</div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width:20%;">Album Title</th>
-                <th style="width:12%;">Date</th>
-                <th style="width:15%;">Location</th>
-                <th style="width:8%;">Images</th>
-                <th style="width:10%;">Consent</th>
-                <th style="width:10%;">Published</th>
-                <th style="width:15%;text-align:right;">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            <tr>
-                <td colspan="7" class="table-empty">
-                    <span class="empty-icon">📭</span>
-                    <h4>No albums found</h4>
-                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Album" to create your first gallery album.</p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:5%;">#</th>
+                    <th style="width:25%;">Album</th>
+                    <th style="width:12%;">Date</th>
+                    <th style="width:18%;">Location</th>
+                    <th style="width:10%;">Images</th>
+                    <th style="width:10%;">Status</th>
+                    <th style="width:10%;">Consent</th>
+                    <th style="width:10%;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td colspan="8" class="table-empty">
+                        <span class="empty-icon">🖼️</span>
+                        <h4>No albums found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Album" to create your first photo album.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- HIDDEN FORM TEMPLATES FOR MODAL                              -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="albumModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="albumModalTitle">Add New Album</h3>
+            <button class="modal-close" onclick="closeAlbumModal()">✕</button>
+        </div>
+        <div class="modal-body" id="albumModalBody">
+            <!-- Form inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeAlbumModal()">Cancel</button>
+            <button class="btn btn-primary" id="albumSaveBtn">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- IMAGE MODAL - For managing images within an album            -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="imageModal">
+    <div class="modal" style="max-width: 800px;">
+        <div class="modal-header">
+            <h3 id="imageModalTitle">Manage Images</h3>
+            <button class="modal-close" onclick="closeImageModal()">✕</button>
+        </div>
+        <div class="modal-body" id="imageModalBody">
+            <!-- Image management content inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeImageModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CREATE FORM TEMPLATE                                         -->
 <!-- ============================================================ -->
 <div style="display:none;">
-    <!-- Create Form Template -->
-    <div id="createFormTemplate">
+    <div id="createFormHtml">
+        <input type="hidden" id="form-id">
+        
         <div class="form-group">
             <label>Album Title <span class="required">*</span></label>
             <input type="text" id="form-title" placeholder="e.g. Smart Mushroom Pilot Launch">
         </div>
+        
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="form-slug" placeholder="URL-friendly version (auto-generated)">
+            <small style="color:var(--text-light);font-size:0.7rem;">Leave blank to auto-generate from title</small>
+        </div>
+        
         <div class="form-row">
             <div class="form-group">
-                <label>Date</label>
+                <label>Date <span class="required">*</span></label>
                 <input type="date" id="form-date">
             </div>
             <div class="form-group">
                 <label>Location</label>
-                <input type="text" id="form-location" placeholder="e.g. JKUAT Smart Farm Zone">
+                <input type="text" id="form-location" placeholder="e.g. JKUAT Smart Farm Zone, Juja">
             </div>
         </div>
+        
         <div class="form-group">
             <label>Description</label>
-            <textarea id="form-description" rows="2" placeholder="Brief description of the album and event"></textarea>
+            <textarea id="form-description" rows="3" placeholder="Brief description of the album and the event it documents"></textarea>
         </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Status <span class="required">*</span></label>
+                <select id="form-status">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Consent Status <span class="required">*</span></label>
+                <select id="form-consent">
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="not_required">Not Required</option>
+                </select>
+                <small style="color:var(--text-light);font-size:0.7rem;">Confirm that consent was obtained for all photos</small>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Event Link (Optional)</label>
+            <input type="text" id="form-event-link" placeholder="e.g. /activities/smart-mushroom-pilot-launch">
+            <small style="color:var(--text-light);font-size:0.7rem;">Link to related activity page</small>
+        </div>
+        
         <div class="form-group">
             <label>Photographer Credit</label>
-            <input type="text" id="form-photographer-credit" placeholder="e.g. Photo by JHUB Africa">
+            <input type="text" id="form-photographer" placeholder="e.g. John Mwangi, JHUB Africa">
         </div>
+        
         <div class="form-group">
-            <label>Images</label>
-            <textarea id="form-images" rows="3" placeholder='[{"caption":"Smart mushroom container","image_path":"gallery/album1/img1.jpg","alt_text":"Smart container at JKUAT"},{"caption":"Farmers training","image_path":"gallery/album1/img2.jpg","alt_text":"Farmers at IoT training"}]'></textarea>
-            <small style="color:var(--text-light);font-size:0.7rem;">JSON array of image objects with caption, image_path, and alt_text fields</small>
+            <label>Consent Notes</label>
+            <textarea id="form-consent-notes" rows="2" placeholder="Details about consent obtained, date, method, restrictions..."></textarea>
+            <small style="color:var(--text-light);font-size:0.7rem;">Internal notes about consent documentation</small>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="form-is-published" checked> Published
-                </label>
-            </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="form-consent-confirmed"> Consent Confirmed
-                </label>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Form Template -->
-    <div id="editFormTemplate">
-        <div class="form-group">
-            <label>Album Title <span class="required">*</span></label>
-            <input type="text" id="edit-form-title" placeholder="e.g. Smart Mushroom Pilot Launch">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date</label>
-                <input type="date" id="edit-form-date">
-            </div>
-            <div class="form-group">
-                <label>Location</label>
-                <input type="text" id="edit-form-location" placeholder="e.g. JKUAT Smart Farm Zone">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <textarea id="edit-form-description" rows="2" placeholder="Brief description of the album and event"></textarea>
-        </div>
-        <div class="form-group">
-            <label>Photographer Credit</label>
-            <input type="text" id="edit-form-photographer-credit" placeholder="e.g. Photo by JHUB Africa">
-        </div>
-        <div class="form-group">
-            <label>Images</label>
-            <textarea id="edit-form-images" rows="3" placeholder='[{"caption":"Smart mushroom container","image_path":"gallery/album1/img1.jpg","alt_text":"Smart container at JKUAT"},{"caption":"Farmers training","image_path":"gallery/album1/img2.jpg","alt_text":"Farmers at IoT training"}]'></textarea>
-            <small style="color:var(--text-light);font-size:0.7rem;">JSON array of image objects with caption, image_path, and alt_text fields</small>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="edit-form-is-published"> Published
-                </label>
-            </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="edit-form-consent-confirmed"> Consent Confirmed
-                </label>
-            </div>
-        </div>
-        <!-- Hidden ID field -->
-        <input type="hidden" id="edit-form-id">
     </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- MANAGE IMAGES MODAL (Nested)                                -->
+<!-- IMAGE MANAGEMENT FORM TEMPLATE                               -->
 <!-- ============================================================ -->
 <div style="display:none;">
-    <div id="manageImagesTemplate">
-        <div id="imagesList" style="margin-bottom:16px;">
-            <!-- Images will be rendered here -->
+    <div id="imageManagementHtml">
+        <div id="albumInfo" style="margin-bottom:16px;padding:12px 16px;background:var(--bg-light);border-radius:var(--radius-sm);">
+            <strong id="albumInfoTitle"></strong>
+            <span style="color:var(--text-muted);margin-left:12px;" id="albumInfoLocation"></span>
+            <span style="color:var(--text-muted);margin-left:12px;" id="albumInfoDate"></span>
         </div>
-        <div style="padding-top:16px;border-top:1px solid var(--border-light);">
-            <h4 style="font-size:0.9rem;margin-bottom:12px;">➕ Add New Image</h4>
-            <div class="form-group">
-                <label>Caption <span class="required">*</span></label>
-                <input type="text" id="image-caption" placeholder="Image caption">
-            </div>
+        
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="addImageToAlbum()" style="flex:0 0 auto;">
+                📷 Add Image
+            </button>
+            <span style="font-size:0.85rem;color:var(--text-muted);display:flex;align-items:center;">
+                Images: <strong id="imageCountDisplay">0</strong>
+            </span>
+        </div>
+        
+        <div id="imageGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
+            <!-- Images rendered here -->
+        </div>
+        
+        <div id="addImageForm" style="display:none;margin-top:16px;padding:16px;background:var(--bg-light);border-radius:var(--radius-sm);border:1px solid var(--border-light);">
+            <h4 style="margin-bottom:12px;font-size:0.95rem;">Add New Image</h4>
             <div class="form-group">
                 <label>Image Path <span class="required">*</span></label>
-                <input type="text" id="image-path" placeholder="gallery/album1/new-image.jpg">
-                <small style="color:var(--text-light);font-size:0.7rem;">Path to the image file</small>
+                <input type="text" id="image-path" placeholder="gallery/event-name/photo.jpg">
+                <small style="color:var(--text-light);font-size:0.7rem;">Path to image in static/images/gallery/</small>
+            </div>
+            <div class="form-group">
+                <label>Caption</label>
+                <input type="text" id="image-caption" placeholder="Brief caption describing the photo">
             </div>
             <div class="form-group">
                 <label>Alt Text</label>
-                <input type="text" id="image-alt" placeholder="Descriptive alt text for accessibility">
+                <input type="text" id="image-alt" placeholder="Descriptive text for accessibility">
             </div>
-            <button class="btn btn-success" onclick="addImageToAlbum()">➕ Add Image</button>
+            <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" id="image-order" placeholder="1" min="1" value="1">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="image-approved" checked>
+                <label for="image-approved">Approved for Publication</label>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+                <button class="btn btn-primary" onclick="saveImageToAlbum()">💾 Save Image</button>
+                <button class="btn btn-outline" onclick="cancelAddImage()">Cancel</button>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- ============================================================ -->
+<!-- TOAST CONTAINER                                              -->
+<!-- ============================================================ -->
+<div id="toastContainer"></div>
+
+<!-- ============================================================ -->
+<!-- STYLES                                                       -->
+<!-- ============================================================ -->
+<style>
+    /* ================================================================ */
+    /* CSS VARIABLES                                                   */
+    /* ================================================================ */
+    :root {
+        --bg-white: #ffffff;
+        --bg-light: #f5f8fa;
+        --bg-lighter: #fafbfc;
+        --primary: #0f2a3a;
+        --primary-light: #1a4a6b;
+        --text-dark: #1a2a3a;
+        --text-body: #2a3a4a;
+        --text-muted: #6b7a8a;
+        --text-light: #8a9aaa;
+        --border-light: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+        --shadow-xl: 0 8px 40px rgba(0,0,0,0.16);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --error: #e74c3c;
+        --success: #28a745;
+        --warning: #f39c12;
+    }
+
+    /* ================================================================ */
+    /* STATS ROW                                                       */
+    /* ================================================================ */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-light);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+    }
+    
+    .stat-card.type-published .stat-number { color: var(--success); }
+    .stat-card.type-draft .stat-number { color: var(--warning); }
+    .stat-card.type-images .stat-number { color: var(--primary-light); }
+    .stat-card.type-approved .stat-number { color: #8e44ad; }
+    
+    /* ================================================================ */
+    /* SECTION HEADER                                                  */
+    /* ================================================================ */
+    .section-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .section-count {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    
+    .section-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    /* ================================================================ */
+    /* BUTTONS                                                         */
+    /* ================================================================ */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        background: var(--bg-light);
+        color: var(--text-body);
+    }
+    
+    .btn:hover {
+        background: #e4eaf0;
+    }
+    
+    .btn-primary {
+        background: var(--primary-light);
+        color: #ffffff;
+    }
+    
+    .btn-primary:hover {
+        background: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26,74,107,0.25);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border-light);
+    }
+    
+    .btn-outline:hover {
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+        background: rgba(26,74,107,0.04);
+    }
+    
+    .btn-danger {
+        background: var(--error);
+        color: #ffffff;
+    }
+    
+    .btn-danger:hover {
+        background: #c0392b;
+    }
+    
+    .btn-sm {
+        padding: 4px 10px;
+        font-size: 0.7rem;
+    }
+    
+    /* ================================================================ */
+    /* TABLE                                                           */
+    /* ================================================================ */
+    .table-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-light);
+        background: var(--bg-light);
+    }
+    
+    .table-search {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 1;
+    }
+    
+    .table-search input,
+    .table-search select {
+        padding: 6px 10px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-family: inherit;
+        background: var(--bg-white);
+        color: var(--text-body);
+        transition: all 0.3s ease;
+    }
+    
+    .table-search input:focus,
+    .table-search select:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    
+    .table-search input {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .table-search select {
+        min-width: 120px;
+    }
+    
+    .table-count {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        font-weight: 500;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        min-width: 800px;
+    }
+    
+    table thead {
+        background: var(--bg-light);
+        border-bottom: 2px solid var(--border-light);
+    }
+    
+    table thead th {
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+    
+    table tbody tr {
+        border-bottom: 1px solid var(--border-light);
+        transition: background 0.2s ease;
+    }
+    
+    table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    table tbody tr:hover {
+        background: var(--bg-lighter);
+    }
+    
+    table tbody td {
+        padding: 10px 14px;
+        vertical-align: middle;
+        color: var(--text-body);
+    }
+    
+    /* ================================================================ */
+    /* BADGES                                                          */
+    /* ================================================================ */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .badge-published {
+        background: rgba(40,167,69,0.1);
+        color: #28a745;
+    }
+    
+    .badge-draft {
+        background: rgba(243,156,18,0.1);
+        color: #f39c12;
+    }
+    
+    .badge-archived {
+        background: rgba(107,122,138,0.1);
+        color: #6b7a8a;
+    }
+    
+    .badge-consent-confirmed {
+        background: rgba(40,167,69,0.1);
+        color: #28a745;
+    }
+    
+    .badge-consent-pending {
+        background: rgba(243,156,18,0.1);
+        color: #f39c12;
+    }
+    
+    .badge-consent-not_required {
+        background: rgba(26,74,107,0.08);
+        color: #1a4a6b;
+    }
+    
+    /* ================================================================ */
+    /* ACTIONS CELL                                                    */
+    /* ================================================================ */
+    .actions-cell {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .action-icon {
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        background: transparent;
+        color: var(--text-muted);
+    }
+    
+    .action-icon:hover {
+        background: var(--bg-light);
+        color: var(--text-dark);
+    }
+    
+    .action-icon.edit:hover {
+        background: rgba(26,74,107,0.08);
+        color: var(--primary-light);
+    }
+    
+    .action-icon.images:hover {
+        background: rgba(142,68,173,0.08);
+        color: #8e44ad;
+    }
+    
+    .action-icon.delete:hover {
+        background: rgba(231,76,60,0.08);
+        color: var(--error);
+    }
+    
+    /* ================================================================ */
+    /* EMPTY STATE                                                     */
+    /* ================================================================ */
+    .table-empty {
+        text-align: center;
+        padding: 48px 20px !important;
+        color: var(--text-muted);
+    }
+    
+    .table-empty .empty-icon {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 12px;
+        opacity: 0.4;
+    }
+    
+    .table-empty h4 {
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+    
+    .table-empty p {
+        font-size: 0.85rem;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    /* ================================================================ */
+    /* MODAL                                                           */
+    /* ================================================================ */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .modal-overlay.active {
+        display: flex;
+    }
+    
+    .modal {
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        max-width: 640px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlide 0.3s ease;
+    }
+    
+    @keyframes modalSlide {
+        from { opacity: 0; transform: scale(0.95) translateY(20px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: var(--text-light);
+        padding: 4px;
+        line-height: 1;
+        transition: color 0.2s ease;
+    }
+    
+    .modal-close:hover {
+        color: var(--error);
+    }
+    
+    .modal-body {
+        padding: 20px 24px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .modal-footer {
+        padding: 12px 24px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    /* ================================================================ */
+    /* IMAGE GRID                                                     */
+    /* ================================================================ */
+    .image-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+    
+    .image-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+    
+    .image-card .image-preview {
+        width: 100%;
+        height: 130px;
+        background: var(--bg-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--text-light);
+        overflow: hidden;
+    }
+    
+    .image-card .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .image-card .image-info {
+        padding: 10px 12px;
+    }
+    
+    .image-card .image-info .caption {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .image-card .image-info .meta {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .image-card .image-actions {
+        display: flex;
+        gap: 2px;
+        padding: 4px 8px 8px;
+        justify-content: flex-end;
+        border-top: 1px solid var(--border-light);
+    }
+    
+    /* ================================================================ */
+    /* FORM                                                           */
+    /* ================================================================ */
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+    
+    .form-group label .required {
+        color: var(--error);
+        margin-left: 2px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.88rem;
+        font-family: inherit;
+        color: var(--text-body);
+        background: var(--bg-white);
+        transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 60px;
+    }
+    
+    .form-group small {
+        display: block;
+        margin-top: 4px;
+        color: var(--text-light);
+        font-size: 0.7rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        cursor: pointer;
+        accent-color: var(--primary-light);
+        flex-shrink: 0;
+    }
+    
+    .checkbox-group label {
+        font-weight: 400;
+        cursor: pointer;
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-body);
+    }
+    
+    /* ================================================================ */
+    /* TOAST                                                           */
+    /* ================================================================ */
+    #toastContainer {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none !important;
+    }
+    
+    #toastContainer .toast {
+        pointer-events: auto !important;
+    }
+    
+    .toast {
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        color: #ffffff;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        animation: toastSlide 0.3s ease;
+        min-width: 200px;
+    }
+    
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--error); }
+    .toast-warning { background: var(--warning); }
+    .toast-info { background: var(--primary-light); }
+    
+    @keyframes toastSlide {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* ================================================================ */
+    /* FIX: Add Album Button - Ensure clickable                        */
+    /* ================================================================ */
+    #addAlbumBtn {
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* ================================================================ */
+    /* RESPONSIVE                                                      */
+    /* ================================================================ */
+    @media (max-width: 1024px) {
+        .stats-row {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .section-header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .section-actions {
+            justify-content: stretch;
+        }
+        
+        .section-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-search {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-search input {
+            min-width: auto;
+        }
+        
+        .table-search select {
+            min-width: auto;
+        }
+        
+        .table-count {
+            text-align: center;
+        }
+        
+        table {
+            font-size: 0.75rem;
+            min-width: 600px;
+        }
+        
+        table thead th,
+        table tbody td {
+            padding: 8px 10px;
+        }
+        
+        .modal {
+            max-width: 100%;
+            margin: 10px;
+            max-height: 95vh;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        #imageGrid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .stat-card {
+            padding: 12px 16px;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 1.4rem;
+        }
+        
+        .toast {
+            font-size: 0.8rem;
+            padding: 10px 16px;
+            min-width: 160px;
+        }
+        
+        #imageGrid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    (function() {
-        'use strict';
+(function() {
+    'use strict';
 
-        // ================================================================
-        // STATE
-        // ================================================================
+    // ================================================================
+    // STATE
+    // ================================================================
 
-        let albums = [];
-        let editingId = null;
-        let viewingAlbumId = null;
-        let currentAlbumImages = [];
-        let nextImageId = 1;
-        const API_URL = '/api/gallery/';
+    let albums = [];
+    let editingId = null;
+    let currentAlbumId = null;
+    let currentAlbumData = null;
+    let imageEditingId = null;
+    const API_URL = '/api/gallery/';
+    const IMAGE_API_URL = '/api/gallery/images/';
 
-        // ================================================================
-        // LOAD DATA
-        // ================================================================
+    // ================================================================
+    // LOAD DATA
+    // ================================================================
 
-        function loadAlbums() {
-            fetch(API_URL)
-                .then(response => response.json())
-                .then(data => {
-                    albums = data || [];
-                    renderTable(albums);
-                    updateCounts(albums.length);
-                })
-                .catch(error => {
-                    console.error('Error loading albums:', error);
-                    showToast('error', 'Failed to load albums');
-                });
+    function loadAlbums() {
+        console.log('🔄 Loading albums...');
+        fetch(API_URL, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('📥 Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('📥 Data received:', data);
+            albums = data || [];
+            renderTable(albums);
+            updateStats(albums);
+            updateCounts(albums.length);
+        })
+        .catch(error => {
+            console.error('❌ Error loading albums:', error);
+            showToast('error', 'Failed to load albums: ' + error.message);
+        });
+    }
+
+    // ================================================================
+    // RENDER TABLE
+    // ================================================================
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="table-empty">
+                        <span class="empty-icon">🖼️</span>
+                        <h4>No albums found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Album" to create your first photo album.</p>
+                    </td>
+                </tr>
+            `;
+            return;
         }
 
-        // ================================================================
-        // RENDER TABLE
-        // ================================================================
-
-        function renderTable(data) {
-            const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = data.map((item, index) => {
+            const displayOrder = item.display_order || index + 1;
+            const imageCount = item.images ? item.images.length : 0;
+            const approvedCount = item.images ? item.images.filter(img => img.is_approved).length : 0;
+            const statusClass = item.status === 'published' ? 'badge-published' : 
+                               item.status === 'draft' ? 'badge-draft' : 'badge-archived';
+            const consentClass = item.consent_status === 'confirmed' ? 'badge-consent-confirmed' : 
+                                 item.consent_status === 'pending' ? 'badge-consent-pending' : 'badge-consent-not_required';
             
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="table-empty">
-                            <span class="empty-icon">📭</span>
-                            <h4>No albums found</h4>
-                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Album" to create your first gallery album.</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
+            return `
                 <tr>
-                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                    <td style="color:var(--text-muted);font-size:0.8rem;font-weight:500;">${displayOrder}</td>
+                    <td>
+                        <div>
+                            <div style="font-weight:600;font-size:0.9rem;">${escapeHtml(item.title || 'Untitled')}</div>
+                            <div style="font-size:0.7rem;color:var(--text-muted);">${escapeHtml(item.slug || '')}</div>
+                            ${item.event_link ? `<div style="font-size:0.7rem;color:var(--primary-light);">🔗 ${escapeHtml(item.event_link)}</div>` : ''}
+                        </div>
+                    </td>
                     <td>${item.date ? formatDate(item.date) : '-'}</td>
-                    <td>${escapeHtml(item.location || '-')}</td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${(item.images || []).length}</span></td>
-                    <td>${item.consent_confirmed ? '✅ Yes' : '❌ No'}</td>
-                    <td>${item.is_published ? '✅ Yes' : '❌ No'}</td>
+                    <td style="font-size:0.85rem;color:var(--text-muted);">${escapeHtml(item.location || '-')}</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="font-weight:600;">${imageCount}</span>
+                            ${approvedCount > 0 ? `<span style="font-size:0.65rem;color:var(--success);">(${approvedCount} approved)</span>` : ''}
+                        </div>
+                    </td>
+                    <td><span class="badge ${statusClass}">${escapeHtml(item.status || 'draft')}</span></td>
+                    <td><span class="badge ${consentClass}">${escapeHtml(item.consent_status || 'pending')}</span></td>
                     <td style="text-align:right;">
                         <div class="actions-cell">
-                            <button class="action-icon" onclick="openManageImages(${item.id})" title="Manage Images" style="font-size:1rem;">🖼️</button>
+                            <button class="action-icon images" onclick="openImageManager(${item.id})" title="Manage Images">🖼️</button>
                             <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
                             <button class="action-icon delete" onclick="deleteAlbum(${item.id})" title="Delete">🗑️</button>
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `;
+        }).join('');
 
-            updateCounts(data.length);
+        updateStats(data);
+        updateCounts(data.length);
+    }
+
+    // ================================================================
+    // UPDATE STATS
+    // ================================================================
+
+    function updateStats(data) {
+        const total = data.length;
+        const published = data.filter(item => item.status === 'published').length;
+        const draft = data.filter(item => item.status === 'draft').length;
+        let totalImages = 0;
+        let approvedImages = 0;
+        
+        data.forEach(item => {
+            if (item.images) {
+                totalImages += item.images.length;
+                approvedImages += item.images.filter(img => img.is_approved).length;
+            }
+        });
+        
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('publishedCount').textContent = published;
+        document.getElementById('draftCount').textContent = draft;
+        document.getElementById('imageCount').textContent = totalImages;
+        document.getElementById('approvedImageCount').textContent = approvedImages;
+    }
+
+    // ================================================================
+    // FILTER TABLE
+    // ================================================================
+
+    window.filterTable = function() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('filterStatus').value;
+        const consentFilter = document.getElementById('filterConsent').value;
+
+        let filtered = albums;
+
+        if (search) {
+            filtered = filtered.filter(item => {
+                const searchable = [
+                    item.title,
+                    item.description,
+                    item.location,
+                    item.slug,
+                    item.photographer
+                ].join(' ').toLowerCase();
+                return searchable.includes(search);
+            });
         }
 
-        // ================================================================
-        // FILTER TABLE
-        // ================================================================
+        if (statusFilter) {
+            filtered = filtered.filter(item => item.status === statusFilter);
+        }
 
-        window.filterTable = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const publishedFilter = document.getElementById('filterPublished').value;
-            const consentFilter = document.getElementById('filterConsent').value;
+        if (consentFilter) {
+            filtered = filtered.filter(item => item.consent_status === consentFilter);
+        }
 
-            let filtered = albums;
+        renderTable(filtered);
+    };
 
-            if (search) {
-                filtered = filtered.filter(item => {
-                    const searchable = [
-                        item.title,
-                        item.location,
-                        item.description,
-                        item.photographer_credit
-                    ].join(' ').toLowerCase();
-                    return searchable.includes(search);
-                });
-            }
+    // ================================================================
+    // MODAL FUNCTIONS
+    // ================================================================
 
-            if (publishedFilter) {
-                const isPublished = publishedFilter === 'true';
-                filtered = filtered.filter(item => item.is_published === isPublished);
-            }
+    function getFormHtml() {
+        return document.getElementById('createFormHtml').innerHTML;
+    }
 
-            if (consentFilter) {
-                const hasConsent = consentFilter === 'true';
-                filtered = filtered.filter(item => item.consent_confirmed === hasConsent);
-            }
-
-            renderTable(filtered);
+    function getFormData() {
+        return {
+            id: document.getElementById('form-id').value ? parseInt(document.getElementById('form-id').value) : null,
+            title: document.getElementById('form-title').value.trim(),
+            slug: document.getElementById('form-slug').value.trim(),
+            date: document.getElementById('form-date').value,
+            location: document.getElementById('form-location').value.trim(),
+            description: document.getElementById('form-description').value.trim(),
+            status: document.getElementById('form-status').value,
+            consent_status: document.getElementById('form-consent').value,
+            event_link: document.getElementById('form-event-link').value.trim(),
+            photographer: document.getElementById('form-photographer').value.trim(),
+            consent_notes: document.getElementById('form-consent-notes').value.trim()
         };
+    }
 
-        // ================================================================
-        // CREATE MODAL
-        // ================================================================
+    function populateForm(data) {
+        document.getElementById('form-id').value = data.id || '';
+        document.getElementById('form-title').value = data.title || '';
+        document.getElementById('form-slug').value = data.slug || '';
+        document.getElementById('form-date').value = data.date ? data.date.substring(0, 10) : '';
+        document.getElementById('form-location').value = data.location || '';
+        document.getElementById('form-description').value = data.description || '';
+        document.getElementById('form-status').value = data.status || 'draft';
+        document.getElementById('form-consent').value = data.consent_status || 'pending';
+        document.getElementById('form-event-link').value = data.event_link || '';
+        document.getElementById('form-photographer').value = data.photographer || '';
+        document.getElementById('form-consent-notes').value = data.consent_notes || '';
+    }
 
-        window.openCreateModal = function() {
+    function openAlbumModal(title, editData) {
+        const modal = document.getElementById('albumModal');
+        const modalTitle = document.getElementById('albumModalTitle');
+        const modalBody = document.getElementById('albumModalBody');
+        const saveBtn = document.getElementById('albumSaveBtn');
+
+        modalTitle.textContent = title;
+        modalBody.innerHTML = getFormHtml();
+
+        if (editData) {
+            populateForm(editData);
+            editingId = editData.id;
+        } else {
             editingId = null;
-            const formHtml = document.getElementById('createFormTemplate').innerHTML;
-            openModal('Add New Gallery Album', formHtml, saveAlbum);
-        };
+            populateForm({});
+        }
 
-        // ================================================================
-        // EDIT MODAL
-        // ================================================================
+        saveBtn.onclick = saveAlbum;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
 
-        window.openEditModal = function(id) {
-            const item = albums.find(a => a.id === id);
-            if (!item) {
-                showToast('error', 'Album not found');
-                return;
+    window.closeAlbumModal = function() {
+        const modal = document.getElementById('albumModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        editingId = null;
+    };
+
+    window.openCreateModal = function() {
+        openAlbumModal('Add New Album', null);
+    };
+
+    window.openEditModal = function(id) {
+        const item = albums.find(a => a.id === id);
+        if (!item) {
+            showToast('error', 'Album not found');
+            return;
+        }
+        openAlbumModal('Edit Album', item);
+    };
+
+    // ================================================================
+    // SAVE ALBUM
+    // ================================================================
+
+    window.saveAlbum = function() {
+        const isEdit = !!editingId;
+        const data = getFormData();
+
+        console.log('📝 Form Data:', data);
+
+        // Validate required fields
+        if (!data.title) {
+            showToast('warning', 'Album title is required');
+            return;
+        }
+        if (!data.date) {
+            showToast('warning', 'Date is required');
+            return;
+        }
+        if (!data.status) {
+            showToast('warning', 'Status is required');
+            return;
+        }
+        if (!data.consent_status) {
+            showToast('warning', 'Consent status is required');
+            return;
+        }
+
+        // Auto-generate slug if not provided
+        if (!data.slug) {
+            data.slug = slugify(data.title);
+        }
+
+        // Clean up data - remove empty fields
+        Object.keys(data).forEach(key => {
+            if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                delete data[key];
             }
+        });
 
-            editingId = id;
-            const formHtml = document.getElementById('editFormTemplate').innerHTML;
-            openModal('Edit Gallery Album', formHtml, saveAlbum);
+        const url = isEdit ? `${API_URL}${editingId}` : API_URL;
+        const method = isEdit ? 'PUT' : 'POST';
 
-            // Populate form fields
-            setTimeout(() => {
-                document.getElementById('edit-form-id').value = item.id;
-                document.getElementById('edit-form-title').value = item.title || '';
-                document.getElementById('edit-form-date').value = item.date || '';
-                document.getElementById('edit-form-location').value = item.location || '';
-                document.getElementById('edit-form-description').value = item.description || '';
-                document.getElementById('edit-form-photographer-credit').value = item.photographer_credit || '';
-                document.getElementById('edit-form-is-published').checked = item.is_published || false;
-                document.getElementById('edit-form-consent-confirmed').checked = item.consent_confirmed || false;
-                document.getElementById('edit-form-images').value = JSON.stringify(item.images || [], null, 2);
-            }, 100);
-        };
+        console.log(`📤 Sending ${method} request to ${url}`);
+        console.log('📤 Data:', JSON.stringify(data, null, 2));
 
-        // ================================================================
-        // SAVE ALBUM
-        // ================================================================
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+        console.log('🔐 CSRF Token:', csrfToken);
 
-        window.saveAlbum = function() {
-            const isEdit = !!editingId;
+        const saveBtn = document.getElementById('albumSaveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = '💾 Saving...';
 
-            // Get form values based on mode
-            let data;
-            if (isEdit) {
-                data = {
-                    id: parseInt(document.getElementById('edit-form-id').value),
-                    title: document.getElementById('edit-form-title').value.trim(),
-                    date: document.getElementById('edit-form-date').value,
-                    location: document.getElementById('edit-form-location').value.trim(),
-                    description: document.getElementById('edit-form-description').value.trim(),
-                    photographer_credit: document.getElementById('edit-form-photographer-credit').value.trim(),
-                    is_published: document.getElementById('edit-form-is-published').checked,
-                    consent_confirmed: document.getElementById('edit-form-consent-confirmed').checked,
-                    images: parseImagesField(document.getElementById('edit-form-images').value)
-                };
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            console.log('📥 Response status:', response.status);
+            return response.text().then(text => {
+                console.log('📥 Raw response:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Failed to parse JSON:', text);
+                    throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                }
+            });
+        })
+        .then(result => {
+            console.log('📥 Parsed result:', result);
+            if (result.success) {
+                showToast('success', `Album ${isEdit ? 'updated' : 'created'} successfully!`);
+                window.closeAlbumModal();
+                loadAlbums();
             } else {
-                data = {
-                    title: document.getElementById('form-title').value.trim(),
-                    date: document.getElementById('form-date').value,
-                    location: document.getElementById('form-location').value.trim(),
-                    description: document.getElementById('form-description').value.trim(),
-                    photographer_credit: document.getElementById('form-photographer-credit').value.trim(),
-                    is_published: document.getElementById('form-is-published').checked,
-                    consent_confirmed: document.getElementById('form-consent-confirmed').checked,
-                    images: parseImagesField(document.getElementById('form-images').value)
+                showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} album`);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Fetch error:', error);
+            showToast('error', `Error: ${error.message}`);
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '💾 Save';
+        });
+    };
+
+    // ================================================================
+    // DELETE ALBUM
+    // ================================================================
+
+    window.deleteAlbum = function(id) {
+        const item = albums.find(a => a.id === id);
+        if (!item) return;
+
+        if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        console.log(`🗑️ Deleting album ${id}`);
+
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+        fetch(`${API_URL}${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                showToast('success', 'Album deleted successfully!');
+                loadAlbums();
+            } else {
+                showToast('error', result.error || 'Failed to delete album');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Delete error:', error);
+            showToast('error', `Error: ${error.message}`);
+        });
+    };
+
+    // ================================================================
+    // IMAGE MANAGEMENT
+    // ================================================================
+
+    function getImageManagementHtml() {
+        return document.getElementById('imageManagementHtml').innerHTML;
+    }
+
+    function renderImageGrid(album) {
+        const grid = document.getElementById('imageGrid');
+        const images = album.images || [];
+        const countDisplay = document.getElementById('imageCountDisplay');
+        
+        if (countDisplay) countDisplay.textContent = images.length;
+        
+        if (!images.length) {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-muted);">
+                    <span style="font-size:2rem;display:block;margin-bottom:8px;">📷</span>
+                    <p>No images in this album yet.</p>
+                    <p style="font-size:0.8rem;">Click "Add Image" to upload photos.</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = images.map((img, index) => {
+            const displayOrder = img.display_order || index + 1;
+            const imgPath = img.image_path || '';
+            
+            return `
+                <div class="image-card" data-id="${img.id || index}">
+                    <div class="image-preview">
+                        ${imgPath ? `<img src="{{ url_for('static', filename='images/${imgPath}') }}" alt="${escapeHtml(img.alt_text || '')}" onerror="this.parentElement.textContent='🖼️'">` : '🖼️'}
+                    </div>
+                    <div class="image-info">
+                        <div class="caption">${escapeHtml(img.caption || 'Untitled')}</div>
+                        <div class="meta">
+                            <span>#${displayOrder}</span>
+                            <span>${img.is_approved ? '✅ Approved' : '⏳ Pending'}</span>
+                        </div>
+                    </div>
+                    <div class="image-actions">
+                        <button class="btn btn-sm btn-outline" onclick="editImage(${index})">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteImage(${index})">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.openImageManager = function(id) {
+        const item = albums.find(a => a.id === id);
+        if (!item) {
+            showToast('error', 'Album not found');
+            return;
+        }
+        
+        currentAlbumId = id;
+        currentAlbumData = item;
+        
+        const modal = document.getElementById('imageModal');
+        const modalTitle = document.getElementById('imageModalTitle');
+        const modalBody = document.getElementById('imageModalBody');
+        
+        modalTitle.textContent = `📷 Manage Images: ${item.title}`;
+        modalBody.innerHTML = getImageManagementHtml();
+        
+        // Set album info
+        document.getElementById('albumInfoTitle').textContent = item.title;
+        document.getElementById('albumInfoLocation').textContent = item.location || '';
+        document.getElementById('albumInfoDate').textContent = item.date ? formatDate(item.date) : '';
+        
+        renderImageGrid(item);
+        
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeImageModal = function() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        currentAlbumId = null;
+        currentAlbumData = null;
+        imageEditingId = null;
+        document.getElementById('addImageForm').style.display = 'none';
+        loadAlbums();
+    };
+
+    window.addImageToAlbum = function() {
+        const form = document.getElementById('addImageForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        if (form.style.display === 'block') {
+            // Reset form
+            document.getElementById('image-path').value = '';
+            document.getElementById('image-caption').value = '';
+            document.getElementById('image-alt').value = '';
+            document.getElementById('image-order').value = '';
+            document.getElementById('image-approved').checked = true;
+            imageEditingId = null;
+        }
+    };
+
+    window.cancelAddImage = function() {
+        document.getElementById('addImageForm').style.display = 'none';
+        imageEditingId = null;
+    };
+
+    window.saveImageToAlbum = function() {
+        const album = currentAlbumData;
+        if (!album) {
+            showToast('error', 'No album selected');
+            return;
+        }
+
+        const path = document.getElementById('image-path').value.trim();
+        const caption = document.getElementById('image-caption').value.trim();
+        const alt = document.getElementById('image-alt').value.trim();
+        const order = document.getElementById('image-order').value ? parseInt(document.getElementById('image-order').value) : null;
+        const approved = document.getElementById('image-approved').checked;
+
+        if (!path) {
+            showToast('warning', 'Image path is required');
+            return;
+        }
+
+        // Get existing images
+        const images = album.images || [];
+        
+        // Check if editing existing image
+        if (imageEditingId !== null && typeof imageEditingId === 'number') {
+            // Edit existing image
+            const existingIndex = images.findIndex(img => img.id === imageEditingId);
+            if (existingIndex !== -1) {
+                images[existingIndex] = {
+                    ...images[existingIndex],
+                    image_path: path,
+                    caption: caption,
+                    alt_text: alt,
+                    display_order: order || images[existingIndex].display_order || 1,
+                    is_approved: approved
                 };
             }
-
-            // Validate required fields
-            if (!data.title) {
-                showToast('warning', 'Album title is required');
-                return;
-            }
-
-            const url = isEdit ? `${API_URL}${editingId}/` : API_URL;
-            const method = isEdit ? 'PUT' : 'POST';
-
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    showToast('success', `Album ${isEdit ? 'updated' : 'created'} successfully!`);
-                    closeModal();
-                    loadAlbums();
-                } else {
-                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} album`);
-                }
-            })
-            .catch(error => {
-                showToast('error', `Error: ${error.message}`);
-            });
-        };
-
-        // ================================================================
-        // DELETE ALBUM
-        // ================================================================
-
-        window.deleteAlbum = function(id) {
-            const item = albums.find(a => a.id === id);
-            if (!item) return;
-
-            if (!confirm(`Are you sure you want to delete "${item.title}" and all its images? This action cannot be undone.`)) {
-                return;
-            }
-
-            fetch(`${API_URL}${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    showToast('success', 'Album deleted successfully!');
-                    loadAlbums();
-                } else {
-                    showToast('error', result.error || 'Failed to delete album');
-                }
-            })
-            .catch(error => {
-                showToast('error', `Error: ${error.message}`);
-            });
-        };
-
-        // ================================================================
-        // MANAGE IMAGES - Open modal to manage album images
-        // ================================================================
-
-        window.openManageImages = function(albumId) {
-            const album = albums.find(a => a.id === albumId);
-            if (!album) {
-                showToast('error', 'Album not found');
-                return;
-            }
-
-            viewingAlbumId = albumId;
-            currentAlbumImages = album.images || [];
-            nextImageId = Math.max(0, ...currentAlbumImages.map(i => i.id || 0)) + 1;
-
-            const title = `🖼️ Manage Images - ${album.title}`;
-            const formHtml = document.getElementById('manageImagesTemplate').innerHTML;
-            openModal(title, formHtml, function() {
-                // Save button does nothing - images are saved via add/delete
-                showToast('info', 'Images are saved automatically when added or deleted');
-            });
-
-            // Update save button text
-            document.querySelector('#modalSaveBtn').textContent = '✅ Done';
-
-            // Override save function to just close
-            const originalSave = window.saveAlbum;
-            document.getElementById('modalSaveBtn').onclick = function() {
-                closeModal();
-            };
-
-            renderImagesList();
-        };
-
-        // ================================================================
-        // RENDER IMAGES LIST
-        // ================================================================
-
-        function renderImagesList() {
-            const container = document.getElementById('imagesList');
-            
-            if (!currentAlbumImages || currentAlbumImages.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center;padding:30px 0;color:var(--text-light);">
-                        <span style="font-size:2rem;display:block;margin-bottom:8px;">🖼️</span>
-                        <p>No images in this album yet.</p>
-                        <p style="font-size:0.8rem;">Add images using the form below.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = currentAlbumImages.map((img, index) => `
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg-light);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border-light);">
-                    <span style="font-weight:600;color:var(--text-muted);min-width:30px;">#${index + 1}</span>
-                    <div style="flex:1;">
-                        <div style="font-weight:600;font-size:0.85rem;">${escapeHtml(img.caption || 'Untitled')}</div>
-                        <div style="font-size:0.7rem;color:var(--text-light);">${escapeHtml(img.image_path || 'No path')}</div>
-                    </div>
-                    <div style="font-size:0.7rem;color:var(--text-light);min-width:80px;">
-                        ${img.alt_text ? '📝 Alt: ' + escapeHtml(img.alt_text.substring(0, 20)) + (img.alt_text.length > 20 ? '...' : '') : 'No alt text'}
-                    </div>
-                    <button class="btn btn-danger btn-sm" onclick="deleteImage(${index})">🗑️</button>
-                </div>
-            `).join('');
-        }
-
-        // ================================================================
-        // ADD IMAGE TO ALBUM
-        // ================================================================
-
-        window.addImageToAlbum = function() {
-            const caption = document.getElementById('image-caption').value.trim();
-            const imagePath = document.getElementById('image-path').value.trim();
-            const altText = document.getElementById('image-alt').value.trim();
-
-            if (!caption) {
-                showToast('warning', 'Image caption is required');
-                return;
-            }
-            if (!imagePath) {
-                showToast('warning', 'Image path is required');
-                return;
-            }
-
+        } else {
+            // Create new image
+            const maxId = images.reduce((max, img) => Math.max(max, img.id || 0), 0);
             const newImage = {
-                id: nextImageId++,
+                id: maxId + 1,
+                image_path: path,
                 caption: caption,
-                image_path: imagePath,
-                alt_text: altText || caption,
-                display_order: currentAlbumImages.length
+                alt_text: alt,
+                display_order: order || (images.length + 1),
+                is_approved: approved
             };
+            images.push(newImage);
+        }
 
-            currentAlbumImages.push(newImage);
-
-            // Update the album in the database
-            updateAlbumImages();
-
-            // Clear form fields
-            document.getElementById('image-caption').value = '';
-            document.getElementById('image-path').value = '';
-            document.getElementById('image-alt').value = '';
-
-            // Re-render list
-            renderImagesList();
-
-            showToast('success', 'Image added successfully!');
-        };
-
-        // ================================================================
-        // DELETE IMAGE FROM ALBUM
-        // ================================================================
-
-        window.deleteImage = function(index) {
-            const image = currentAlbumImages[index];
-            if (!image) return;
-
-            if (!confirm(`Are you sure you want to delete "${image.caption}"?`)) {
-                return;
-            }
-
-            currentAlbumImages.splice(index, 1);
-            updateAlbumImages();
-            renderImagesList();
-            showToast('success', 'Image deleted successfully!');
-        };
-
-        // ================================================================
-        // UPDATE ALBUM IMAGES IN DATABASE
-        // ================================================================
-
-        function updateAlbumImages() {
-            const album = albums.find(a => a.id === viewingAlbumId);
-            if (!album) return;
-
-            // Update local album data
-            album.images = currentAlbumImages;
-
-            // Update via API
-            fetch(`${API_URL}${viewingAlbumId}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    ...album,
-                    updated_at: new Date().toISOString()
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (!result.success) {
-                    showToast('error', 'Failed to update album images');
+        // Update album
+        album.images = images;
+        
+        // Save to server
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+        
+        fetch(`${API_URL}${album.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(album)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showToast('success', imageEditingId !== null ? 'Image updated successfully!' : 'Image added successfully!');
+                // Update local data
+                const albumIndex = albums.findIndex(a => a.id === album.id);
+                if (albumIndex !== -1) {
+                    albums[albumIndex] = album;
+                    currentAlbumData = album;
                 }
-            })
-            .catch(error => {
-                showToast('error', `Error: ${error.message}`);
+                renderImageGrid(album);
+                updateStats(albums);
+                // Reset form
+                document.getElementById('addImageForm').style.display = 'none';
+                document.getElementById('image-path').value = '';
+                document.getElementById('image-caption').value = '';
+                document.getElementById('image-alt').value = '';
+                document.getElementById('image-order').value = '';
+                imageEditingId = null;
+            } else {
+                showToast('error', result.error || 'Failed to save image');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error saving image:', error);
+            showToast('error', 'Error saving image: ' + error.message);
+        });
+    };
+
+    window.editImage = function(index) {
+        const album = currentAlbumData;
+        if (!album || !album.images || !album.images[index]) {
+            showToast('error', 'Image not found');
+            return;
+        }
+
+        const img = album.images[index];
+        imageEditingId = img.id || index;
+        
+        document.getElementById('addImageForm').style.display = 'block';
+        document.getElementById('image-path').value = img.image_path || '';
+        document.getElementById('image-caption').value = img.caption || '';
+        document.getElementById('image-alt').value = img.alt_text || '';
+        document.getElementById('image-order').value = img.display_order || '';
+        document.getElementById('image-approved').checked = img.is_approved !== false;
+    };
+
+    window.deleteImage = function(index) {
+        const album = currentAlbumData;
+        if (!album || !album.images || !album.images[index]) {
+            showToast('error', 'Image not found');
+            return;
+        }
+
+        const img = album.images[index];
+        if (!confirm(`Delete image "${img.caption || 'Untitled'}"?`)) {
+            return;
+        }
+
+        // Remove image from array
+        album.images.splice(index, 1);
+        
+        // Save to server
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+        
+        fetch(`${API_URL}${album.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(album)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showToast('success', 'Image deleted successfully!');
+                // Update local data
+                const albumIndex = albums.findIndex(a => a.id === album.id);
+                if (albumIndex !== -1) {
+                    albums[albumIndex] = album;
+                    currentAlbumData = album;
+                }
+                renderImageGrid(album);
+                updateStats(albums);
+                if (document.getElementById('addImageForm').style.display !== 'none') {
+                    document.getElementById('addImageForm').style.display = 'none';
+                }
+            } else {
+                showToast('error', result.error || 'Failed to delete image');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error deleting image:', error);
+            showToast('error', 'Error deleting image: ' + error.message);
+        });
+    };
+
+    // ================================================================
+    // CLOSE MODAL ON OVERLAY CLICK
+    // ================================================================
+
+    document.getElementById('albumModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            window.closeAlbumModal();
+        }
+    });
+
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            window.closeImageModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('imageModal').classList.contains('active')) {
+                window.closeImageModal();
+            } else if (document.getElementById('albumModal').classList.contains('active')) {
+                window.closeAlbumModal();
+            }
+        }
+    });
+
+    // ================================================================
+    // ✅ ADD EVENT LISTENER FOR ADD ALBUM BUTTON
+    // ================================================================
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            const addBtn = document.getElementById('addAlbumBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openAlbumModal('Add New Album', null);
+                });
+                console.log('✅ Add Album button listener attached');
+            }
+        });
+    } else {
+        const addBtn = document.getElementById('addAlbumBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openAlbumModal('Add New Album', null);
             });
+            console.log('✅ Add Album button listener attached');
         }
+    }
 
-        // ================================================================
-        // PARSE IMAGES FIELD
-        // ================================================================
+    // ================================================================
+    // UTILITY FUNCTIONS
+    // ================================================================
 
-        function parseImagesField(value) {
-            if (!value) return [];
-            try {
-                const parsed = JSON.parse(value);
-                if (Array.isArray(parsed)) {
-                    return parsed;
-                }
-                return [];
-            } catch {
-                return [];
-            }
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch {
+            return dateStr.substring(0, 10);
         }
+    }
 
-        // ================================================================
-        // UTILITY FUNCTIONS
-        // ================================================================
+    function slugify(text) {
+        return text.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+    function updateCounts(count) {
+        const countEl = document.getElementById('count-albums');
+        const tableCount = document.getElementById('tableCount');
+        if (countEl) countEl.textContent = `${count} items`;
+        if (tableCount) tableCount.textContent = `${count} items`;
+    }
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            try {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            } catch {
-                return dateStr.substring(0, 10);
-            }
-        }
+    // ================================================================
+    // TOAST NOTIFICATIONS
+    // ================================================================
 
-        function updateCounts(count) {
-            const countEl = document.getElementById('count-gallery');
-            const tableCount = document.getElementById('tableCount');
-            if (countEl) countEl.textContent = `${count} items`;
-            if (tableCount) tableCount.textContent = `${count} items`;
-        }
+    function showToast(type, message) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
 
-        // ================================================================
-        // INITIALIZE
-        // ================================================================
+    // ================================================================
+    // INITIALIZE
+    // ================================================================
 
-        loadAlbums();
+    loadAlbums();
 
-        console.log('✅ BRIDGE-AI Kenya Manage Gallery Albums page initialized');
+    console.log('✅ BRIDGE-AI Kenya Manage Gallery page initialized');
 
-    })();
+})();
 </script>
 {% endblock %}
