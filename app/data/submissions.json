@@ -1,96 +1,58 @@
 [
   {
-    "id": 1,
     "form_type": "contact",
     "data": {
-      "name": "Dr. Jane Muthoni",
-      "email": "jane.muthoni@jkuat.ac.ke",
-      "organisation": "JKUAT - Department of Agricultural Engineering",
-      "audience": "researcher",
-      "message": "I am a researcher at JKUAT interested in the Smart Mushroom pilot project. I would like to know more about the IoT sensors being used and how we can collaborate on the data collection and analysis. I have been following the BRIDGE-AI project and I'm particularly interested in the GenAI predictive analytics component. Could we schedule a meeting to discuss potential synergies with our ongoing research on mushroom cultivation? I look forward to hearing from you."
-    },
-    "ip_address": "192.168.1.100",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "is_read": false,
-    "is_responded": false,
-    "submitted_at": "2026-06-30T14:30:00.000",
-    "created_at": "2026-06-30T14:30:00.000",
-    "updated_at": "2026-06-30T14:30:00.000"
-  },
-  {
-    "id": 3,
-    "form_type": "training",
-    "data": {
-      "name": "Sarah Wanjiru",
-      "email": "sarah.wanjiru@techhub.co.ke",
-      "phone": "+254712345678",
-      "county": "Nairobi",
-      "audience": "entrepreneur",
-      "training_interest": "smart_mushroom"
-    },
-    "ip_address": "192.168.1.102",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "is_read": true,
-    "is_responded": false,
-    "submitted_at": "2026-06-30T16:20:00.000",
-    "created_at": "2026-06-30T16:20:00.000",
-    "updated_at": "2026-06-30T16:20:00.000"
-  },
-  {
-    "id": 5,
-    "form_type": "media",
-    "data": {
-      "name": "Grace Akinyi",
-      "email": "grace.akinyi@dailynation.co.ke",
-      "outlet": "Daily Nation",
-      "request_type": "interview",
-      "deadline": "15 Jul 2026",
-      "message": "I am a journalist with the Daily Nation. I am writing a feature article on how AI and IoT technologies are transforming agriculture in Kenya. I would like to request an interview with the BRIDGE-AI project team and a visit to the JKUAT Smart Farm Zone to see the Smart Mushroom pilot in action. I am available next week. Please let me know if you can accommodate this request."
-    },
-    "ip_address": "192.168.1.104",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "is_read": true,
-    "is_responded": false,
-    "submitted_at": "2026-06-30T18:30:00.000",
-    "created_at": "2026-06-30T18:30:00.000",
-    "updated_at": "2026-06-30T02:00:04.748653"
-  },
-  {
-    "id": 6,
-    "form_type": "media",
-    "data": {
-      "name": "James Omondi",
-      "email": "james.omondi@citizen.co.ke",
-      "outlet": "Citizen TV",
-      "request_type": "site_visit",
-      "deadline": "20 Jul 2026",
-      "message": "We are producing a documentary on agritech innovations in Kenya and would like to feature the Smart Mushroom project. We would like to do a site visit and film the demonstration farm operations. We can bring our own production team and equipment. Please let us know when would be a good time for us to come and what permissions are required."
-    },
-    "ip_address": "192.168.1.105",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "is_read": true,
-    "is_responded": false,
-    "submitted_at": "2026-06-30T19:15:00.000",
-    "created_at": "2026-06-30T19:15:00.000",
-    "updated_at": "2026-06-30T01:59:51.617770"
-  },
-  {
-    "form_type": "training",
-    "data": {
-      "name": "Brandi Gathara",
-      "email": "brandigathara@gmail.com",
-      "phone": "+254742749779",
-      "county": "NYERI",
-      "audience": "farmer",
-      "training_interest": "entrepreneurship"
+      "name": "Bradon Muriithi",
+      "email": "brandiara@gmail.com",
+      "organisation": "qwer",
+      "audience": "student",
+      "message": "The information you submit will be used only to respond to your enquiry or manage your participation in BRIDGE-AI activities. It will not be published publicly without your consent. Read our full privacy policy "
     },
     "ip_address": "127.0.0.1",
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
     "is_read": false,
     "is_responded": false,
-    "submitted_at": "2026-06-30T02:37:49.811479",
+    "submitted_at": "2026-06-30T03:12:11.297912",
     "id": 7,
-    "created_at": "2026-06-30T02:37:49.811881",
-    "updated_at": "2026-06-30T02:37:49.811888"
+    "created_at": "2026-06-30T03:12:11.298557",
+    "updated_at": "2026-06-30T03:12:11.298573"
+  },
+  {
+    "form_type": "media",
+    "data": {
+      "name": "Brandi Gathara",
+      "email": "brana@gmail.com",
+      "outlet": "qwer",
+      "request_type": "site_visit",
+      "deadline": "",
+      "message": "🔒 Privacy Notice: The information you submit will be used only to respond to your enquiry or manage your participation in BRIDGE-AI activities. It will not be published publicly without your consent. Read our full privacy policy →\r\n"
+    },
+    "ip_address": "127.0.0.1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T03:15:01.594001",
+    "id": 8,
+    "created_at": "2026-06-30T03:15:01.594500",
+    "updated_at": "2026-06-30T03:15:01.594514"
+  },
+  {
+    "form_type": "media",
+    "data": {
+      "name": "Bradon Muriithi",
+      "email": "br@gmail.com",
+      "outlet": "qwer",
+      "request_type": "interview",
+      "deadline": "",
+      "message": "published publicly without your consent. Read our full privacy policy \r\n"
+    },
+    "ip_address": "127.0.0.1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+    "is_read": false,
+    "is_responded": false,
+    "submitted_at": "2026-06-30T03:15:39.593853",
+    "id": 9,
+    "created_at": "2026-06-30T03:15:39.594613",
+    "updated_at": "2026-06-30T03:15:39.594625"
   }
 ]

@@ -18,23 +18,23 @@
 <div class="stats-row">
     <div class="stat-card">
         <div class="stat-number" id="totalCount">0</div>
-        <div class="stat-label">Total</div>
+        <div class="stat-label">Total Messages</div>
     </div>
     <div class="stat-card">
         <div class="stat-number" id="unreadCount">0</div>
-        <div class="stat-label">Unread</div>
+        <div class="stat-label">Unread Messages</div>
     </div>
     <div class="stat-card type-contact">
         <div class="stat-number" id="contactCount">0</div>
-        <div class="stat-label">Contact</div>
+        <div class="stat-label">General Contact</div>
     </div>
     <div class="stat-card type-training">
         <div class="stat-number" id="trainingCount">0</div>
-        <div class="stat-label">Training</div>
+        <div class="stat-label">Training  interest</div>
     </div>
     <div class="stat-card type-media">
         <div class="stat-number" id="mediaCount">0</div>
-        <div class="stat-label">Media</div>
+        <div class="stat-label">Media request</div>
     </div>
 </div>
 
@@ -43,12 +43,12 @@
 <!-- ============================================================ -->
 <div class="filter-bar">
     <div class="filter-group">
-        <span class="filter-label">Type</span>
+        <span class="filter-label">Message Type</span>
         <div class="filter-pills" id="typePills">
             <button class="pill active" data-type="all">All <span class="pill-count" id="pillAll">0</span></button>
-            <button class="pill" data-type="contact">Contact <span class="pill-count" id="pillContact">0</span></button>
-            <button class="pill" data-type="training">Training <span class="pill-count" id="pillTraining">0</span></button>
-            <button class="pill" data-type="media">Media <span class="pill-count" id="pillMedia">0</span></button>
+            <button class="pill" data-type="contact">General Contact <span class="pill-count" id="pillContact">0</span></button>
+            <button class="pill" data-type="training">Training interest<span class="pill-count" id="pillTraining">0</span></button>
+            <button class="pill" data-type="media">Media request<span class="pill-count" id="pillMedia">0</span></button>
         </div>
     </div>
     
@@ -467,16 +467,66 @@
     }
     
     .actions-col {
-        text-align: right;
-        min-width: 160px;
-    }
-    
-    .actions-cell {
-        display: flex;
-        gap: 6px;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-    }
+    text-align: right;
+    min-width: 180px;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 4px 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-btn.view {
+    background: rgba(26,74,107,0.08);
+    color: #1a4a6b;
+}
+
+.action-btn.view:hover {
+    background: rgba(26,74,107,0.15);
+}
+
+.action-btn.mark {
+    background: rgba(40,167,69,0.08);
+    color: #28a745;
+}
+
+.action-btn.mark:hover {
+    background: rgba(40,167,69,0.15);
+}
+
+.action-btn.mark.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.action-btn.mark.disabled:hover {
+    background: rgba(40,167,69,0.08);
+}
+
+.action-btn.delete {
+    background: rgba(231,76,60,0.08);
+    color: #e74c3c;
+}
+
+.action-btn.delete:hover {
+    background: rgba(231,76,60,0.15);
+}
     
     /* ================================================================ */
     /* BADGES                                                          */
@@ -925,53 +975,56 @@
     // ================================================================
 
     function renderTable(data) {
-        const tbody = document.getElementById('tableBody');
-        
-        if (!data || data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="table-empty">
-                        <div class="empty-state">
-                            <div class="empty-icon">📭</div>
-                            <h4>No submissions found</h4>
-                            <p style="color: var(--text-light); font-size: 0.85rem;">Form submissions will appear here when users fill out contact forms.</p>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        tbody.innerHTML = data.map(item => {
-            const formData = item.data || {};
-            const type = item.form_type || 'contact';
-            const typeLabel = formatType(type);
-            const typeColor = getTypeColor(type);
-            const statusLabel = item.is_read ? 'Read' : 'Unread';
-            const statusClass = item.is_read ? 'published' : 'draft';
-            const rowClass = item.is_read ? '' : 'unread-row';
-
-            return `
-                <tr class="${rowClass}">
-                    <td><span class="status-badge" style="background:${typeColor};color:#ffffff;">${typeLabel}</span></td>
-                    <td><strong>${escapeHtml(formData.name || '-')}</strong></td>
-                    <td><a href="mailto:${escapeHtml(formData.email || '')}" style="color:var(--primary-light);text-decoration:none;">${escapeHtml(formData.email || '-')}</a></td>
-                    <td>${item.submitted_at ? formatDate(item.submitted_at) : '-'}</td>
-                    <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                    <td>${escapeHtml(getMessagePreview(formData, type))}</td>
-                    <td style="text-align:right;">
-                        <div class="actions-cell">
-                            <button class="action-icon" onclick="viewSubmission(${item.id})" title="View Details">📄</button>
-                            <button class="action-icon" onclick="markRead(${item.id})" title="Mark Read" style="${item.is_read ? 'opacity:0.3;' : ''}">📖</button>
-                            <button class="action-icon delete" onclick="deleteSubmission(${item.id})" title="Delete">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-
-        updateStatsAndCounts(data);
+    const tbody = document.getElementById('tableBody');
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h4>No submissions found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Form submissions will appear here when users fill out contact forms.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
     }
+
+    tbody.innerHTML = data.map(item => {
+        const formData = item.data || {};
+        const type = item.form_type || 'contact';
+        const typeLabel = formatType(type);
+        const typeColor = getTypeColor(type);
+        const statusLabel = item.is_read ? 'Read' : 'Unread';
+        const statusClass = item.is_read ? 'published' : 'draft';
+        const rowClass = item.is_read ? '' : 'unread-row';
+        const isRead = item.is_read;
+
+        return `
+            <tr class="${rowClass}">
+                <td><span class="status-badge" style="background:${typeColor};color:#ffffff;">${typeLabel}</span></td>
+                <td><strong>${escapeHtml(formData.name || '-')}</strong></td>
+                <td><a href="mailto:${escapeHtml(formData.email || '')}" style="color:var(--primary-light);text-decoration:none;">${escapeHtml(formData.email || '-')}</a></td>
+                <td>${item.submitted_at ? formatDate(item.submitted_at) : '-'}</td>
+                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                <td>${escapeHtml(getMessagePreview(formData, type))}</td>
+                <td style="text-align:right;">
+                    <div class="actions-cell">
+                        <button class="action-btn view" onclick="viewSubmission(${item.id})" title="View Details">👁 View</button>
+                        <button class="action-btn mark ${isRead ? 'disabled' : ''}" onclick="markRead(${item.id})" ${isRead ? 'disabled' : ''} title="${isRead ? 'Already read' : 'Mark as read'}">
+                            ${isRead ? '✓ Read' : '📖 Mark Read'}
+                        </button>
+                        <button class="action-btn delete" onclick="deleteSubmission(${item.id})" title="Delete">🗑 Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    updateStatsAndCounts(data);
+}
 
     // ================================================================
     // FORMAT HELPERS - EXACTLY AS WORKING VERSION
@@ -1288,7 +1341,7 @@
 
         const csrfToken = getCsrfToken();
 
-        showToast('info', '⏳ Deleting submission...');
+        showToast('info', '⏳ Deleting Message...');
 
         fetch(`${API_URL}${id}/`, {
             method: 'DELETE',
@@ -1307,7 +1360,7 @@
         })
         .then(result => {
             if (result.success) {
-                showToast('success', '🗑️ Submission deleted successfully!');
+                showToast('success', '🗑️ Message deleted successfully!');
                 loadSubmissions();
             } else {
                 showToast('error', '❌ Failed to delete: ' + (result.error || 'Unknown error'));
