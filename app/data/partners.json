@@ -1,19 +1,5 @@
 [
   {
-    "name": "FUNDACIO EURECAT",
-    "short_name": "EURECAT",
-    "country": "Spain",
-    "role": "Coordinator",
-    "description": "Leading the BRIDGE-AI project coordination and technical development.",
-    "website": "https://eurecat.org",
-    "logo": "logos/partners/eurecat.svg",
-    "display_order": 1,
-    "is_consortium": true,
-    "id": 1,
-    "created_at": "2026-06-25T03:04:46.149930",
-    "updated_at": "2026-06-25T03:04:46.149977"
-  },
-  {
     "name": "Universidad Politecnica de Madrid",
     "short_name": "UPM",
     "country": "Spain",
@@ -110,5 +96,19 @@
     "id": 8,
     "created_at": "2026-06-25T03:04:46.261575",
     "updated_at": "2026-06-25T03:04:46.261584"
+  },
+  {
+    "name": "Universitat Politècnica de Catalunya",
+    "short_name": "UPC",
+    "country": "Spain",
+    "role": "Coordinator",
+    "description": "Project coordinator responsible for overall project management, scientific leadership, AI research coordination, quality assurance, and communication across all consortium partners.",
+    "website": "https://www.upc.edu",
+    "logo": "logos/partners/upc.svg",
+    "display_order": 1,
+    "is_consortium": true,
+    "created_at": "2026-07-01T00:57:57.993430",
+    "updated_at": "2026-07-01T00:57:57.993441",
+    "id": 9
   }
 ]

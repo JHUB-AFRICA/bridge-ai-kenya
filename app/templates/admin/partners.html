@@ -1,11 +1,6 @@
 <!-- ================================================================ -->
 <!-- BRIDGE-AI KENYA - MANAGE PARTNERS                              -->
 <!-- ================================================================ -->
-<!-- Full CRUD for Partner content type.                            -->
-<!-- Fields: name, short_name, country, role, description,         -->
-<!-- website, logo, display_order, is_consortium.                  -->
-<!-- Uses JSON file storage - no database required.               -->
-<!-- ================================================================ -->
 
 {% extends "admin/layout.html" %}
 
@@ -13,7 +8,7 @@
 
 {% block page_title %}🤝 Manage <span class="highlight">Partners</span>{% endblock %}
 
-{% block page_subtitle %}Manage consortium partners and ecosystem collaborators for BRIDGE-AI Kenya{% endblock %}
+{% block page_subtitle %}Create, edit, and delete consortium partners and ecosystem collaborators for BRIDGE-AI Kenya{% endblock %}
 
 {% block content %}
 
@@ -44,82 +39,70 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- FILTER BAR                                                   -->
+<!-- SECTION HEADER                                              -->
 <!-- ============================================================ -->
-<div class="filter-bar">
-    <div class="filter-group">
-        <span class="filter-label">Type</span>
-        <div class="filter-pills" id="typePills">
-            <button class="pill active" data-type="all">All</button>
-            <button class="pill" data-type="consortium">Consortium</button>
-            <button class="pill" data-type="ecosystem">Ecosystem</button>
-        </div>
+<div class="section-header-content">
+    <div class="section-title">
+        <span class="section-count" id="count-partners">0 items</span>
     </div>
-    
-    <div class="filter-group">
-        <span class="filter-label">Role</span>
-        <div class="filter-pills" id="rolePills">
-            <button class="pill active" data-role="all">All</button>
-            <button class="pill" data-role="Coordinator">Coordinator</button>
-            <button class="pill" data-role="Beneficiary">Beneficiary</button>
-            <button class="pill" data-role="WP5 Lead">WP5 Lead</button>
-            <button class="pill" data-role="Partner">Partner</button>
-        </div>
-    </div>
-    
-    <div class="filter-group">
-        <span class="filter-label">Country</span>
-        <div class="filter-pills" id="countryPills">
-            <button class="pill active" data-country="all">All</button>
-            <button class="pill" data-country="Spain">Spain</button>
-            <button class="pill" data-country="Kenya">Kenya</button>
-            <button class="pill" data-country="Tunisia">Tunisia</button>
-            <button class="pill" data-country="Nigeria">Nigeria</button>
-            <button class="pill" data-country="Austria">Austria</button>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SEARCH & ACTIONS                                             -->
-<!-- ============================================================ -->
-<div class="action-bar">
-    <div class="search-wrapper">
-        <span class="search-icon">⌕</span>
-        <input type="text" id="searchInput" placeholder="Search partners by name, country, or role..." onkeyup="filterTable()">
-    </div>
-    <div class="action-buttons">
-        <button class="btn btn-primary" onclick="openCreateModal()">
-            <span class="btn-icon">+</span> Add Partner
+    <div class="section-actions">
+        <button class="btn btn-primary" id="addPartnerBtn">
+            ➕ Add Partner
         </button>
     </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- TABLE                                                        -->
+<!-- TABLE CONTAINER                                             -->
 <!-- ============================================================ -->
 <div class="table-container">
+    <div class="table-header">
+        <div class="table-search">
+            <input type="text" id="searchInput" placeholder="Search partners..." onkeyup="filterTable()">
+            <select id="filterType" onchange="filterTable()">
+                <option value="">All Types</option>
+                <option value="consortium">Consortium</option>
+                <option value="ecosystem">Ecosystem</option>
+            </select>
+            <select id="filterRole" onchange="filterTable()">
+                <option value="">All Roles</option>
+                <option value="Coordinator">Coordinator</option>
+                <option value="Beneficiary">Beneficiary</option>
+                <option value="WP5 Lead">WP5 Lead</option>
+                <option value="Partner">Partner</option>
+                <option value="Collaborator">Collaborator</option>
+                <option value="Funder">Funder</option>
+            </select>
+            <select id="filterCountry" onchange="filterTable()">
+                <option value="">All Countries</option>
+                <option value="Spain">🇪🇸 Spain</option>
+                <option value="Kenya">🇰🇪 Kenya</option>
+                <option value="Tunisia">🇹🇳 Tunisia</option>
+                <option value="Nigeria">🇳🇬 Nigeria</option>
+                <option value="Austria">🇦🇹 Austria</option>
+            </select>
+        </div>
+        <div class="table-count" id="tableCount">0 items</div>
+    </div>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
                     <th style="width:5%;">#</th>
-                    <th style="width:18%;">Partner</th>
-                    <th style="width:10%;">Country</th>
+                    <th style="width:22%;">Partner</th>
+                    <th style="width:12%;">Country</th>
                     <th style="width:15%;">Role</th>
-                    <th style="width:12%;">Type</th>
-                    <th style="width:20%;">Description</th>
-                    <th style="width:20%;text-align:right;">Actions</th>
+                    <th style="width:10%;">Type</th>
+                    <th style="width:16%;">Description</th>
+                    <th style="width:10%;text-align:right;">Actions</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
                 <tr>
                     <td colspan="7" class="table-empty">
-                        <div class="empty-state">
-                            <span class="empty-icon">🤝</span>
-                            <h4>No partners found</h4>
-                            <p>Click "Add Partner" to create your first partner.</p>
-                        </div>
+                        <span class="empty-icon">🤝</span>
+                        <h4>No partners found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Partner" to create your first partner.</p>
                     </td>
                 </tr>
             </tbody>
@@ -128,7 +111,7 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- MODAL                                                        -->
+<!-- PAGE-SPECIFIC MODAL                                          -->
 <!-- ============================================================ -->
 <div class="modal-overlay" id="partnerModal">
     <div class="modal">
@@ -169,16 +152,16 @@
                 <label>Country <span class="required">*</span></label>
                 <select id="form-country">
                     <option value="">Select country</option>
-                    <option value="Spain">Spain</option>
-                    <option value="Kenya">Kenya</option>
-                    <option value="Tunisia">Tunisia</option>
-                    <option value="Nigeria">Nigeria</option>
-                    <option value="Austria">Austria</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Netherlands">Netherlands</option>
-                    <option value="Other">Other</option>
+                    <option value="Spain">🇪🇸 Spain</option>
+                    <option value="Kenya">🇰🇪 Kenya</option>
+                    <option value="Tunisia">🇹🇳 Tunisia</option>
+                    <option value="Nigeria">🇳🇬 Nigeria</option>
+                    <option value="Austria">🇦🇹 Austria</option>
+                    <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                    <option value="Germany">🇩🇪 Germany</option>
+                    <option value="France">🇫🇷 France</option>
+                    <option value="Netherlands">🇳🇱 Netherlands</option>
+                    <option value="Other">🌍 Other</option>
                 </select>
             </div>
             <div class="form-group">
@@ -208,7 +191,7 @@
             <div class="form-group">
                 <label>Logo Path</label>
                 <input type="text" id="form-logo" placeholder="logos/partners/eurecat.svg">
-                <small style="color:var(--text-light);font-size:0.7rem;">Path to logo image</small>
+                <small style="color:var(--text-light);font-size:0.7rem;">Path to logo image in static/images/</small>
             </div>
         </div>
         
@@ -227,9 +210,38 @@
 </div>
 
 <!-- ============================================================ -->
+<!-- TOAST CONTAINER                                              -->
+<!-- ============================================================ -->
+<div id="toastContainer"></div>
+
+<!-- ============================================================ -->
 <!-- STYLES                                                       -->
 <!-- ============================================================ -->
 <style>
+    /* ================================================================ */
+    /* CSS VARIABLES                                                   */
+    /* ================================================================ */
+    :root {
+        --bg-white: #ffffff;
+        --bg-light: #f5f8fa;
+        --bg-lighter: #fafbfc;
+        --primary: #0f2a3a;
+        --primary-light: #1a4a6b;
+        --text-dark: #1a2a3a;
+        --text-body: #2a3a4a;
+        --text-muted: #6b7a8a;
+        --text-light: #8a9aaa;
+        --border-light: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+        --shadow-xl: 0 8px 40px rgba(0,0,0,0.16);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --error: #e74c3c;
+        --success: #28a745;
+    }
+
     /* ================================================================ */
     /* STATS ROW                                                       */
     /* ================================================================ */
@@ -290,75 +302,15 @@
         margin-top: 4px;
     }
     
-    .stat-card.type-consortium .stat-number { color: #1a4a6b; }
-    .stat-card.type-ecosystem .stat-number { color: #28a745; }
+    .stat-card.type-consortium .stat-number { color: var(--primary-light); }
+    .stat-card.type-ecosystem .stat-number { color: var(--success); }
     .stat-card.type-countries .stat-number { color: #d4a843; }
     .stat-card.type-roles .stat-number { color: #8e44ad; }
     
     /* ================================================================ */
-    /* FILTER BAR                                                      */
+    /* SECTION HEADER                                                  */
     /* ================================================================ */
-    .filter-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px 32px;
-        background: var(--bg-white);
-        border: 1px solid var(--border-light);
-        border-radius: var(--radius-md);
-        padding: 16px 24px;
-        margin-bottom: 20px;
-        align-items: center;
-    }
-    
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    
-    .filter-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--text-muted);
-        margin-right: 4px;
-    }
-    
-    .filter-pills {
-        display: flex;
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-    
-    .pill {
-        padding: 4px 14px;
-        border: none;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        font-family: inherit;
-        background: var(--bg-light);
-        color: var(--text-muted);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .pill:hover {
-        background: #e4eaf0;
-        color: var(--text-dark);
-    }
-    
-    .pill.active {
-        background: var(--primary-light);
-        color: #ffffff;
-    }
-    
-    /* ================================================================ */
-    /* ACTION BAR                                                      */
-    /* ================================================================ */
-    .action-bar {
+    .section-header-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -367,53 +319,26 @@
         margin-bottom: 16px;
     }
     
-    .search-wrapper {
-        position: relative;
-        flex: 1;
-        min-width: 200px;
-        max-width: 450px;
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
     
-    .search-wrapper .search-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-light);
-        font-size: 1rem;
-        pointer-events: none;
-    }
-    
-    .search-wrapper input {
-        width: 100%;
-        padding: 8px 12px 8px 36px;
-        border: 1px solid var(--border-light);
-        border-radius: var(--radius-sm);
+    .section-count {
         font-size: 0.85rem;
-        font-family: inherit;
-        background: var(--bg-white);
-        transition: all 0.3s ease;
-        color: var(--text-body);
+        color: var(--text-muted);
+        font-weight: 500;
     }
     
-    .search-wrapper input:focus {
-        outline: none;
-        border-color: var(--primary-light);
-        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
-    }
-    
-    .search-wrapper input::placeholder {
-        color: var(--text-light);
-    }
-    
-    .action-buttons {
+    .section-actions {
         display: flex;
         gap: 8px;
-        flex-wrap: wrap;
+        align-items: center;
     }
     
     /* ================================================================ */
-    /* BUTTONS                                                        */
+    /* BUTTONS                                                         */
     /* ================================================================ */
     .btn {
         display: inline-flex;
@@ -436,11 +361,6 @@
         background: #e4eaf0;
     }
     
-    .btn .btn-icon {
-        font-size: 1rem;
-        line-height: 1;
-    }
-    
     .btn-primary {
         background: var(--primary-light);
         color: #ffffff;
@@ -448,6 +368,8 @@
     
     .btn-primary:hover {
         background: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26,74,107,0.25);
     }
     
     .btn-outline {
@@ -461,15 +383,6 @@
         background: rgba(26,74,107,0.04);
     }
     
-    .btn-danger {
-        background: #e74c3c;
-        color: #ffffff;
-    }
-    
-    .btn-danger:hover {
-        background: #c0392b;
-    }
-    
     /* ================================================================ */
     /* TABLE                                                           */
     /* ================================================================ */
@@ -479,6 +392,60 @@
         border-radius: var(--radius-md);
         overflow: hidden;
         box-shadow: var(--shadow-sm);
+    }
+    
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-light);
+        background: var(--bg-light);
+    }
+    
+    .table-search {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 1;
+    }
+    
+    .table-search input,
+    .table-search select {
+        padding: 6px 10px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-family: inherit;
+        background: var(--bg-white);
+        color: var(--text-body);
+        transition: all 0.3s ease;
+    }
+    
+    .table-search input:focus,
+    .table-search select:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26,74,107,0.08);
+    }
+    
+    .table-search input {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .table-search select {
+        min-width: 120px;
+    }
+    
+    .table-count {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        font-weight: 500;
     }
     
     .table-wrapper {
@@ -499,7 +466,7 @@
     }
     
     table thead th {
-        padding: 12px 16px;
+        padding: 10px 14px;
         text-align: left;
         font-size: 0.7rem;
         font-weight: 600;
@@ -523,50 +490,9 @@
     }
     
     table tbody td {
-        padding: 12px 16px;
+        padding: 10px 14px;
         vertical-align: middle;
         color: var(--text-body);
-    }
-    
-    .actions-col {
-        text-align: right;
-        min-width: 120px;
-    }
-    
-    .actions-cell {
-        display: flex;
-        gap: 6px;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-    }
-    
-    /* ================================================================ */
-    /* ACTION BUTTONS                                                  */
-    /* ================================================================ */
-    .action-icon {
-        padding: 4px 8px;
-        border-radius: var(--radius-sm);
-        border: none;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: all 0.2s ease;
-        background: transparent;
-        color: var(--text-muted);
-    }
-    
-    .action-icon:hover {
-        background: var(--bg-light);
-        color: var(--text-dark);
-    }
-    
-    .action-icon.edit:hover {
-        background: rgba(26,74,107,0.08);
-        color: var(--primary-light);
-    }
-    
-    .action-icon.delete:hover {
-        background: rgba(231,76,60,0.08);
-        color: #e74c3c;
     }
     
     /* ================================================================ */
@@ -604,28 +530,63 @@
     }
     
     /* ================================================================ */
-    /* EMPTY STATE                                                     */
+    /* ACTIONS CELL                                                    */
     /* ================================================================ */
-    .empty-state {
-        text-align: center;
-        padding: 48px 20px;
+    .actions-cell {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+    }
+    
+    .action-icon {
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        background: transparent;
         color: var(--text-muted);
     }
     
-    .empty-state .empty-icon {
+    .action-icon:hover {
+        background: var(--bg-light);
+        color: var(--text-dark);
+    }
+    
+    .action-icon.edit:hover {
+        background: rgba(26,74,107,0.08);
+        color: var(--primary-light);
+    }
+    
+    .action-icon.delete:hover {
+        background: rgba(231,76,60,0.08);
+        color: var(--error);
+    }
+    
+    /* ================================================================ */
+    /* EMPTY STATE                                                     */
+    /* ================================================================ */
+    .table-empty {
+        text-align: center;
+        padding: 48px 20px !important;
+        color: var(--text-muted);
+    }
+    
+    .table-empty .empty-icon {
         font-size: 3rem;
         display: block;
         margin-bottom: 12px;
         opacity: 0.4;
     }
     
-    .empty-state h4 {
+    .table-empty h4 {
         font-size: 1.1rem;
         color: var(--text-dark);
         margin-bottom: 4px;
     }
     
-    .empty-state p {
+    .table-empty p {
         font-size: 0.85rem;
         max-width: 400px;
         margin: 0 auto;
@@ -674,6 +635,7 @@
         align-items: center;
         padding: 16px 24px;
         border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0;
     }
     
     .modal-header h3 {
@@ -710,6 +672,7 @@
         display: flex;
         justify-content: flex-end;
         gap: 8px;
+        flex-shrink: 0;
     }
     
     /* ================================================================ */
@@ -728,7 +691,7 @@
     }
     
     .form-group label .required {
-        color: #e74c3c;
+        color: var(--error);
         margin-left: 2px;
     }
     
@@ -757,6 +720,13 @@
     .form-group textarea {
         resize: vertical;
         min-height: 60px;
+    }
+    
+    .form-group small {
+        display: block;
+        margin-top: 4px;
+        color: var(--text-light);
+        font-size: 0.7rem;
     }
     
     .form-row {
@@ -799,6 +769,11 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        pointer-events: none !important;
+    }
+    
+    #toastContainer .toast {
+        pointer-events: auto !important;
     }
     
     .toast {
@@ -812,13 +787,22 @@
         min-width: 200px;
     }
     
-    .toast-success { background: #28a745; }
-    .toast-error { background: #e74c3c; }
-    .toast-info { background: #1a4a6b; }
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--error); }
+    .toast-warning { background: #f39c12; }
+    .toast-info { background: var(--primary-light); }
     
     @keyframes toastSlide {
         from { opacity: 0; transform: translateX(30px); }
         to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* ================================================================ */
+    /* FIX: Add Partner Button - Ensure clickable                      */
+    /* ================================================================ */
+    #addPartnerBtn {
+        position: relative;
+        z-index: 10;
     }
     
     /* ================================================================ */
@@ -835,37 +819,40 @@
             grid-template-columns: repeat(2, 1fr);
         }
         
-        .filter-bar {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 12px;
-            padding: 16px;
-        }
-        
-        .filter-group {
-            flex-wrap: wrap;
-        }
-        
-        .filter-pills {
-            flex-wrap: wrap;
-        }
-        
-        .action-bar {
+        .section-header-content {
             flex-direction: column;
             align-items: stretch;
         }
         
-        .search-wrapper {
-            max-width: none;
-        }
-        
-        .action-buttons {
+        .section-actions {
             justify-content: stretch;
         }
         
-        .action-buttons .btn {
+        .section-actions .btn {
             flex: 1;
             justify-content: center;
+        }
+        
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-search {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-search input {
+            min-width: auto;
+        }
+        
+        .table-search select {
+            min-width: auto;
+        }
+        
+        .table-count {
+            text-align: center;
         }
         
         table {
@@ -903,11 +890,6 @@
             font-size: 1.4rem;
         }
         
-        .pill {
-            font-size: 0.7rem;
-            padding: 3px 10px;
-        }
-        
         .toast {
             font-size: 0.8rem;
             padding: 10px 16px;
@@ -916,469 +898,480 @@
     }
 </style>
 
-<!-- ============================================================ -->
-<!-- TOAST CONTAINER                                              -->
-<!-- ============================================================ -->
-<div id="toastContainer"></div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    (function() {
-        'use strict';
+(function() {
+    'use strict';
 
-        // ================================================================
-        // STATE
-        // ================================================================
+    // ================================================================
+    // STATE
+    // ================================================================
 
-        let partners = [];
-        let editingId = null;
-        const API_URL = '/api/partners/';
+    let partners = [];
+    let editingId = null;
+    const API_URL = '/api/partners/';
 
-        // ================================================================
-        // LOAD DATA
-        // ================================================================
+    // ================================================================
+    // LOAD DATA
+    // ================================================================
 
-        function loadPartners() {
-            console.log('🔄 Loading partners...');
-            fetch(API_URL, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                console.log('📥 Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('📥 Data received:', data);
-                partners = data || [];
-                renderTable(partners);
-                updateStats(partners);
-            })
-            .catch(error => {
-                console.error('❌ Error loading partners:', error);
-                showToast('error', 'Failed to load partners: ' + error.message);
+    function loadPartners() {
+        console.log('🔄 Loading partners...');
+        fetch(API_URL, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('📥 Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('📥 Data received:', data);
+            partners = data || [];
+            renderTable(partners);
+            updateStats(partners);
+            updateCounts(partners.length);
+        })
+        .catch(error => {
+            console.error('❌ Error loading partners:', error);
+            showToast('error', 'Failed to load partners: ' + error.message);
+        });
+    }
+
+    // ================================================================
+    // RENDER TABLE
+    // ================================================================
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="table-empty">
+                        <span class="empty-icon">🤝</span>
+                        <h4>No partners found</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Partner" to create your first partner.</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = data.map((item, index) => {
+            const typeLabel = item.is_consortium ? 'Consortium' : 'Ecosystem';
+            const typeClass = item.is_consortium ? 'badge-consortium' : 'badge-ecosystem';
+            const countryFlag = getCountryFlag(item.country);
+            const displayOrder = item.display_order || index + 1;
+            
+            return `
+                <tr>
+                    <td style="color:var(--text-muted);font-size:0.8rem;font-weight:500;">${displayOrder}</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            ${item.logo ? `<img src="{{ url_for('static', filename='images/${item.logo}') }}" alt="${escapeHtml(item.short_name)}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;background:#f5f8fa;padding:4px;" onerror="this.style.display='none'">` : `<div style="width:32px;height:32px;border-radius:4px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text-light);">${escapeHtml((item.short_name || item.name || '?')[0])}</div>`}
+                            <div>
+                                <div style="font-weight:600;font-size:0.9rem;">${escapeHtml(item.name || 'Untitled')}</div>
+                                <div style="font-size:0.7rem;color:var(--text-muted);">${escapeHtml(item.short_name || '')}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-country">${countryFlag} ${escapeHtml(item.country || '-')}</span></td>
+                    <td><span class="badge badge-role">${escapeHtml(item.role || '-')}</span></td>
+                    <td><span class="badge ${typeClass}">${typeLabel}</span></td>
+                    <td style="font-size:0.8rem;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '…' : '') : '-')}</td>
+                    <td style="text-align:right;">
+                        <div class="actions-cell">
+                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
+                            <button class="action-icon delete" onclick="deletePartner(${item.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        updateStats(data);
+        updateCounts(data.length);
+    }
+
+    // ================================================================
+    // UPDATE STATS
+    // ================================================================
+
+    function updateStats(data) {
+        const total = data.length;
+        const consortium = data.filter(item => item.is_consortium).length;
+        const ecosystem = total - consortium;
+        const countries = [...new Set(data.map(item => item.country).filter(Boolean))];
+        const roles = [...new Set(data.map(item => item.role).filter(Boolean))];
+        
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('consortiumCount').textContent = consortium;
+        document.getElementById('ecosystemCount').textContent = ecosystem;
+        document.getElementById('countryCount').textContent = countries.length;
+        document.getElementById('roleCount').textContent = roles.length;
+    }
+
+    // ================================================================
+    // FILTER TABLE
+    // ================================================================
+
+    window.filterTable = function() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const typeFilter = document.getElementById('filterType').value;
+        const roleFilter = document.getElementById('filterRole').value;
+        const countryFilter = document.getElementById('filterCountry').value;
+
+        let filtered = partners;
+
+        if (search) {
+            filtered = filtered.filter(item => {
+                const searchable = [
+                    item.name,
+                    item.short_name,
+                    item.country,
+                    item.role,
+                    item.description
+                ].join(' ').toLowerCase();
+                return searchable.includes(search);
             });
         }
 
-        // ================================================================
-        // RENDER TABLE
-        // ================================================================
-
-        function renderTable(data) {
-            const tbody = document.getElementById('tableBody');
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="table-empty">
-                            <div class="empty-state">
-                                <span class="empty-icon">🤝</span>
-                                <h4>No partners found</h4>
-                                <p>Click "Add Partner" to create your first partner.</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = data.map((item, index) => {
-                const typeLabel = item.is_consortium ? 'Consortium' : 'Ecosystem';
-                const typeClass = item.is_consortium ? 'badge-consortium' : 'badge-ecosystem';
-                const countryFlag = getCountryFlag(item.country);
-                const displayOrder = item.display_order || index + 1;
-                
-                return `
-                    <tr>
-                        <td style="color:var(--text-muted);font-size:0.8rem;font-weight:500;">${displayOrder}</td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:10px;">
-                                ${item.logo ? `<img src="{{ url_for('static', filename='images/${item.logo}') }}" alt="${escapeHtml(item.short_name)}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;background:#f5f8fa;padding:4px;" onerror="this.style.display='none'">` : `<div style="width:32px;height:32px;border-radius:4px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text-light);">${escapeHtml((item.short_name || item.name || '?')[0])}</div>`}
-                                <div>
-                                    <div style="font-weight:600;font-size:0.9rem;">${escapeHtml(item.name || 'Untitled')}</div>
-                                    <div style="font-size:0.7rem;color:var(--text-muted);">${escapeHtml(item.short_name || '')}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge badge-country">${countryFlag} ${escapeHtml(item.country || '-')}</span></td>
-                        <td><span class="badge badge-role">${escapeHtml(item.role || '-')}</span></td>
-                        <td><span class="badge ${typeClass}">${typeLabel}</span></td>
-                        <td style="font-size:0.8rem;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '…' : '') : '-')}</td>
-                        <td style="text-align:right;">
-                            <div class="actions-cell">
-                                <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
-                                <button class="action-icon delete" onclick="deletePartner(${item.id})" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            updateStats(data);
+        if (typeFilter) {
+            filtered = filtered.filter(item => {
+                if (typeFilter === 'consortium') return item.is_consortium === true;
+                if (typeFilter === 'ecosystem') return item.is_consortium === false;
+                return true;
+            });
         }
 
-        // ================================================================
-        // UPDATE STATS
-        // ================================================================
-
-        function updateStats(data) {
-            const total = data.length;
-            const consortium = data.filter(item => item.is_consortium).length;
-            const ecosystem = total - consortium;
-            const countries = [...new Set(data.map(item => item.country).filter(Boolean))];
-            const roles = [...new Set(data.map(item => item.role).filter(Boolean))];
-            
-            document.getElementById('totalCount').textContent = total;
-            document.getElementById('consortiumCount').textContent = consortium;
-            document.getElementById('ecosystemCount').textContent = ecosystem;
-            document.getElementById('countryCount').textContent = countries.length;
-            document.getElementById('roleCount').textContent = roles.length;
+        if (roleFilter) {
+            filtered = filtered.filter(item => item.role === roleFilter);
         }
 
-        // ================================================================
-        // FILTER TABLE
-        // ================================================================
+        if (countryFilter) {
+            filtered = filtered.filter(item => item.country === countryFilter);
+        }
 
-        window.filterTable = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const typeFilter = document.querySelector('#typePills .pill.active')?.dataset.type || 'all';
-            const roleFilter = document.querySelector('#rolePills .pill.active')?.dataset.role || 'all';
-            const countryFilter = document.querySelector('#countryPills .pill.active')?.dataset.country || 'all';
+        renderTable(filtered);
+    };
 
-            let filtered = partners;
+    // ================================================================
+    // MODAL FUNCTIONS
+    // ================================================================
 
-            if (search) {
-                filtered = filtered.filter(item => {
-                    const searchable = [
-                        item.name,
-                        item.short_name,
-                        item.country,
-                        item.role,
-                        item.description
-                    ].join(' ').toLowerCase();
-                    return searchable.includes(search);
-                });
-            }
+    function getFormHtml() {
+        return document.getElementById('createFormHtml').innerHTML;
+    }
 
-            if (typeFilter === 'consortium') {
-                filtered = filtered.filter(item => item.is_consortium === true);
-            } else if (typeFilter === 'ecosystem') {
-                filtered = filtered.filter(item => item.is_consortium === false);
-            }
-
-            if (roleFilter !== 'all') {
-                filtered = filtered.filter(item => item.role === roleFilter);
-            }
-
-            if (countryFilter !== 'all') {
-                filtered = filtered.filter(item => item.country === countryFilter);
-            }
-
-            renderTable(filtered);
+    function getFormData() {
+        return {
+            id: document.getElementById('form-id').value ? parseInt(document.getElementById('form-id').value) : null,
+            name: document.getElementById('form-name').value.trim(),
+            short_name: document.getElementById('form-short-name').value.trim(),
+            country: document.getElementById('form-country').value,
+            role: document.getElementById('form-role').value,
+            description: document.getElementById('form-description').value.trim(),
+            website: document.getElementById('form-website').value.trim(),
+            logo: document.getElementById('form-logo').value.trim(),
+            display_order: document.getElementById('form-display-order').value ? parseInt(document.getElementById('form-display-order').value) : 1,
+            is_consortium: document.getElementById('form-is-consortium').checked
         };
+    }
 
-        // ================================================================
-        // MODAL FUNCTIONS
-        // ================================================================
+    function populateForm(data) {
+        document.getElementById('form-id').value = data.id || '';
+        document.getElementById('form-name').value = data.name || '';
+        document.getElementById('form-short-name').value = data.short_name || '';
+        document.getElementById('form-country').value = data.country || '';
+        document.getElementById('form-role').value = data.role || '';
+        document.getElementById('form-description').value = data.description || '';
+        document.getElementById('form-website').value = data.website || '';
+        document.getElementById('form-logo').value = data.logo || '';
+        document.getElementById('form-display-order').value = data.display_order || 1;
+        document.getElementById('form-is-consortium').checked = data.is_consortium !== undefined ? data.is_consortium : true;
+    }
 
-        function getFormHtml() {
-            return document.getElementById('createFormHtml').innerHTML;
-        }
+    function openPartnerModal(title, editData) {
+        const modal = document.getElementById('partnerModal');
+        const modalTitle = document.getElementById('partnerModalTitle');
+        const modalBody = document.getElementById('partnerModalBody');
+        const saveBtn = document.getElementById('partnerSaveBtn');
 
-        function getFormData() {
-            return {
-                id: document.getElementById('form-id').value ? parseInt(document.getElementById('form-id').value) : null,
-                name: document.getElementById('form-name').value.trim(),
-                short_name: document.getElementById('form-short-name').value.trim(),
-                country: document.getElementById('form-country').value,
-                role: document.getElementById('form-role').value,
-                description: document.getElementById('form-description').value.trim(),
-                website: document.getElementById('form-website').value.trim(),
-                logo: document.getElementById('form-logo').value.trim(),
-                display_order: document.getElementById('form-display-order').value ? parseInt(document.getElementById('form-display-order').value) : 1,
-                is_consortium: document.getElementById('form-is-consortium').checked
-            };
-        }
+        modalTitle.textContent = title;
+        modalBody.innerHTML = getFormHtml();
 
-        function populateForm(data) {
-            document.getElementById('form-id').value = data.id || '';
-            document.getElementById('form-name').value = data.name || '';
-            document.getElementById('form-short-name').value = data.short_name || '';
-            document.getElementById('form-country').value = data.country || '';
-            document.getElementById('form-role').value = data.role || '';
-            document.getElementById('form-description').value = data.description || '';
-            document.getElementById('form-website').value = data.website || '';
-            document.getElementById('form-logo').value = data.logo || '';
-            document.getElementById('form-display-order').value = data.display_order || 1;
-            document.getElementById('form-is-consortium').checked = data.is_consortium !== undefined ? data.is_consortium : true;
-        }
-
-        function openPartnerModal(title, editData) {
-            const modal = document.getElementById('partnerModal');
-            const modalTitle = document.getElementById('partnerModalTitle');
-            const modalBody = document.getElementById('partnerModalBody');
-            const saveBtn = document.getElementById('partnerSaveBtn');
-
-            modalTitle.textContent = title;
-            modalBody.innerHTML = getFormHtml();
-
-            if (editData) {
-                populateForm(editData);
-                editingId = editData.id;
-            } else {
-                editingId = null;
-                populateForm({});
-            }
-
-            saveBtn.onclick = savePartner;
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closePartnerModal() {
-            const modal = document.getElementById('partnerModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
+        if (editData) {
+            populateForm(editData);
+            editingId = editData.id;
+        } else {
             editingId = null;
+            populateForm({});
         }
 
-        window.openCreateModal = function() {
-            openPartnerModal('Add New Partner', null);
-        };
+        saveBtn.onclick = savePartner;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
 
-        window.openEditModal = function(id) {
-            const item = partners.find(p => p.id === id);
-            if (!item) {
-                showToast('error', 'Partner not found');
-                return;
+    window.closePartnerModal = function() {
+        const modal = document.getElementById('partnerModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        editingId = null;
+    };
+
+    window.openCreateModal = function() {
+        openPartnerModal('Add New Partner', null);
+    };
+
+    window.openEditModal = function(id) {
+        const item = partners.find(p => p.id === id);
+        if (!item) {
+            showToast('error', 'Partner not found');
+            return;
+        }
+        openPartnerModal('Edit Partner', item);
+    };
+
+    // ================================================================
+    // SAVE PARTNER
+    // ================================================================
+
+    window.savePartner = function() {
+        const isEdit = !!editingId;
+        const data = getFormData();
+
+        console.log('📝 Form Data:', data);
+
+        // Validate required fields
+        if (!data.name) {
+            showToast('warning', 'Full name is required');
+            return;
+        }
+        if (!data.short_name) {
+            showToast('warning', 'Short name is required');
+            return;
+        }
+        if (!data.country) {
+            showToast('warning', 'Country is required');
+            return;
+        }
+        if (!data.role) {
+            showToast('warning', 'Role is required');
+            return;
+        }
+
+        // Clean up data - remove empty fields
+        Object.keys(data).forEach(key => {
+            if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                delete data[key];
             }
-            openPartnerModal('Edit Partner', item);
-        };
+        });
 
-        // ================================================================
-        // SAVE PARTNER
-        // ================================================================
+        const url = isEdit ? `${API_URL}${editingId}` : API_URL;
+        const method = isEdit ? 'PUT' : 'POST';
 
-        window.savePartner = function() {
-            const isEdit = !!editingId;
-            const data = getFormData();
+        console.log(`📤 Sending ${method} request to ${url}`);
+        console.log('📤 Data:', JSON.stringify(data, null, 2));
 
-            console.log('📝 Form Data:', data);
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+        console.log('🔐 CSRF Token:', csrfToken);
 
-            // Validate required fields
-            if (!data.name) {
-                showToast('warning', 'Full name is required');
-                return;
-            }
-            if (!data.short_name) {
-                showToast('warning', 'Short name is required');
-                return;
-            }
-            if (!data.country) {
-                showToast('warning', 'Country is required');
-                return;
-            }
-            if (!data.role) {
-                showToast('warning', 'Role is required');
-                return;
-            }
+        const saveBtn = document.getElementById('partnerSaveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = '💾 Saving...';
 
-            // Clean up data - remove empty fields
-            Object.keys(data).forEach(key => {
-                if (data[key] === '' || data[key] === null || data[key] === undefined) {
-                    delete data[key];
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            console.log('📥 Response status:', response.status);
+            return response.text().then(text => {
+                console.log('📥 Raw response:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Failed to parse JSON:', text);
+                    throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
                 }
             });
+        })
+        .then(result => {
+            console.log('📥 Parsed result:', result);
+            if (result.success) {
+                showToast('success', `Partner ${isEdit ? 'updated' : 'created'} successfully!`);
+                window.closePartnerModal();
+                loadPartners();
+            } else {
+                showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} partner`);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Fetch error:', error);
+            showToast('error', `Error: ${error.message}`);
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '💾 Save';
+        });
+    };
 
-            const url = isEdit ? `${API_URL}${editingId}` : API_URL;
-            const method = isEdit ? 'PUT' : 'POST';
+    // ================================================================
+    // DELETE PARTNER
+    // ================================================================
 
-            console.log(`📤 Sending ${method} request to ${url}`);
-            console.log('📤 Data:', JSON.stringify(data, null, 2));
+    window.deletePartner = function(id) {
+        const item = partners.find(p => p.id === id);
+        if (!item) return;
 
-            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
-            console.log('🔐 CSRF Token:', csrfToken);
+        if (!confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
+            return;
+        }
 
-            const saveBtn = document.getElementById('partnerSaveBtn');
-            saveBtn.disabled = true;
-            saveBtn.textContent = '💾 Saving...';
+        console.log(`🗑️ Deleting partner ${id}`);
 
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                console.log('📥 Response status:', response.status);
-                return response.text().then(text => {
-                    console.log('📥 Raw response:', text);
-                    try {
-                        return JSON.parse(text);
-                    } catch (e) {
-                        console.error('❌ Failed to parse JSON:', text);
-                        throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
-                    }
+        const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+        fetch(`${API_URL}${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                showToast('success', 'Partner deleted successfully!');
+                loadPartners();
+            } else {
+                showToast('error', result.error || 'Failed to delete partner');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Delete error:', error);
+            showToast('error', `Error: ${error.message}`);
+        });
+    };
+
+    // ================================================================
+    // CLOSE MODAL ON OVERLAY CLICK
+    // ================================================================
+
+    document.getElementById('partnerModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            window.closePartnerModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            window.closePartnerModal();
+        }
+    });
+
+    // ================================================================
+    // ✅ ADD EVENT LISTENER FOR ADD PARTNER BUTTON
+    // ================================================================
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            const addBtn = document.getElementById('addPartnerBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openPartnerModal('Add New Partner', null);
                 });
-            })
-            .then(result => {
-                console.log('📥 Parsed result:', result);
-                if (result.success) {
-                    showToast('success', `Partner ${isEdit ? 'updated' : 'created'} successfully!`);
-                    closePartnerModal();
-                    loadPartners();
-                } else {
-                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} partner`);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Fetch error:', error);
-                showToast('error', `Error: ${error.message}`);
-            })
-            .finally(() => {
-                saveBtn.disabled = false;
-                saveBtn.textContent = '💾 Save';
+                console.log('✅ Add Partner button listener attached');
+            }
+        });
+    } else {
+        const addBtn = document.getElementById('addPartnerBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openPartnerModal('Add New Partner', null);
             });
+            console.log('✅ Add Partner button listener attached');
+        }
+    }
+
+    // ================================================================
+    // UTILITY FUNCTIONS
+    // ================================================================
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function getCountryFlag(country) {
+        const flags = {
+            'Spain': '🇪🇸',
+            'Kenya': '🇰🇪',
+            'Tunisia': '🇹🇳',
+            'Nigeria': '🇳🇬',
+            'Austria': '🇦🇹',
+            'United Kingdom': '🇬🇧',
+            'Germany': '🇩🇪',
+            'France': '🇫🇷',
+            'Netherlands': '🇳🇱'
         };
+        return flags[country] || '🌍';
+    }
 
-        // ================================================================
-        // DELETE PARTNER
-        // ================================================================
+    function updateCounts(count) {
+        const countEl = document.getElementById('count-partners');
+        const tableCount = document.getElementById('tableCount');
+        if (countEl) countEl.textContent = `${count} items`;
+        if (tableCount) tableCount.textContent = `${count} items`;
+    }
 
-        window.deletePartner = function(id) {
-            const item = partners.find(p => p.id === id);
-            if (!item) return;
+    // ================================================================
+    // TOAST NOTIFICATIONS
+    // ================================================================
 
-            if (!confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
-                return;
-            }
+    function showToast(type, message) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
 
-            console.log(`🗑️ Deleting partner ${id}`);
+    // ================================================================
+    // INITIALIZE
+    // ================================================================
 
-            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+    loadPartners();
 
-            fetch(`${API_URL}${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (result.success) {
-                    showToast('success', 'Partner deleted successfully!');
-                    loadPartners();
-                } else {
-                    showToast('error', result.error || 'Failed to delete partner');
-                }
-            })
-            .catch(error => {
-                console.error('❌ Delete error:', error);
-                showToast('error', `Error: ${error.message}`);
-            });
-        };
+    console.log('✅ BRIDGE-AI Kenya Manage Partners page initialized');
 
-        // ================================================================
-        // CLOSE MODAL ON OVERLAY CLICK
-        // ================================================================
-
-        document.getElementById('partnerModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePartnerModal();
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closePartnerModal();
-            }
-        });
-
-        // ================================================================
-        // PILL CLICK HANDLERS
-        // ================================================================
-
-        document.querySelectorAll('#typePills .pill, #rolePills .pill, #countryPills .pill').forEach(pill => {
-            pill.addEventListener('click', function() {
-                const parent = this.parentElement;
-                parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                filterTable();
-            });
-        });
-
-        // ================================================================
-        // UTILITY FUNCTIONS
-        // ================================================================
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function getCountryFlag(country) {
-            const flags = {
-                'Spain': '🇪🇸',
-                'Kenya': '🇰🇪',
-                'Tunisia': '🇹🇳',
-                'Nigeria': '🇳🇬',
-                'Austria': '🇦🇹',
-                'United Kingdom': '🇬🇧',
-                'Germany': '🇩🇪',
-                'France': '🇫🇷',
-                'Netherlands': '🇳🇱'
-            };
-            return flags[country] || '🌍';
-        }
-
-        function slugify(text) {
-            return text.toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-        }
-
-        // ================================================================
-        // TOAST NOTIFICATIONS
-        // ================================================================
-
-        function showToast(type, message) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(20px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        // ================================================================
-        // INITIALIZE
-        // ================================================================
-
-        loadPartners();
-
-        console.log('✅ BRIDGE-AI Kenya Manage Partners page initialized');
-
-    })();
+})();
 </script>
 {% endblock %}
