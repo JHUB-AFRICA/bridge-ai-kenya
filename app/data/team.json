@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Prof. Esther Maina",
+    "role": "Project Coordinator",
+    "affiliation": "Universitat Politècnica de Catalunya (UPC)",
+    "bio": "Prof. Esther Maina coordinates the BRIDGE-AI project, providing scientific leadership and overseeing project management, consortium collaboration, and the development of responsible AI solutions for sustainable agriculture.",
+    "email": "esther.maina@upc.edu",
+    "photo": "team/prof-esther-maina.jpg",
+    "display_order": 1,
+    "consent_status": "approved",
+    "is_visible": true,
+    "consent_notes": "Written consent obtained for publication of profile, biography, and photograph for project communication purposes.",
+    "created_at": "2026-07-01T01:06:43.698329",
+    "updated_at": "2026-07-01T01:06:43.698342",
+    "id": 1
+  }
+]
