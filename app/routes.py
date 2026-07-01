@@ -179,33 +179,94 @@ def activities():
     all_activities = json_service.get_all('activities.json')
     published = [a for a in all_activities if a.get('evidence_status') == 'published']
     
+    # Get filter parameters
     wp_filter = request.args.get('wp', '')
     audience_filter = request.args.get('audience', '')
+    type_filter = request.args.get('type', '')
     year_filter = request.args.get('year', '')
     
+    # Apply filters
     if wp_filter:
         published = [a for a in published if a.get('wp_tag') == wp_filter]
     if audience_filter:
         published = [a for a in published if audience_filter.lower() in a.get('audience', '').lower()]
+    if type_filter:
+        published = [a for a in published if a.get('activity_type') == type_filter]
     if year_filter:
         published = [a for a in published if year_filter in a.get('date', '')]
     
+    # Sort by date (newest first)
     published = sorted(published, key=lambda x: x.get('date', ''), reverse=True)
     
+    # Generate filter options from the filtered data
     wp_options = list(set([a.get('wp_tag') for a in published if a.get('wp_tag')]))
     audience_options = list(set([a.get('audience') for a in published if a.get('audience')]))
+    type_options = list(set([a.get('activity_type') for a in published if a.get('activity_type')]))
     year_options = list(set([a.get('date', '')[:4] for a in published if a.get('date')]))
+    
+    # Sort options alphabetically
+    wp_options.sort()
+    audience_options.sort()
+    type_options.sort()
+    year_options.sort(reverse=True)
+    
+    # Calculate activity type counts for the hero section
+    activity_type_counts = {}
+    for activity in published:
+        activity_type = activity.get('activity_type')
+        if activity_type:
+            activity_type_counts[activity_type] = activity_type_counts.get(activity_type, 0) + 1
+    
+    # Sort by count (highest first)
+    activity_type_counts = dict(sorted(activity_type_counts.items(), key=lambda x: x[1], reverse=True))
     
     return render_template(
         'activities.html',
         activities=published,
         wp_options=wp_options,
         audience_options=audience_options,
+        type_options=type_options,
         year_options=year_options,
         current_wp=wp_filter,
         current_audience=audience_filter,
-        current_year=year_filter
+        current_type=type_filter,
+        current_year=year_filter,
+        activity_type_counts=activity_type_counts
     )
+
+
+# ================================================================
+# Public Routes - Filtered Activities (AJAX)
+# ================================================================
+
+@public_bp.route('/api/activities/filtered/')
+def api_filtered_activities():
+    """Return filtered activities as JSON for AJAX requests."""
+    all_activities = json_service.get_all('activities.json')
+    published = [a for a in all_activities if a.get('evidence_status') == 'published']
+    
+    # Get filter parameters
+    wp_filter = request.args.get('wp', '')
+    audience_filter = request.args.get('audience', '')
+    type_filter = request.args.get('type', '')
+    year_filter = request.args.get('year', '')
+    
+    # Apply filters
+    if wp_filter:
+        published = [a for a in published if a.get('wp_tag') == wp_filter]
+    if audience_filter:
+        published = [a for a in published if audience_filter.lower() in a.get('audience', '').lower()]
+    if type_filter:
+        published = [a for a in published if a.get('activity_type') == type_filter]
+    if year_filter:
+        published = [a for a in published if year_filter in a.get('date', '')]
+    
+    # Sort by date (newest first)
+    published = sorted(published, key=lambda x: x.get('date', ''), reverse=True)
+    
+    return jsonify(published)
+
+
 
 
 @public_bp.route('/activities/<slug>/')
@@ -616,6 +677,7 @@ def admin_dashboard():
         'partners': len(json_service.get_all('partners.json')),
         'team': len(json_service.get_all('team.json')),
         'albums': len(json_service.get_all('gallery.json')),
+        'gallery_images': sum([len(a.get('images', [])) for a in json_service.get_all('gallery.json')]),
         'faqs': len(json_service.get_all('faqs.json')),
         'submissions': len(json_service.get_all('submissions.json')),
         'unread_submissions': len([s for s in json_service.get_all('submissions.json') if not s.get('is_read')]),
@@ -832,7 +894,7 @@ def api_create_activity():
                 date = datetime.now().strftime('%Y-%m-%d')
             
             # ============================================================
-            # ✅ HANDLE IMAGE UPLOAD
+            # ✅ HANDLE FEATURED IMAGE UPLOAD (Single)
             # ============================================================
             featured_image = None
             if 'featured_image' in request.files:
@@ -841,6 +903,25 @@ def api_create_activity():
                     filename = save_uploaded_file(file, 'activities')
                     if filename:
                         featured_image = f"uploads/activities/{filename}"
+            
+            # ============================================================
+            # ✅ HANDLE MULTIPLE GALLERY IMAGES UPLOAD
+            # ============================================================
+            gallery_images = []
+            if 'gallery_images' in request.files:
+                files = request.files.getlist('gallery_images')
+                for idx, file in enumerate(files):
+                    if file and file.filename:
+                        filename = save_uploaded_file(file, 'activities')
+                        if filename:
+                            caption_key = f'gallery_caption_{idx}'
+                            caption = request.form.get(caption_key, '').strip()
+                            gallery_images.append({
+                                'id': idx + 1,
+                                'image_path': f"uploads/activities/{filename}",
+                                'caption': sanitize_html(caption) if caption else '',
+                                'display_order': idx
+                            })
             
             # Build activity data
             activity_data = {
@@ -868,8 +949,11 @@ def api_create_activity():
                 activity_data['author'] = author
             if featured_image:
                 activity_data['featured_image'] = featured_image
+            if gallery_images:
+                activity_data['gallery_images'] = gallery_images
             
-            print(f"📝 FormData - Activity data to save: {activity_data}")
+            print(f"FormData - Activity data to save: {activity_data}")
+            print(f"Gallery images count: {len(gallery_images)}")
             
             # Save to JSON
             result = json_service.create('activities.json', activity_data)
@@ -878,7 +962,7 @@ def api_create_activity():
             audit.log_action(
                 user=current_user.username,
                 action='CREATE_ACTIVITY',
-                details={'title': title, 'wp_tag': wp_tag, 'has_image': bool(featured_image)}
+                details={'title': title, 'wp_tag': wp_tag, 'has_image': bool(featured_image), 'gallery_count': len(gallery_images)}
             )
             
             if result:
@@ -963,7 +1047,7 @@ def api_create_activity():
             if related_resources:
                 activity_data['related_resources'] = related_resources
             
-            print(f"📝 JSON - Activity data to save: {activity_data}")
+            print(f"JSON - Activity data to save: {activity_data}")
             
             result = json_service.create('activities.json', activity_data)
             
@@ -991,14 +1075,14 @@ def api_create_activity():
             action='CREATE_ACTIVITY_ERROR',
             details={'error': str(e)}
         )
-        print(f"❌ Error creating activity: {str(e)}")
+        print(f"Error creating activity: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({
             'success': False,
             'error': str(e)
         }), 400
-
+    
 
 @api_bp.route('/activities/<int:id>', methods=['GET'])
 @login_required
@@ -1007,6 +1091,7 @@ def api_get_activity(id):
     if not activity:
         return jsonify({'error': 'Not found'}), 404
     return jsonify(activity)
+
 
 
 @api_bp.route('/activities/<int:id>', methods=['PUT'])
@@ -1068,7 +1153,7 @@ def api_update_activity(id):
                 date = datetime.now().strftime('%Y-%m-%d')
             
             # ============================================================
-            # ✅ HANDLE IMAGE UPLOAD (replaces old image)
+            # ✅ HANDLE FEATURED IMAGE UPLOAD (replaces old image)
             # ============================================================
             featured_image = existing.get('featured_image')  # Keep existing by default
             
@@ -1085,14 +1170,54 @@ def api_update_activity(id):
                         if os.path.exists(old_path):
                             try:
                                 os.remove(old_path)
-                                print(f"🗑️ Deleted old image: {old_path}")
+                                print(f"Deleted old featured image: {old_path}")
                             except Exception as e:
-                                print(f"⚠️ Could not delete old image: {e}")
+                                print(f"Could not delete old image: {e}")
                     
                     # Save new image
                     filename = save_uploaded_file(file, 'activities')
                     if filename:
                         featured_image = f"uploads/activities/{filename}"
+            
+            # ============================================================
+            # ✅ HANDLE MULTIPLE GALLERY IMAGES UPLOAD (APPEND NEW)
+            # ============================================================
+            existing_gallery = existing.get('gallery_images', [])
+            new_gallery_images = []
+            
+            if 'gallery_images' in request.files:
+                files = request.files.getlist('gallery_images')
+                # Get the next available ID
+                next_id = max([img.get('id', 0) for img in existing_gallery]) + 1 if existing_gallery else 1
+                
+                for idx, file in enumerate(files):
+                    if file and file.filename:
+                        filename = save_uploaded_file(file, 'activities')
+                        if filename:
+                            caption_key = f'gallery_caption_{idx}'
+                            caption = request.form.get(caption_key, '').strip()
+                            new_gallery_images.append({
+                                'id': next_id + idx,
+                                'image_path': f"uploads/activities/{filename}",
+                                'caption': sanitize_html(caption) if caption else '',
+                                'display_order': len(existing_gallery) + idx
+                            })
+            
+            # Combine existing + new
+            all_gallery_images = existing_gallery + new_gallery_images
+            
+            # ============================================================
+            # ✅ HANDLE REMOVED GALLERY IMAGES
+            # ============================================================
+            # Get list of image IDs to keep from form
+            keep_ids = request.form.get('keep_gallery_ids', '')
+            if keep_ids:
+                keep_ids_list = [int(x.strip()) for x in keep_ids.split(',') if x.strip()]
+                # Filter to keep only those IDs
+                all_gallery_images = [img for img in all_gallery_images if img.get('id') in keep_ids_list]
+            else:
+                # If no keep_ids provided, keep all (or handle as needed)
+                pass
             
             # Build updated data
             updated_data = {
@@ -1119,18 +1244,21 @@ def api_update_activity(id):
                 updated_data['author'] = author
             if featured_image:
                 updated_data['featured_image'] = featured_image
+            if all_gallery_images:
+                updated_data['gallery_images'] = all_gallery_images
             
             # Keep created_at from existing
             updated_data['created_at'] = existing.get('created_at', datetime.now().isoformat())
             
-            print(f"📝 FormData - Updated activity data: {updated_data}")
+            print(f"FormData - Updated activity data: {updated_data}")
+            print(f"Gallery images count: {len(all_gallery_images)}")
             
             result = json_service.update('activities.json', id, updated_data)
             
             audit.log_action(
                 user=current_user.username,
                 action='UPDATE_ACTIVITY',
-                details={'id': id, 'title': title, 'has_image': bool(featured_image)}
+                details={'id': id, 'title': title, 'has_image': bool(featured_image), 'gallery_count': len(all_gallery_images)}
             )
             
             if not result:
@@ -1183,10 +1311,11 @@ def api_update_activity(id):
                 updated_data['author'] = sanitize_html(data['author'].strip())
             if data.get('featured_image'):
                 updated_data['featured_image'] = data['featured_image'].strip()
-            if data.get('gallery'):
-                gallery = safe_json_parse(data['gallery'])
-                if gallery:
-                    updated_data['gallery'] = gallery
+            if data.get('gallery_images'):
+                # Handle gallery_images as JSON array
+                gallery = data.get('gallery_images')
+                if isinstance(gallery, list):
+                    updated_data['gallery_images'] = gallery
             if data.get('related_resources'):
                 related = safe_json_parse(data['related_resources'])
                 if related:
@@ -1214,7 +1343,9 @@ def api_update_activity(id):
             action='UPDATE_ACTIVITY_ERROR',
             details={'id': id, 'error': str(e)}
         )
-        print(f"❌ Error updating activity: {e}")
+        print(f"Error updating activity: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 400
 
 
@@ -1236,14 +1367,37 @@ def api_delete_activity(id):
                 if os.path.exists(image_path):
                     try:
                         os.remove(image_path)
-                        print(f"🗑️ Deleted image: {image_path}")
+                        print(f"Deleted featured image: {image_path}")
                     except Exception as e:
-                        print(f"⚠️ Could not delete image: {e}")
+                        print(f"Could not delete featured image: {e}")
+            
+            # ============================================================
+            # ✅ DELETE ALL GALLERY IMAGES
+            # ============================================================
+            gallery_images = activity.get('gallery_images', [])
+            for img in gallery_images:
+                img_path = img.get('image_path', '')
+                if img_path:
+                    full_path = os.path.join(
+                        current_app.root_path, 
+                        'static', 
+                        img_path
+                    )
+                    if os.path.exists(full_path):
+                        try:
+                            os.remove(full_path)
+                            print(f"Deleted gallery image: {full_path}")
+                        except Exception as e:
+                            print(f"Could not delete gallery image: {e}")
             
             audit.log_action(
                 user=current_user.username,
                 action='DELETE_ACTIVITY',
-                details={'id': id, 'title': activity.get('title')}
+                details={
+                    'id': id, 
+                    'title': activity.get('title'),
+                    'gallery_count': len(gallery_images)
+                }
             )
         
         result = json_service.delete('activities.json', id)
@@ -1257,7 +1411,6 @@ def api_delete_activity(id):
             details={'id': id, 'error': str(e)}
         )
         return jsonify({'success': False, 'error': str(e)}), 400
-
 # ================================================================
 # API - Events
 # ================================================================

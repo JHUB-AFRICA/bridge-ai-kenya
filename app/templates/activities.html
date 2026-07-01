@@ -2,10 +2,11 @@
 <!-- BRIDGE-AI KENYA - ACTIVITIES PAGE                               -->
 <!-- ================================================================ -->
 <!-- This page displays all activities from the JSON file with       -->
-<!-- filtering capabilities by Work Package, Audience, and Year.    -->
-<!-- Filters are dynamically populated from the activity data.      -->
-<!-- Fallback image uses a reliable placeholder when no image exists.-->
-<!-- Modern, premium styling with smooth interactions.              -->
+<!-- filtering capabilities by Work Package, Audience, Activity Type,-->
+<!-- and Year.                                                      -->
+<!-- Filters are applied via AJAX without page reload.              -->
+<!-- Premium minimal design with no emojis, no hyphens, no colons.  -->
+<!-- Activity types displayed as full-width informational cards.    -->
 <!-- ================================================================ -->
 
 <!DOCTYPE html>
@@ -21,28 +22,32 @@
         /* CSS VARIABLES                                                   */
         /* ================================================================ */
         :root {
-            --primary-dark: #081a28;
-            --primary: #0f2b3d;
-            --primary-light: #1a4a6b;
-            --primary-lighter: #2a6a8b;
-            --accent: #1a8a6a;
-            --accent-light: #d4edda;
-            --gold: #d4a843;
-            --text-dark: #081a28;
-            --text-body: #1a2a3a;
-            --text-muted: #5a6a7a;
-            --text-light: #8a9aaa;
-            --bg-white: #ffffff;
-            --bg-light: #f5f8fa;
-            --bg-lighter: #fafcfe;
-            --border-light: #e4eaf0;
+            --primary-dark: #061420;
+            --primary: #0F2B3D;
+            --primary-light: #1A4A6B;
+            --primary-lighter: #2A6A8B;
+            --gold: #D4A843;
+            --gold-light: #F5D77E;
+            --gold-pale: #F5ECD7;
+            --text-dark: #081A28;
+            --text-body: #1A2A3A;
+            --text-muted: #5A6A7A;
+            --text-light: #8A9AAA;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F8FA;
+            --bg-lighter: #FAFCFE;
+            --border-light: #E4EAF0;
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
             --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.12);
             --radius-sm: 8px;
             --radius-md: 14px;
             --radius-lg: 20px;
+            --radius-xl: 28px;
             --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
         }
 
         * {
@@ -52,7 +57,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
             color: var(--text-body);
             background: var(--bg-white);
             line-height: 1.7;
@@ -62,93 +67,619 @@
         }
 
         /* ================================================================ */
-        /* PAGE HERO                                                       */
+        /* HERO SECTION - Balanced Magazine Style                          */
         /* ================================================================ */
-        .page-hero {
-            background: linear-gradient(160deg, #061420 0%, #0f2b3d 40%, #1a4a6b 100%);
-            padding: 70px 24px 60px;
-            text-align: center;
+        .hero-section {
             position: relative;
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: var(--primary-dark);
+        }
+
+        .hero-bg-image {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-image: url('https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=1600&h=1000&fit=crop&crop=center&auto=format');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transform: scale(1.05);
+            transition: transform 20s ease;
+        }
+
+        .hero-section:hover .hero-bg-image {
+            transform: scale(1);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background:
+                linear-gradient(160deg, rgba(6, 20, 32, 0.88) 0%, rgba(15, 43, 61, 0.75) 50%, rgba(26, 74, 107, 0.4) 100%);
+        }
+
+        .hero-spotlight {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background:
+                radial-gradient(ellipse at 55% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 75% 50%, rgba(212, 168, 67, 0.04) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .hero-decoration {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
             overflow: hidden;
         }
 
-        .page-hero::before {
-            content: '📰';
+        .deco-line {
             position: absolute;
-            font-size: 18rem;
-            opacity: 0.03;
-            right: -5%;
-            bottom: -20%;
-            transform: rotate(-8deg);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
         }
 
-        .page-hero h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -1px;
+        .deco-line-1 {
+            width: 35%;
+            top: 18%;
+            left: 8%;
+            transform: rotate(10deg);
+        }
+
+        .deco-line-2 {
+            width: 25%;
+            bottom: 22%;
+            right: 10%;
+            transform: rotate(-6deg);
+        }
+
+        .deco-line-3 {
+            width: 20%;
+            top: 45%;
+            right: 5%;
+            transform: rotate(20deg);
+            opacity: 0.5;
+        }
+
+        .deco-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(212, 168, 67, 0.15);
+        }
+
+        .deco-dot-1 {
+            top: 25%;
+            right: 15%;
+        }
+
+        .deco-dot-2 {
+            bottom: 30%;
+            left: 12%;
+        }
+
+        .deco-dot-3 {
+            top: 60%;
+            right: 25%;
+        }
+
+        .hero-container {
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            max-width: 1280px;
+            width: 100%;
+            padding: 40px 24px;
+            margin: 0 auto;
         }
 
-        .page-hero h1 .highlight {
-            background: linear-gradient(135deg, #7ad4b8, #5cb8e0);
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: stretch;
+            min-height: 60vh;
+        }
+
+        /* ─── Left Column ─── */
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 600px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 18px 6px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 24px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
+        }
+
+        .hero-title {
+            font-size: 4.6rem;
+            font-weight: 800;
+            line-height: 1.04;
+            letter-spacing: -0.04em;
+            margin: 0 0 16px;
+            color: #ffffff;
+        }
+
+        .title-line {
+            display: block;
+        }
+
+        .title-line.accent {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 40%, var(--gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .page-hero p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 10px auto 0;
-            position: relative;
-            z-index: 1;
+        .hero-subtitle {
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.55);
+            max-width: 480px;
+            line-height: 1.8;
+            margin: 0 0 36px;
+            letter-spacing: 0.01em;
         }
 
-        .page-hero .breadcrumb {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
         }
 
-        .page-hero .breadcrumb a {
-            color: rgba(255, 255, 255, 0.5);
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 34px;
+            background: var(--gold);
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
             text-decoration: none;
-            transition: color var(--transition);
+            border-radius: 60px;
+            transition: all var(--transition);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            font-family: var(--font-sans);
+            box-shadow: 0 8px 32px rgba(212, 168, 67, 0.15);
         }
 
-        .page-hero .breadcrumb a:hover {
-            color: #ffffff;
+        .btn-primary:hover {
+            background: var(--gold-light);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 48px rgba(212, 168, 67, 0.3);
         }
 
-        .page-hero .breadcrumb .sep {
-            color: rgba(255, 255, 255, 0.15);
-        }
-
-        .page-hero .hero-count {
+        .btn-arrow {
+            transition: transform var(--transition);
             display: inline-block;
-            background: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.7);
-            padding: 4px 18px;
-            border-radius: 50px;
-            font-size: 0.75rem;
+        }
+
+        .btn-primary:hover .btn-arrow {
+            transform: translateX(6px);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 60px;
             font-weight: 500;
-            margin-top: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-family: var(--font-sans);
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transform: translateY(-3px);
+        }
+
+        /* ─── Right Column ─── */
+        .hero-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Activity Types Container - Full Width Cards */
+        .activity-types-container {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 20px 24px;
+    max-height: none;
+    overflow: visible;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+        .activity-types-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(212, 168, 67, 0.03) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 80%, rgba(26, 74, 107, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .activity-types-container.expanded {
+            max-height: 900px;
+        }
+
+        .activity-types-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             position: relative;
             z-index: 1;
+        }
+
+        .activity-types-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .activity-types-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.3);
+            display: block;
+        }
+
+        .activity-types-subtitle {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.2);
+            margin: 0;
+            letter-spacing: 0.03em;
+        }
+
+        .activity-types-count-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 3px 14px;
+            border-radius: 60px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            letter-spacing: 0.05em;
+        }
+
+        /* ─── Full Width List ─── */
+        .activity-types-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Count badge - now a separate block element */
+.activity-type-card .type-count-badge {
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1px 12px;
+    border-radius: 40px;
+    letter-spacing: 0.03em;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    display: inline-block;  /* Changed from flex to inline-block */
+    margin-top: 2px;
+    margin-bottom: 4px;
+    width: fit-content;     /* Only as wide as needed */
+}
+
+.activity-type-card:hover .type-count-badge {
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+
+
+        /* ─── Full Width Card ─── */
+        .activity-type-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            width: 100%;
+        }
+
+        .activity-type-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .activity-type-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .activity-type-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-type-card:hover::before {
+            opacity: 1;
+        }
+
+        .activity-type-card:hover::after {
+            opacity: 1;
+        }
+
+        .activity-type-card .type-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .activity-type-card .type-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-type-card:hover .type-dot {
+            transform: scale(1.25);
+            box-shadow: 0 0 24px rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-type-card .type-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.02em;
+            transition: color 0.3s ease;
+        }
+
+        .activity-type-card:hover .type-name {
+            color: rgba(255, 255, 255, 1);
+        }
+
+       
+
+        .activity-type-card:hover .type-count-badge {
+            color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .activity-type-card .type-description {
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.25);
+            line-height: 1.6;
+            margin: 0;
+            padding-left: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .activity-type-card:hover .type-description {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ─── Toggle Button ─── */
+        .types-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.7rem;
+            font-weight: 500;
+            font-family: var(--font-sans);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.04em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .types-toggle-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: width 0.4s ease;
+        }
+
+        .types-toggle-btn:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .types-toggle-btn:hover::before {
+            width: 100%;
+        }
+
+        .types-toggle-btn .toggle-icon {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.6rem;
+        }
+
+        .types-toggle-btn .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* ─── Scroll Indicator ─── */
+        .hero-scroll {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.35;
+            transition: opacity var(--transition);
+        }
+
+        .hero-scroll:hover {
+            opacity: 0.7;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 32px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollLine {
+            0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
+        .scroll-text {
+            font-size: 0.55rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.25);
         }
 
         /* ================================================================ */
-        /* FILTER SECTION - MODERN & PREMIUM                               */
+        /* LOADING INDICATOR                                               */
+        /* ================================================================ */
+        #loadingIndicator {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        #loadingIndicator .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-light);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #loadingIndicator p {
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ================================================================ */
+        /* FILTER SECTION - Modern Pill Style                              */
         /* ================================================================ */
         .filter-section {
             background: var(--bg-white);
-            padding: 20px 0;
+            padding: 18px 0;
             border-bottom: 1px solid var(--border-light);
             position: sticky;
             top: 72px;
@@ -156,7 +687,7 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             background: rgba(255, 255, 255, 0.92);
-            transition: box-shadow 0.3s var(--transition);
+            transition: box-shadow var(--transition);
         }
 
         .filter-section.scrolled {
@@ -171,7 +702,7 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 14px;
+            gap: 12px;
         }
 
         .filter-group {
@@ -183,64 +714,94 @@
 
         .filter-group .filter-label {
             font-size: 0.7rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.08em;
             flex-shrink: 0;
-            padding: 4px 12px 4px 0;
+            padding: 4px 8px 4px 0;
         }
 
-        /* ✅ MODERN DROPDOWN STYLES */
-        .filter-group select {
-            padding: 9px 40px 9px 18px;
-            border: 1.5px solid var(--border-light);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-body);
-            background: var(--bg-white);
-            cursor: pointer;
-            transition: all 0.3s var(--transition);
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a4a6b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            min-width: 160px;
-            max-width: 220px;
-            width: auto;
-            font-family: inherit;
-            box-shadow: var(--shadow-sm);
-        }
+        /* ================================================================ */
+/* MODERN FILTER SELECTS - Premium Styling                         */
+/* ================================================================ */
 
-        .filter-group select:hover {
-            border-color: var(--primary-light);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-1px);
-        }
+.filter-group select {
+    padding: 10px 40px 10px 18px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-body);
+    background: var(--bg-white);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231A4A6B' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    min-width: 160px;
+    max-width: 220px;
+    width: auto;
+    font-family: var(--font-sans);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    letter-spacing: 0.01em;
+}
 
-        .filter-group select:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 4px rgba(26, 74, 107, 0.08);
-            transform: translateY(-1px);
-        }
+.filter-group select:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 4px 16px rgba(26, 74, 107, 0.08);
+    transform: translateY(-2px);
+}
 
-        .filter-group select option {
-            padding: 10px 16px;
-            font-size: 0.85rem;
-            font-weight: 400;
-            background: var(--bg-white);
-            color: var(--text-body);
-        }
+.filter-group select:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(26, 74, 107, 0.08), 0 4px 16px rgba(26, 74, 107, 0.06);
+    transform: translateY(-2px);
+}
 
-        /* ✅ DYNAMIC FILTER OPTIONS - Styling for dynamically populated options */
-        .filter-group select option[value=""] {
-            color: var(--text-muted);
-        }
+.filter-group select.has-value {
+    border-color: var(--primary-light);
+    background-color: #F5F9FC;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D4A843' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 
-        /* ✅ MODERN CLEAR BUTTON */
-        .filter-group .filter-clear {
+/* Style the dropdown options */
+.filter-group select option {
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    background: var(--bg-white);
+    color: var(--text-body);
+}
+
+.filter-group select option:hover {
+    background: var(--primary-light);
+    color: #ffffff;
+}
+
+.filter-group select option:checked {
+    background: var(--primary-light);
+    color: #ffffff;
+}
+
+/* ================================================================ */
+/* FILTER LABEL - Modern                                            */
+/* ================================================================ */
+
+.filter-group .filter-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding: 4px 8px 4px 0;
+    opacity: 0.6;
+}
+
+        .filter-clear {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -250,14 +811,15 @@
             color: var(--text-muted);
             background: var(--bg-light);
             border: 1.5px solid var(--border-light);
-            border-radius: 50px;
+            border-radius: 60px;
             text-decoration: none;
-            transition: all 0.3s var(--transition);
+            transition: all var(--transition);
             flex-shrink: 0;
-            font-family: inherit;
+            font-family: var(--font-sans);
+            cursor: pointer;
         }
 
-        .filter-group .filter-clear:hover {
+        .filter-clear:hover {
             background: var(--primary-light);
             color: #ffffff;
             border-color: var(--primary-light);
@@ -265,19 +827,23 @@
             box-shadow: 0 4px 16px rgba(26, 74, 107, 0.15);
         }
 
-        .filter-group .filter-clear .clear-icon {
+        .filter-clear .clear-icon {
             font-size: 0.8rem;
-            transition: transform 0.3s var(--transition);
+            transition: transform var(--transition);
+            display: inline-block;
         }
 
-        .filter-group .filter-clear:hover .clear-icon {
+        .filter-clear:hover .clear-icon {
             transform: rotate(90deg);
         }
 
-        /* ✅ Filter active state indicator */
-        .filter-group select.has-value {
-            border-color: var(--primary-light);
-            background-color: #f5f9fc;
+        .filter-active-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 4px 12px;
+            background: var(--bg-light);
+            border-radius: 60px;
         }
 
         /* ================================================================ */
@@ -296,29 +862,36 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 28px;
+            transition: opacity 0.3s ease;
         }
 
+        .activities-grid.loading {
+            opacity: 0.3;
+        }
+
+        /* ─── Activity Card ─── */
         .activity-card {
             background: var(--bg-white);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: all 0.4s var(--transition);
+            transition: all var(--transition);
             box-shadow: var(--shadow-sm);
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .activity-card:hover {
             transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
             border-color: var(--primary-light);
         }
 
         .activity-card .activity-image {
             width: 100%;
             height: 200px;
-            background: linear-gradient(135deg, var(--bg-light), #e8f0f6);
+            background: linear-gradient(135deg, var(--bg-light), #E8F0F6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -331,59 +904,48 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s var(--transition);
+            transition: transform var(--transition-slow);
         }
 
         .activity-card:hover .activity-image img {
-            transform: scale(1.03);
+            transform: scale(1.04);
         }
 
-        /* ✅ FALLBACK IMAGE - Reliable online placeholder */
         .activity-card .activity-image .fallback-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            background: linear-gradient(135deg, #e8f0f6, #d4dce6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: var(--text-light);
-        }
-
-        .activity-card .activity-image .image-placeholder {
-            font-size: 3rem;
-            color: var(--text-light);
+            background: linear-gradient(135deg, #E8F0F6, #D4DCE6);
         }
 
         .activity-card .activity-image .image-tag {
             position: absolute;
             top: 14px;
             right: 14px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             color: #ffffff;
             padding: 4px 16px;
-            border-radius: 50px;
+            border-radius: 60px;
             font-size: 0.6rem;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            letter-spacing: 0.04em;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .activity-card .activity-body {
-            padding: 24px 24px 0;
+            padding: 22px 24px 0;
             flex: 1;
         }
 
         .activity-card .activity-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .activity-card .activity-meta .meta-date {
@@ -394,29 +956,27 @@
 
         .activity-card .activity-meta .meta-tag {
             display: inline-block;
-            background: var(--bg-light);
-            color: var(--primary-light);
             padding: 2px 12px;
-            border-radius: 50px;
+            border-radius: 60px;
             font-size: 0.6rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.03em;
         }
 
         .activity-card .activity-meta .meta-tag.wp {
-            background: #d4e8f5;
-            color: #1a4a6b;
+            background: #D4E8F5;
+            color: var(--primary-light);
         }
 
         .activity-card .activity-meta .meta-tag.audience {
-            background: #ece4f5;
-            color: #5a3a7a;
+            background: #ECE4F5;
+            color: #5A3A7A;
         }
 
         .activity-card .activity-meta .meta-tag.type {
-            background: #e6f0e6;
-            color: #1a6a4a;
+            background: #E6F0E6;
+            color: #1A6A4A;
         }
 
         .activity-card h3 {
@@ -476,12 +1036,13 @@
         }
 
         .activity-card .activity-footer .activity-readmore:hover {
-            color: var(--accent);
+            color: var(--gold);
             gap: 10px;
         }
 
         .activity-card .activity-footer .activity-readmore .arrow {
             transition: transform var(--transition);
+            display: inline-block;
         }
 
         .activity-card .activity-footer .activity-readmore:hover .arrow {
@@ -489,7 +1050,7 @@
         }
 
         /* ================================================================ */
-        /* EMPTY STATE                                                     */
+        /* EMPTY STATE - Minimal & Premium                                */
         /* ================================================================ */
         .empty-state {
             text-align: center;
@@ -497,16 +1058,33 @@
             background: var(--bg-light);
             border-radius: var(--radius-lg);
             border: 2px dashed var(--border-light);
+            position: relative;
+        }
+
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 2px;
         }
 
         .empty-state .empty-icon {
-            font-size: 4rem;
+            font-size: 2.8rem;
             display: block;
             margin-bottom: 16px;
+            opacity: 0.2;
+            font-weight: 100;
+            letter-spacing: 0.2em;
         }
 
         .empty-state h3 {
             font-size: 1.4rem;
+            font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 4px;
         }
@@ -515,6 +1093,7 @@
             color: var(--text-muted);
             max-width: 400px;
             margin: 0 auto;
+            font-weight: 400;
         }
 
         /* ================================================================ */
@@ -562,12 +1141,30 @@
         }
 
         /* ================================================================ */
-        /* RESPONSIVE                                                      */
+        /* RESPONSIVE - Full Width Cards                                   */
         /* ================================================================ */
         @media (max-width: 1024px) {
+            .hero-grid {
+                gap: 40px;
+            }
+
+            .hero-title {
+                font-size: 3.6rem;
+            }
+
             .activities-grid {
                 grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             }
+
+            .activity-types-container {
+    padding: 14px 14px;
+    max-height: none;
+}
+
+.activity-types-list {
+    max-height: none;
+    gap: 4px;
+}
         }
 
         @media (max-width: 768px) {
@@ -575,16 +1172,77 @@
                 padding-top: 64px;
             }
 
-            .page-hero {
-                padding: 50px 20px 40px;
+            .hero-section {
+                min-height: auto;
+                padding: 80px 0 60px;
             }
 
-            .page-hero h1 {
-                font-size: 2.2rem;
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                min-height: auto;
             }
 
-            .page-hero p {
+            .hero-left {
+                max-width: 100%;
+                text-align: center;
+                align-items: center;
+            }
+
+            .hero-badge {
+                margin: 0 auto 20px;
+            }
+
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .hero-subtitle {
+                max-width: 100%;
                 font-size: 1rem;
+                margin: 0 auto 28px;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .hero-right {
+                align-items: center;
+                width: 100%;
+            }
+
+            .activity-types-container {
+                width: 100%;
+                max-height: 340px;
+                padding: 16px 18px;
+            }
+
+            .activity-types-list {
+                max-height: 200px;
+                gap: 6px;
+            }
+
+            .activity-type-card {
+                padding: 10px 14px;
+            }
+
+            .activity-type-card .type-name {
+                font-size: 0.75rem;
+            }
+
+            .activity-type-card .type-description {
+                font-size: 0.6rem;
+                padding-left: 16px;
+            }
+
+            .activity-types-subtitle {
+                font-size: 0.65rem;
+            }
+
+            .activity-type-card .type-count-badge {
+                font-size: 0.5rem;
+                padding: 1px 10px;
             }
 
             .filter-section {
@@ -603,9 +1261,14 @@
             }
 
             .filter-group select {
-                min-width: 140px;
+                min-width: 130px;
                 flex: 1;
                 max-width: 100%;
+            }
+
+            .filter-clear {
+                width: 100%;
+                justify-content: center;
             }
 
             .activities-section {
@@ -619,9 +1282,33 @@
             .activity-card .activity-image {
                 height: 160px;
             }
+
+            .hero-scroll {
+                display: none;
+            }
         }
 
         @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-primary,
+            .btn-outline {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 20px;
+            }
+
             .filter-group {
                 flex-direction: column;
                 width: 100%;
@@ -638,13 +1325,13 @@
                 width: 100%;
             }
 
-            .filter-group .filter-clear {
+            .filter-active-count {
+                text-align: center;
                 width: 100%;
-                justify-content: center;
             }
 
             .activity-card .activity-body {
-                padding: 18px 16px 0;
+                padding: 16px 16px 0;
             }
 
             .activity-card .activity-footer {
@@ -653,13 +1340,76 @@
                 align-items: flex-start;
                 padding: 12px 16px 16px;
             }
+
+            .activity-types-container {
+    width: 100%;
+    max-height: none;
+    padding: 16px 18px;
+}
+
+.activity-types-list {
+    max-height: none;
+    gap: 6px;
+}
+
+            .activity-type-card {
+                padding: 8px 12px;
+            }
+
+            .activity-type-card .type-header {
+                gap: 8px;
+            }
+
+            .activity-type-card .type-name {
+                font-size: 0.7rem;
+            }
+
+            .activity-type-card .type-description {
+                font-size: 0.55rem;
+                padding-left: 14px;
+            }
+
+            .activity-type-card .type-dot {
+                width: 6px;
+                height: 6px;
+            }
+
+            .hero-bg-image {
+                background-attachment: scroll;
+            }
+
+            .empty-state {
+                padding: 60px 16px;
+            }
+
+            .empty-state .empty-icon {
+                font-size: 2rem;
+            }
+
+            .empty-state h3 {
+                font-size: 1.1rem;
+            }
+
+            .empty-state p {
+                font-size: 0.85rem;
+            }
+
+            .activity-types-header {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .activity-types-count-badge {
+                align-self: flex-start;
+                margin-top: 4px;
+            }
         }
 
         /* ================================================================ */
         /* SCROLLBAR                                                       */
         /* ================================================================ */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: var(--bg-light);
@@ -671,6 +1421,193 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary);
         }
+
+
+
+        /* ================================================================ */
+/* CUSTOM DROPDOWN - Premium Styled                                */
+/* ================================================================ */
+
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+    min-width: 150px;
+    max-width: 200px;
+    width: auto;
+}
+
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 9px 16px 9px 18px;
+    background: #fafcfe;
+    border: 1.5px solid var(--border-light);
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-body);
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    gap: 12px;
+    min-height: 42px;
+    background-color: #fafcfe;
+}
+
+.dropdown-trigger:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 4px 16px rgba(26, 74, 107, 0.08);
+    transform: translateY(-1px);
+    background-color: #ffffff;
+}
+
+.dropdown-trigger:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(26, 74, 107, 0.06);
+}
+
+.dropdown-trigger .dropdown-selected {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-trigger .dropdown-arrow {
+    font-size: 0.55rem;
+    color: var(--text-light);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.dropdown-trigger.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-trigger.has-value {
+    border-color: var(--primary-light);
+    background-color: #F5F9FC;
+}
+
+.dropdown-trigger.has-value .dropdown-selected {
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 6px 0;
+    margin: 0;
+    list-style: none;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.10);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.dropdown-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.dropdown-menu li {
+    padding: 9px 18px;
+    font-size: 0.78rem;
+    font-weight: 450;
+    color: var(--text-body);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-sans);
+}
+
+.dropdown-menu li:hover {
+    background: #EFF3F7;
+    color: var(--primary-light);
+}
+
+.dropdown-menu li.active {
+    background: #E8EFF5;
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
+.dropdown-menu li.active::before {
+    content: '✓ ';
+    font-size: 0.7rem;
+    color: var(--primary-light);
+}
+
+.dropdown-menu li:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.dropdown-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .custom-dropdown {
+        width: 100%;
+        min-width: unset;
+        max-width: 100%;
+    }
+    .dropdown-trigger {
+        width: 100%;
+        padding: 10px 16px;
+    }
+    .dropdown-menu {
+        min-width: 100%;
+        max-height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dropdown-trigger {
+        font-size: 0.75rem;
+        padding: 9px 14px;
+        min-height: 38px;
+    }
+    .dropdown-menu li {
+        padding: 8px 14px;
+        font-size: 0.72rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -686,135 +1623,379 @@
     <main>
 
         <!-- ============================================================ -->
-        <!-- PAGE HERO                                                    -->
+        <!-- HERO SECTION - Balanced Magazine Style                       -->
         <!-- ============================================================ -->
-        <section class="page-hero">
-            <div class="breadcrumb">
-                <a href="{{ url_for('public.index') }}">Home</a>
-                <span class="sep">/</span>
-                <span>Activities</span>
+        <section class="hero-section">
+            <!-- Background Image -->
+            <div class="hero-bg-image"></div>
+
+            <!-- Overlay -->
+            <div class="hero-overlay"></div>
+
+            <!-- Spotlight Effect -->
+            <div class="hero-spotlight"></div>
+
+            <!-- Decorative Elements -->
+            <div class="hero-decoration">
+                <div class="deco-line deco-line-1"></div>
+                <div class="deco-line deco-line-2"></div>
+                <div class="deco-line deco-line-3"></div>
+                <div class="deco-dot deco-dot-1"></div>
+                <div class="deco-dot deco-dot-2"></div>
+                <div class="deco-dot deco-dot-3"></div>
             </div>
-            <h1>BRIDGE-AI Kenya <span class="highlight">Activities</span></h1>
-            <p>News, events, field updates and training activities from BRIDGE-AI implementation at JKUAT</p>
-            <span class="hero-count">📊 {{ activities|length if activities else 0 }} activities</span>
+
+            <!-- Main Content -->
+            <div class="hero-container">
+                <div class="hero-grid">
+                    <!-- Left Column -->
+                    <div class="hero-left">
+                        <div class="hero-badge">
+                            <span class="badge-dot"></span>
+                            BRIDGE-AI
+                        </div>
+
+                        <h1 class="hero-title">
+                            <span class="title-line">Activities</span>
+                        </h1>
+
+                        <p class="hero-subtitle">
+                            News, events, and field updates from BRIDGE-AI implementation at JKUAT
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="#activities" class="btn-primary">
+                                Explore Latest
+                                <span class="btn-arrow">→</span>
+                            </a>
+                            <a href="#filters" class="btn-outline">
+                                Filter Activities
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Full Width Activity Types -->
+<div class="hero-right">
+    <div class="activity-types-container" id="activityTypesContainer">
+        <div class="activity-types-header">
+            <div class="activity-types-header-left">
+                <span class="activity-types-label">Activity Types</span>
+                <p class="activity-types-subtitle">
+                    Explore the diverse activities documented across BRIDGE-AI
+                </p>
+            </div>
+            <span class="activity-types-count-badge">11 types</span>
+        </div>
+        <div class="activity-types-list" id="activityTypesList">
+
+    <!-- ACTIVITY TYPE 1: Training -->
+    <div class="activity-type-card" data-type="training">
+        <div class="type-header">
+            <span class="type-dot" style="background: #4A9E6E;"></span>
+            <span class="type-name">Training</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Hands-on skill development sessions for farmers, youth, and women in agritech and digital tools</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 2: Workshop -->
+    <div class="activity-type-card" data-type="workshop">
+        <div class="type-header">
+            <span class="type-dot" style="background: #4A7A9E;"></span>
+            <span class="type-name">Workshop</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Interactive co-design sessions with stakeholders to refine and validate BRIDGE-AI solutions</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 3: Bootcamp -->
+    <div class="activity-type-card" data-type="bootcamp">
+        <div class="type-header">
+            <span class="type-dot" style="background: #9E7A4A;"></span>
+            <span class="type-name">Bootcamp</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Intensive multi-day capacity building programs focused on GenAI, IoT, and agricultural innovation</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 4: Field Demo -->
+    <div class="activity-type-card" data-type="field_demo">
+        <div class="type-header">
+            <span class="type-dot" style="background: #6E9E4A;"></span>
+            <span class="type-name">Field Demo</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Practical on-farm demonstrations of Smart Mushroom technology and sensor deployments</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 5: Meeting -->
+    <div class="activity-type-card" data-type="meeting">
+        <div class="type-header">
+            <span class="type-dot" style="background: #7A4A9E;"></span>
+            <span class="type-name">Meeting</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Stakeholder coordination, project planning, and partner collaboration sessions</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 6: Media -->
+    <div class="activity-type-card" data-type="media">
+        <div class="type-header">
+            <span class="type-dot" style="background: #9E4A6E;"></span>
+            <span class="type-name">Media</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Press releases, interviews, and public communication outputs from BRIDGE-AI activities</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 7: Publication -->
+    <div class="activity-type-card" data-type="publication">
+        <div class="type-header">
+            <span class="type-dot" style="background: #4A6E9E;"></span>
+            <span class="type-name">Publication</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Academic papers, reports, and formal research outputs from the project</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 8: Resource -->
+    <div class="activity-type-card" data-type="resource">
+        <div class="type-header">
+            <span class="type-dot" style="background: #6E9E7A;"></span>
+            <span class="type-name">Resource</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Curated materials including guides, toolkits, and educational content for stakeholders</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 9: Repository -->
+    <div class="activity-type-card" data-type="repository">
+        <div class="type-header">
+            <span class="type-dot" style="background: #9E6E4A;"></span>
+            <span class="type-name">Repository</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Open-source code, datasets, and technical documentation shared via public platforms</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 10: Policy -->
+    <div class="activity-type-card" data-type="policy">
+        <div class="type-header">
+            <span class="type-dot" style="background: #4A9E9E;"></span>
+            <span class="type-name">Policy</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Engagement with policymakers to support replication and scaling of agritech solutions</p>
+    </div>
+
+    <!-- ACTIVITY TYPE 11: Stakeholder Engagement -->
+    <div class="activity-type-card" data-type="stakeholder_engagement">
+        <div class="type-header">
+            <span class="type-dot" style="background: #9E4A4A;"></span>
+            <span class="type-name">Stakeholder Engagement</span>
+        </div>
+        <div class="type-count-badge">0 activities</div>
+        <p class="type-description">Strategic dialogues with farmers, SMEs, government, and community representatives</p>
+    </div>
+
+</div>
+        <!-- Show More button (visible since 11 > 4) -->
+        <button class="types-toggle-btn" id="typesToggleBtn">
+            <span id="typesToggleText">Show More</span>
+            <span class="toggle-icon" id="typesToggleIcon">→</span>
+        </button>
+    </div>
+</div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="hero-scroll">
+                <span class="scroll-line"></span>
+                <span class="scroll-text">Scroll</span>
+            </div>
         </section>
 
         <!-- ============================================================ -->
-        <!-- FILTER SECTION - DYNAMIC OPTIONS FROM DATA                   -->
+        <!-- FILTER SECTION - With Activity Type Filter                    -->
         <!-- ============================================================ -->
         <section class="filter-section" id="filters">
             <div class="filter-container">
                 <div class="filter-group">
-                    <span class="filter-label">🔍 Filter by:</span>
+    <span class="filter-label">Filter</span>
 
-                    <!-- ✅ DYNAMIC Work Packages from data -->
-                    <select id="filterWp" onchange="applyFilters()">
-                        <option value="">All Work Packages</option>
-                        {% for wp in wp_options %}
-                            <option value="{{ wp }}" {% if current_wp == wp %}selected{% endif %}>{{ wp }}</option>
-                        {% endfor %}
-                    </select>
+    <!-- Hidden real selects for form submission -->
+    <select id="filterWp" data-filter="wp" style="display:none;">
+        <option value="">All Work Packages</option>
+        {% for wp in wp_options %}
+            <option value="{{ wp }}">{{ wp }}</option>
+        {% endfor %}
+    </select>
+    <select id="filterAudience" data-filter="audience" style="display:none;">
+        <option value="">All Audiences</option>
+        {% for aud in audience_options %}
+            <option value="{{ aud }}">{{ aud|title }}</option>
+        {% endfor %}
+    </select>
+    <select id="filterType" data-filter="type" style="display:none;">
+        <option value="">All Activity Types</option>
+        {% for type in type_options %}
+            <option value="{{ type }}">{{ type|replace('_', ' ')|title }}</option>
+        {% endfor %}
+    </select>
+    <select id="filterYear" data-filter="year" style="display:none;">
+        <option value="">All Years</option>
+        {% for year in year_options %}
+            <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+    </select>
 
-                    <!-- ✅ DYNAMIC Audiences from data -->
-                    <select id="filterAudience" onchange="applyFilters()">
-                        <option value="">All Audiences</option>
-                        {% for aud in audience_options %}
-                            <option value="{{ aud }}" {% if current_audience == aud %}selected{% endif %}>{{ aud|title }}</option>
-                        {% endfor %}
-                    </select>
+    <!-- Custom dropdowns -->
+    <div class="custom-dropdown" data-filter="wp">
+        <button type="button" class="dropdown-trigger" id="triggerWp">
+            <span class="dropdown-selected">All Work Packages</span>
+            <span class="dropdown-arrow">▾</span>
+        </button>
+        <ul class="dropdown-menu" id="menuWp">
+            <li data-value="">All Work Packages</li>
+            {% for wp in wp_options %}
+                <li data-value="{{ wp }}">{{ wp }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-                    <!-- ✅ DYNAMIC Years from data -->
-                    <select id="filterYear" onchange="applyFilters()">
-                        <option value="">All Years</option>
-                        {% for year in year_options %}
-                            <option value="{{ year }}" {% if current_year == year %}selected{% endif %}>{{ year }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+    <div class="custom-dropdown" data-filter="audience">
+        <button type="button" class="dropdown-trigger" id="triggerAudience">
+            <span class="dropdown-selected">All Audiences</span>
+            <span class="dropdown-arrow">▾</span>
+        </button>
+        <ul class="dropdown-menu" id="menuAudience">
+            <li data-value="">All Audiences</li>
+            {% for aud in audience_options %}
+                <li data-value="{{ aud }}">{{ aud|title }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="custom-dropdown" data-filter="type">
+        <button type="button" class="dropdown-trigger" id="triggerType">
+            <span class="dropdown-selected">All Activity Types</span>
+            <span class="dropdown-arrow">▾</span>
+        </button>
+        <ul class="dropdown-menu" id="menuType">
+            <li data-value="">All Activity Types</li>
+            {% for type in type_options %}
+                <li data-value="{{ type }}">{{ type|replace('_', ' ')|title }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="custom-dropdown" data-filter="year">
+        <button type="button" class="dropdown-trigger" id="triggerYear">
+            <span class="dropdown-selected">All Years</span>
+            <span class="dropdown-arrow">▾</span>
+        </button>
+        <ul class="dropdown-menu" id="menuYear">
+            <li data-value="">All Years</li>
+            {% for year in year_options %}
+                <li data-value="{{ year }}">{{ year }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 
                 <div class="filter-group">
-                    <!-- ✅ Clear Filters - returns to no filtered state (shows all) -->
-                    <a href="{{ url_for('public.activities') }}" class="filter-clear">
-                        <span class="clear-icon">✕</span> Clear Filters
+                    {% if current_wp or current_audience or current_type or current_year %}
+                        <span class="filter-active-count">Active filters</span>
+                    {% endif %}
+                    <a href="{{ url_for('public.activities') }}" class="filter-clear" id="clearFiltersBtn">
+                        <span class="clear-icon">×</span> Clear Filters
                     </a>
                 </div>
             </div>
         </section>
 
         <!-- ============================================================ -->
+        <!-- LOADING INDICATOR                                             -->
+        <!-- ============================================================ -->
+        <div id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Loading activities...</p>
+        </div>
+
+        <!-- ============================================================ -->
         <!-- ACTIVITIES GRID                                              -->
         <!-- ============================================================ -->
-        <section class="activities-section">
+        <section class="activities-section" id="activities">
             <div class="activities-container">
 
-                {% if activities and activities|length > 0 %}
-                    <div class="activities-grid">
-                        {% for activity in activities %}
-                        <article class="activity-card">
-                            <div class="activity-image">
+                <div id="activitiesContainer">
+                    <div class="activities-grid" id="activitiesGrid">
+                        {% if activities and activities|length > 0 %}
+                            {% for activity in activities %}
+                            <article class="activity-card">
+                                <div class="activity-image">
+                                    {% if activity.featured_image %}
+                                        <img src="{{ url_for('static', filename=activity.featured_image) }}" alt="{{ activity.title }}" loading="lazy">
+                                    {% else %}
+                                        <img src="https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=600&h=400&fit=crop&crop=center&auto=format"
+                                             alt="{{ activity.title }}"
+                                             class="fallback-image"
+                                             loading="lazy">
+                                    {% endif %}
 
-                                {% if activity.featured_image %}
-                                    <!-- ✅ Local image from JSON path -->
-                                    <img src="{{ url_for('static', filename=activity.featured_image) }}" alt="{{ activity.title }}" loading="lazy">
-                                {% else %}
-                                    <!-- ✅ RELIABLE FALLBACK - Unsplash mushroom image -->
-                                    <img src="https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=600&h=400&fit=crop&crop=center&auto=format"
-                                         alt="{{ activity.title }}"
-                                         class="fallback-image"
-                                         loading="lazy">
-                                {% endif %}
-
-                                {% if activity.wp_tag %}
-                                    <span class="image-tag">{{ activity.wp_tag }}</span>
-                                {% endif %}
-                            </div>
-
-                            <div class="activity-body">
-                                <div class="activity-meta">
-                                    <span class="meta-date">📅 {{ activity.date[:10] if activity.date else 'Date TBD' }}</span>
                                     {% if activity.wp_tag %}
-                                        <span class="meta-tag wp">{{ activity.wp_tag }}</span>
-                                    {% endif %}
-                                    {% if activity.audience %}
-                                        <span class="meta-tag audience">{{ activity.audience|title }}</span>
-                                    {% endif %}
-                                    {% if activity.activity_type %}
-                                        <span class="meta-tag type">{{ activity.activity_type|replace('_', ' ')|title }}</span>
+                                        <span class="image-tag">{{ activity.wp_tag }}</span>
                                     {% endif %}
                                 </div>
 
-                                <h3>
-                                    <a href="{{ url_for('public.activity_detail', slug=activity.slug) if activity.slug else '#' }}">
-                                        {{ activity.title }}
+                                <div class="activity-body">
+                                    <div class="activity-meta">
+                                        <span class="meta-date">{{ activity.date[:10] if activity.date else 'Date TBD' }}</span>
+                                        {% if activity.wp_tag %}
+                                            <span class="meta-tag wp">{{ activity.wp_tag }}</span>
+                                        {% endif %}
+                                        {% if activity.audience %}
+                                            <span class="meta-tag audience">{{ activity.audience|title }}</span>
+                                        {% endif %}
+                                        {% if activity.activity_type %}
+                                            <span class="meta-tag type">{{ activity.activity_type|replace('_', ' ')|title }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <h3>
+                                        <a href="{{ url_for('public.activity_detail', slug=activity.slug) if activity.slug else '#' }}">
+                                            {{ activity.title }}
+                                        </a>
+                                    </h3>
+
+                                    {% if activity.summary %}
+                                        <p class="activity-summary">{{ activity.summary }}</p>
+                                    {% elif activity.body %}
+                                        <p class="activity-summary">{{ activity.body|striptags|truncate(120) }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="activity-footer">
+                                    {% if activity.location %}
+                                        <span class="activity-location">{{ activity.location }}</span>
+                                    {% endif %}
+                                    <a href="{{ url_for('public.activity_detail', slug=activity.slug) if activity.slug else '#' }}" class="activity-readmore">
+                                        Read More
+                                        <span class="arrow">→</span>
                                     </a>
-                                </h3>
-
-                                {% if activity.summary %}
-                                    <p class="activity-summary">{{ activity.summary }}</p>
-                                {% elif activity.body %}
-                                    <p class="activity-summary">{{ activity.body|striptags|truncate(120) }}</p>
-                                {% endif %}
+                                </div>
+                            </article>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state" style="grid-column:1/-1;">
+                                <span class="empty-icon">∅</span>
+                                <h3>No Activities Found</h3>
+                                <p>There are no activities matching your filters. Try clearing the filters or check back later.</p>
                             </div>
-
-                            <div class="activity-footer">
-                                {% if activity.location %}
-                                    <span class="activity-location">📍 {{ activity.location }}</span>
-                                {% endif %}
-                                <a href="{{ url_for('public.activity_detail', slug=activity.slug) if activity.slug else '#' }}" class="activity-readmore">
-                                    Read More
-                                    <span class="arrow">→</span>
-                                </a>
-                            </div>
-                        </article>
-                        {% endfor %}
+                        {% endif %}
                     </div>
-                {% else %}
-                    <div class="empty-state">
-                        <span class="empty-icon">📭</span>
-                        <h3>No Activities Found</h3>
-                        <p>There are no activities matching your filters. Try clearing the filters or check back later.</p>
-                    </div>
-                {% endif %}
+                </div>
 
             </div>
         </section>
@@ -827,47 +2008,459 @@
     {% include 'footer.html' %}
 
     <!-- ================================================================ -->
-    <!-- PAGE-SPECIFIC JAVASCRIPT                                        -->
+    <!-- PAGE-SPECIFIC JAVASCRIPT - AJAX FILTERING                       -->
     <!-- ================================================================ -->
     <script>
         (function() {
             'use strict';
 
             // ================================================================
-            // FILTER FUNCTIONALITY - Uses select values directly
+            // DOM REFERENCES
             // ================================================================
 
-            window.applyFilters = function() {
-                const wp = document.getElementById('filterWp')?.value || '';
-                const audience = document.getElementById('filterAudience')?.value || '';
-                const year = document.getElementById('filterYear')?.value || '';
+            const filterSelects = document.querySelectorAll('.filter-group select[data-filter]');
+            const activitiesGrid = document.getElementById('activitiesGrid');
+            const activitiesContainer = document.getElementById('activitiesContainer');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
-                // Build URL with parameters
-                let url = "{{ url_for('public.activities') }}";
-                const params = [];
+            // ================================================================
+            // GET FILTERS FROM URL
+            // ================================================================
 
-                if (wp) params.push('wp=' + encodeURIComponent(wp));
-                if (audience) params.push('audience=' + encodeURIComponent(audience));
-                if (year) params.push('year=' + encodeURIComponent(year));
+            function getFiltersFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return {
+                    wp: urlParams.get('wp') || '',
+                    audience: urlParams.get('audience') || '',
+                    type: urlParams.get('type') || '',
+                    year: urlParams.get('year') || ''
+                };
+            }
 
-                if (params.length > 0) {
-                    url += '?' + params.join('&');
+            // ================================================================
+            // SET SELECTS FROM URL
+            // ================================================================
+
+            function setSelectsFromURL() {
+    const filters = getFiltersFromURL();
+    
+    filterSelects.forEach(function(select) {
+        const filterType = select.dataset.filter;
+        if (filters[filterType]) {
+            select.value = filters[filterType];
+            select.classList.add('has-value');
+            
+            // Update custom dropdown display
+            const dropdown = document.querySelector(`.custom-dropdown[data-filter="${filterType}"]`);
+            if (dropdown) {
+                const selected = dropdown.querySelector('.dropdown-selected');
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                const menu = dropdown.querySelector('.dropdown-menu');
+                const activeItem = menu.querySelector(`li[data-value="${filters[filterType]}"]`);
+                
+                if (activeItem) {
+                    selected.textContent = activeItem.textContent.trim();
+                    trigger.classList.add('has-value');
+                    menu.querySelectorAll('li').forEach(function(li) {
+                        li.classList.remove('active');
+                    });
+                    activeItem.classList.add('active');
+                }
+            }
+        }
+    });
+}
+
+            // ================================================================
+            // GET CURRENT FILTER VALUES
+            // ================================================================
+
+            function getFilterValues() {
+                const values = {};
+                filterSelects.forEach(function(select) {
+                    const filterType = select.dataset.filter;
+                    values[filterType] = select.value || '';
+                });
+                return values;
+            }
+
+            // ================================================================
+            // BUILD QUERY STRING
+            // ================================================================
+
+            function buildQueryString(filters) {
+                const params = new URLSearchParams();
+                Object.keys(filters).forEach(function(key) {
+                    if (filters[key]) {
+                        params.append(key, filters[key]);
+                    }
+                });
+                return params.toString();
+            }
+
+            // ================================================================
+            // SHOW / HIDE LOADING
+            // ================================================================
+
+            function showLoading() {
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'block';
+                }
+                if (activitiesGrid) {
+                    activitiesGrid.classList.add('loading');
+                }
+            }
+
+            function hideLoading() {
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+                if (activitiesGrid) {
+                    activitiesGrid.classList.remove('loading');
+                }
+            }
+
+            // ================================================================
+            // RENDER ACTIVITIES
+            // ================================================================
+
+            function renderActivities(activities) {
+                if (!activities || activities.length === 0) {
+                    activitiesGrid.innerHTML = `
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <span class="empty-icon">∅</span>
+                            <h3>No Activities Found</h3>
+                            <p>There are no activities matching your filters. Try clearing the filters or check back later.</p>
+                        </div>
+                    `;
+                    return;
                 }
 
-                window.location.href = url;
-            };
+                let html = '';
+                activities.forEach(function(activity) {
+                    const date = activity.date ? activity.date.substring(0, 10) : 'Date TBD';
+                    const wpTag = activity.wp_tag ? `<span class="meta-tag wp">${activity.wp_tag}</span>` : '';
+                    const audience = activity.audience ? `<span class="meta-tag audience">${activity.audience}</span>` : '';
+                    const type = activity.activity_type ? `<span class="meta-tag type">${activity.activity_type.replace(/_/g, ' ')}</span>` : '';
+                    const summary = activity.summary ? activity.summary : (activity.body ? activity.body.substring(0, 120) : '');
+                    const location = activity.location ? `<span class="activity-location">${activity.location}</span>` : '';
+                    const image = activity.featured_image ?
+                        `<img src="{{ url_for('static', filename='') }}${activity.featured_image}" alt="${activity.title}" loading="lazy">` :
+                        `<img src="https://images.unsplash.com/photo-1585951237318-9ea5e175b891?w=600&h=400&fit=crop&crop=center&auto=format" alt="${activity.title}" class="fallback-image" loading="lazy">`;
+                    const wpTagImage = activity.wp_tag ? `<span class="image-tag">${activity.wp_tag}</span>` : '';
+                    const slug = activity.slug ? activity.slug : '#';
+
+                    html += `
+                        <article class="activity-card">
+                            <div class="activity-image">
+                                ${image}
+                                ${wpTagImage}
+                            </div>
+                            <div class="activity-body">
+                                <div class="activity-meta">
+                                    <span class="meta-date">${date}</span>
+                                    ${wpTag}
+                                    ${audience}
+                                    ${type}
+                                </div>
+                                <h3>
+                                    <a href="/activities/${slug}/">
+                                        ${activity.title}
+                                    </a>
+                                </h3>
+                                <p class="activity-summary">${summary}</p>
+                            </div>
+                            <div class="activity-footer">
+                                ${location}
+                                <a href="/activities/${slug}/" class="activity-readmore">
+                                    Read More
+                                    <span class="arrow">→</span>
+                                </a>
+                            </div>
+                        </article>
+                    `;
+                });
+
+                activitiesGrid.innerHTML = html;
+            }
 
             // ================================================================
-            // STICKY FILTER SECTION - Add shadow on scroll
+            // APPLY FILTERS - AJAX VERSION
             // ================================================================
 
-            const filterSection = document.querySelector('.filter-section');
-            if (filterSection) {
+            function applyFilters() {
+                const filters = getFilterValues();
+                const queryString = buildQueryString(filters);
+                const apiUrl = '/api/activities/filtered/?' + queryString;
+
+                showLoading();
+
+                fetch(apiUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    renderActivities(data);
+                    hideLoading();
+
+                    // Update URL without page reload
+                    const newUrl = window.location.pathname + (queryString ? '?' + queryString : '');
+                    window.history.pushState({}, '', newUrl);
+
+                    // Update active filter indicators
+                    filterSelects.forEach(function(select) {
+                        if (select.value) {
+                            select.classList.add('has-value');
+                        } else {
+                            select.classList.remove('has-value');
+                        }
+                    });
+
+                    // Update active filter count
+                    updateActiveFilterCount(filters);
+                })
+                .catch(function(error) {
+                    console.error('Error fetching filtered activities:', error);
+                    hideLoading();
+                    // Fallback: reload page on error
+                    window.location.reload();
+                });
+            }
+
+            // ================================================================
+            // UPDATE ACTIVE FILTER COUNT
+            // ================================================================
+
+            function updateActiveFilterCount(filters) {
+                const activeCount = Object.values(filters).filter(function(value) { return value; }).length;
+                const countElement = document.querySelector('.filter-active-count');
+                if (countElement) {
+                    if (activeCount > 0) {
+                        countElement.textContent = 'Active filters: ' + activeCount;
+                        countElement.style.display = 'inline-block';
+                    } else {
+                        countElement.style.display = 'none';
+                    }
+                }
+            }
+
+            // ================================================================
+            // CLEAR FILTERS
+            // ================================================================
+
+            function clearFilters() {
+                filterSelects.forEach(function(select) {
+                    select.value = '';
+                    select.classList.remove('has-value');
+                });
+                applyFilters();
+            }
+
+            // ================================================================
+            // EXPOSE TO WINDOW
+            // ================================================================
+
+            window.applyFilters = applyFilters;
+            window.clearFilters = clearFilters;
+
+            // ================================================================
+            // EVENT LISTENERS
+            // ================================================================
+
+            // Filter selects - trigger on change
+            filterSelects.forEach(function(select) {
+                select.addEventListener('change', applyFilters);
+                select.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        applyFilters();
+                    }
+                });
+            });
+
+            // Clear filters button
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearFilters();
+                });
+            }
+
+            // ================================================================
+            // ACTIVITY TYPES TOGGLE (Show More / Show Less)
+            // ================================================================
+
+          function setupTypesToggle() {
+    const toggleBtn = document.getElementById('typesToggleBtn');
+    const toggleText = document.getElementById('typesToggleText');
+    const toggleIcon = document.getElementById('typesToggleIcon');
+    
+    // Get all activity type cards
+    const allCards = document.querySelectorAll('.activity-type-card');
+    const cardsPerPage = 3;
+    const totalCards = allCards.length;
+    const totalPages = Math.ceil(totalCards / cardsPerPage);
+    
+    let currentPage = 0;
+
+    // Function to show cards for a specific page
+    function showPage(page) {
+        allCards.forEach(function(card, index) {
+            const start = page * cardsPerPage;
+            const end = start + cardsPerPage;
+            if (index >= start && index < end && index < totalCards) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Show first page initially
+    showPage(0);
+
+    // If only one page, hide the button
+    if (totalPages <= 1) {
+        toggleBtn.style.display = 'none';
+        return;
+    }
+
+    // Update button text
+    function updateButton() {
+        if (currentPage < totalPages - 1) {
+            toggleText.textContent = 'Show More';
+            toggleIcon.textContent = '➜';
+            toggleIcon.classList.remove('rotated');
+        } else {
+            toggleText.textContent = 'Show Less';
+            toggleIcon.textContent = '⬅';
+            toggleIcon.classList.add('rotated');
+        }
+    }
+
+    toggleBtn.addEventListener('click', function() {
+        if (currentPage < totalPages - 1) {
+            // Go to next page
+            currentPage++;
+        } else {
+            // Go back to first page
+            currentPage = 0;
+        }
+        
+        showPage(currentPage);
+        updateButton();
+    });
+
+    // Initial button state
+    updateButton();
+}
+
+
+// ================================================================
+// CUSTOM DROPDOWN FUNCTIONALITY
+// ================================================================
+
+function initCustomDropdowns() {
+    const dropdowns = document.querySelectorAll('.custom-dropdown');
+
+    dropdowns.forEach(function(dropdown) {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        const selected = dropdown.querySelector('.dropdown-selected');
+        const filterType = dropdown.dataset.filter;
+        const hiddenSelect = document.querySelector(`select[data-filter="${filterType}"]`);
+
+        // Toggle dropdown on trigger click
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = menu.classList.contains('open');
+
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu.open').forEach(function(m) {
+                m.classList.remove('open');
+            });
+            document.querySelectorAll('.dropdown-trigger.open').forEach(function(t) {
+                t.classList.remove('open');
+            });
+
+            if (!isOpen) {
+                menu.classList.add('open');
+                trigger.classList.add('open');
+            }
+        });
+
+        // Select item on click
+        menu.querySelectorAll('li').forEach(function(item) {
+            item.addEventListener('click', function() {
+                const value = this.dataset.value;
+                const text = this.textContent.trim();
+
+                selected.textContent = text;
+
+                menu.querySelectorAll('li').forEach(function(li) {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                if (value !== '') {
+                    trigger.classList.add('has-value');
+                } else {
+                    trigger.classList.remove('has-value');
+                }
+
+                if (hiddenSelect) {
+                    hiddenSelect.value = value;
+                    const event = new Event('change', { bubbles: true });
+                    hiddenSelect.dispatchEvent(event);
+                }
+
+                menu.classList.remove('open');
+                trigger.classList.remove('open');
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target)) {
+                menu.classList.remove('open');
+                trigger.classList.remove('open');
+            }
+        });
+
+        // Sync with hidden select
+        if (hiddenSelect && hiddenSelect.value) {
+            const activeItem = menu.querySelector(`li[data-value="${hiddenSelect.value}"]`);
+            if (activeItem) {
+                selected.textContent = activeItem.textContent.trim();
+                trigger.classList.add('has-value');
+                menu.querySelectorAll('li').forEach(function(li) {
+                    li.classList.remove('active');
+                });
+                activeItem.classList.add('active');
+            }
+        }
+    });
+}
+
+            // ================================================================
+            // STICKY FILTER SECTION
+            // ================================================================
+
+            function handleStickyFilter() {
+                const filterSection = document.querySelector('.filter-section');
+                if (!filterSection) return;
+
                 const headerHeight = document.querySelector('.site-header')?.offsetHeight || 72;
 
                 window.addEventListener('scroll', function() {
                     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-
                     if (currentScroll > headerHeight + 20) {
                         filterSection.classList.add('scrolled');
                     } else {
@@ -877,38 +2470,55 @@
             }
 
             // ================================================================
-            // KEYBOARD SUPPORT - Enter to apply filter
+            // SMOOTH SCROLL FOR FILTER BUTTON
             // ================================================================
 
-            document.querySelectorAll('.filter-group select').forEach(function(select) {
-                select.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        window.applyFilters();
-                    }
-                });
-            });
-
-            // ================================================================
-            // ACTIVE FILTER INDICATOR - Add class when filter has value
-            // ================================================================
-
-            document.querySelectorAll('.filter-group select').forEach(function(select) {
-                // Check initial state
-                if (select.value) {
-                    select.classList.add('has-value');
+            function setupSmoothScroll() {
+                const filterBtn = document.querySelector('.btn-outline');
+                if (filterBtn) {
+                    filterBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const target = document.querySelector('#filters');
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
                 }
+            }
 
-                select.addEventListener('change', function() {
-                    if (this.value) {
-                        this.classList.add('has-value');
+            // ================================================================
+            // INITIALIZE
+            // ================================================================
+
+            document.addEventListener('DOMContentLoaded', function() {
+    setSelectsFromURL();
+    handleStickyFilter();
+    setupTypesToggle();
+    setupSmoothScroll();
+    initCustomDropdowns(); // <-- ADD THIS LINE
+
+    // Check if any filters are active and update count
+    const filters = getFilterValues();
+    updateActiveFilterCount(filters);
+
+    console.log('BRIDGE-AI Kenya Activities page initialized (AJAX mode)');
+});
+
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', function() {
+                const filters = getFiltersFromURL();
+                filterSelects.forEach(function(select) {
+                    const filterType = select.dataset.filter;
+                    if (filters[filterType]) {
+                        select.value = filters[filterType];
+                        select.classList.add('has-value');
                     } else {
-                        this.classList.remove('has-value');
+                        select.value = '';
+                        select.classList.remove('has-value');
                     }
                 });
+                applyFilters();
             });
-
-            console.log('✅ BRIDGE-AI Kenya Activities page initialized');
-            
 
         })();
     </script>

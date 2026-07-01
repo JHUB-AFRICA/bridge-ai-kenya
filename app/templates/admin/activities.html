@@ -6,9 +6,9 @@
 
 {% block title %}Manage Activities - BRIDGE-AI Kenya Admin{% endblock %}
 
-{% block page_title %}📰 Manage <span class="highlight">Activities</span>{% endblock %}
+{% block page_title %}Manage <span class="highlight">Activities</span>{% endblock %}
 
-{% block page_subtitle %}Create, edit, and delete activity posts{% endblock %}
+{% block page_subtitle %}Create, edit, and delete activity posts with multiple images{% endblock %}
 
 {% block content %}
 
@@ -21,7 +21,7 @@
     </div>
     <div class="section-actions">
         <button class="btn btn-primary" onclick="openCreateModal()">
-            ➕ Add Activity
+            Add Activity
         </button>
     </div>
 </div>
@@ -32,9 +32,9 @@
 <div class="table-container">
     <div class="table-header">
         <div class="table-search">
-            <input type="text" id="searchInput" placeholder="Search activities..." onkeyup="filterTable()">
+            <input type="text" id="searchInput" placeholder="Search activities" onkeyup="filterTable()">
             <select id="filterWp" onchange="filterTable()">
-                <option value="">All WPs</option>
+                <option value="">All Work Packages</option>
                 <option value="WP1">WP1</option>
                 <option value="WP2">WP2</option>
                 <option value="WP3">WP3</option>
@@ -56,21 +56,22 @@
     <table>
         <thead>
             <tr>
-                <th style="width:30%;">Title</th>
-                <th style="width:12%;">WP</th>
-                <th style="width:15%;">Date</th>
+                <th style="width:25%;">Title</th>
+                <th style="width:10%;">Work Package</th>
+                <th style="width:13%;">Date</th>
                 <th style="width:10%;">Type</th>
-                <th style="width:12%;">Audience</th>
-                <th style="width:11%;">Status</th>
-                <th style="width:10%;text-align:right;">Actions</th>
+                <th style="width:10%;">Audience</th>
+                <th style="width:10%;">Images</th>
+                <th style="width:10%;">Status</th>
+                <th style="width:12%;text-align:right;">Actions</th>
             </tr>
         </thead>
         <tbody id="tableBody">
             <tr>
-                <td colspan="7" class="table-empty">
-                    <span class="empty-icon">📭</span>
+                <td colspan="8" class="table-empty">
+                    <span class="empty-icon">∅</span>
                     <h4>No activities found</h4>
-                    <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Activity" to create your first post.</p>
+                    <p style="color: var(--text-light); font-size: 0.85rem;">Click Add Activity to create your first post</p>
                 </td>
             </tr>
         </tbody>
@@ -81,31 +82,34 @@
 <!-- PAGE-SPECIFIC MODAL                                          -->
 <!-- ============================================================ -->
 <div class="modal-overlay" id="activityModal">
-    <div class="modal">
+    <div class="modal modal-wide">
         <div class="modal-header">
             <h3 id="activityModalTitle">Add New Activity</h3>
-            <button class="modal-close" onclick="closeActivityModal()">✕</button>
+            <button class="modal-close" onclick="closeActivityModal()">×</button>
         </div>
         <div class="modal-body" id="activityModalBody">
             <!-- Form inserted here -->
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline" onclick="closeActivityModal()">Cancel</button>
-            <button class="btn btn-primary" id="activitySaveBtn">💾 Save</button>
+            <button class="btn btn-primary" id="activitySaveBtn">Save</button>
         </div>
     </div>
 </div>
 
-
+<!-- ============================================================ -->
+<!-- FORM HTML (Hidden)                                           -->
+<!-- ============================================================ -->
 <div style="display:none;">
     <div id="createFormHtml">
+        <!-- Basic Fields -->
         <div class="form-group">
             <label>Title <span class="required">*</span></label>
             <input type="text" id="form-title" placeholder="Enter activity title">
         </div>
         <div class="form-group">
             <label>Slug</label>
-            <input type="text" id="form-slug" placeholder="URL-friendly version (auto-generated)">
+            <input type="text" id="form-slug" placeholder="URL-friendly version, auto-generated if left blank">
             <small style="color:var(--text-light);font-size:0.7rem;">Leave blank to auto-generate from title</small>
         </div>
         <div class="form-group">
@@ -130,7 +134,7 @@
             <div class="form-group">
                 <label>Work Package</label>
                 <select id="form-wp">
-                    <option value="">Select WP</option>
+                    <option value="">Select Work Package</option>
                     <option value="WP1">WP1</option>
                     <option value="WP2">WP2</option>
                     <option value="WP3">WP3</option>
@@ -142,7 +146,7 @@
             <div class="form-group">
                 <label>Activity Type</label>
                 <select id="form-activity-type">
-                    <option value="">Select type</option>
+                    <option value="">Select activity type</option>
                     <option value="training">Training</option>
                     <option value="workshop">Workshop</option>
                     <option value="bootcamp">Bootcamp</option>
@@ -180,23 +184,86 @@
             </div>
         </div>
 
-  
+        <!-- ============================================================ -->
+        <!-- FEATURED IMAGE                                              -->
+        <!-- ============================================================ -->
         <div class="form-group">
             <label>Featured Image</label>
-            <input type="file" id="form-featured-image" accept="image/*" onchange="previewImage(event)">
-            <div id="image-preview-container" style="margin-top:10px;display:none;">
-                <img id="image-preview" src="#" alt="Preview" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--border);">
-                <button type="button" onclick="removeImage()" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:0.8rem;display:block;margin-top:5px;">✕ Remove</button>
+            <input type="file" id="form-featured-image" accept="image/*" onchange="previewFeaturedImage(event)">
+            <div id="featured-preview-container" style="margin-top:10px;display:none;">
+                <img id="featured-preview" src="#" alt="Preview" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--border);">
+                <button type="button" onclick="removeFeaturedImage()" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:0.8rem;display:block;margin-top:5px;">Remove</button>
             </div>
-            <div id="current-image-display" style="margin-top:5px;display:none;">
-                <span style="font-size:0.8rem;color:var(--text-light);">Current image:</span><br>
-                <img id="current-image" src="#" alt="Current" style="max-width:150px;max-height:100px;border-radius:4px;margin-top:5px;border:1px solid var(--border);">
+            <div id="current-featured-display" style="margin-top:5px;display:none;">
+                <span style="font-size:0.8rem;color:var(--text-light);">Current featured image</span><br>
+                <img id="current-featured" src="#" alt="Current" style="max-width:150px;max-height:100px;border-radius:4px;margin-top:5px;border:1px solid var(--border);">
             </div>
-            <input type="hidden" id="form-existing-image" value="">
-            <small style="color:var(--text-light);font-size:0.7rem;">Upload an image (JPG, PNG, WebP). Max 5MB.</small>
+            <input type="hidden" id="form-existing-featured" value="">
+            <small style="color:var(--text-light);font-size:0.7rem;">Upload an image in JPG, PNG, or WebP format. Maximum file size is 5 MB</small>
         </div>
 
-        
+        <!-- ============================================================ -->
+        <!-- GALLERY IMAGES - MODERN PREMIUM UPLOAD                     -->
+        <!-- ============================================================ -->
+        <div class="form-group gallery-upload-section">
+            <div class="gallery-section-header">
+                <div class="gallery-section-title">
+                    <div class="gallery-icon-box">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="4"/>
+                            <circle cx="9" cy="9" r="2"/>
+                            <path d="M22 17l-4-4-6 6-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.95rem;color:var(--text-dark);display:block;">Gallery Images</label>
+                        <p style="color:var(--text-light);font-size:0.78rem;margin:0;">Upload multiple images for the activity gallery</p>
+                    </div>
+                </div>
+                <span class="gallery-counter" id="galleryCounter">0 images</span>
+            </div>
+
+            <!-- Drop Zone -->
+            <div class="gallery-drop-zone" id="galleryDropZone">
+                <div class="drop-zone-content">
+                    <div class="drop-icon-wrapper">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="4"/>
+                            <circle cx="9" cy="9" r="2"/>
+                            <path d="M22 17l-4-4-6 6-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <p class="drop-title">Drop images here or click to browse</p>
+                    <p class="drop-subtitle">JPG, PNG, WebP · Max 5MB each</p>
+                    <button type="button" class="drop-browse-btn" onclick="document.getElementById('form-gallery-images').click()">
+                        Browse Files
+                    </button>
+                    <input type="file" id="form-gallery-images" accept="image/*" multiple style="display:none;">
+                </div>
+            </div>
+
+            <!-- Existing Gallery Images (Edit Mode) -->
+            <div id="existing-gallery-container" style="display:none;margin-top:16px;">
+                <div class="gallery-section-label">
+                    <span>Existing Images</span>
+                    <span class="gallery-count-badge" id="existingGalleryCount">0</span>
+                </div>
+                <div id="existing-gallery-grid" class="gallery-grid"></div>
+            </div>
+
+            <!-- New Gallery Images Preview -->
+            <div id="gallery-preview-container" style="display:none;margin-top:16px;">
+                <div class="gallery-section-label">
+                    <span>New Images</span>
+                    <span class="gallery-count-badge" id="newGalleryCount">0</span>
+                </div>
+                <div id="gallery-preview-grid" class="gallery-grid"></div>
+            </div>
+
+            <input type="hidden" id="form-keep-gallery-ids" value="">
+        </div>
+
+        <!-- Evidence Status -->
         <div class="form-group">
             <label>Evidence Status</label>
             <select id="form-evidence-status">
@@ -213,6 +280,449 @@
 
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* ================================================================ */
+    /* MODAL WIDE                                                     */
+    /* ================================================================ */
+    .modal-wide .modal {
+        max-width: 800px;
+        width: 95%;
+    }
+
+    /* ================================================================ */
+    /* GALLERY UPLOAD SECTION - Premium Design                        */
+    /* ================================================================ */
+    .gallery-upload-section {
+        background: var(--bg-lighter);
+        border-radius: var(--radius-md);
+        padding: 20px 24px 24px;
+        border: 1px solid var(--border-light);
+        transition: border-color var(--transition);
+    }
+
+    .gallery-upload-section:focus-within {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(26, 74, 107, 0.06);
+    }
+
+    .gallery-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+    .gallery-section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .gallery-icon-box {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(26, 74, 107, 0.06);
+        border-radius: 10px;
+        color: var(--primary-light);
+        flex-shrink: 0;
+    }
+
+    .gallery-icon-box svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .gallery-counter {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--bg-white);
+        padding: 4px 14px;
+        border-radius: 40px;
+        border: 1px solid var(--border-light);
+    }
+
+    /* ================================================================ */
+    /* DROP ZONE                                                      */
+    /* ================================================================ */
+    .gallery-drop-zone {
+        border: 2px dashed var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 36px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--bg-white);
+        position: relative;
+        min-height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gallery-drop-zone::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, rgba(26, 74, 107, 0.02), rgba(212, 168, 67, 0.02));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .gallery-drop-zone:hover::before,
+    .gallery-drop-zone.dragover::before {
+        opacity: 1;
+    }
+
+    .gallery-drop-zone:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(26, 74, 107, 0.06);
+    }
+
+    .gallery-drop-zone.dragover {
+        border-color: var(--primary-light);
+        background: rgba(26, 74, 107, 0.03);
+        transform: scale(1.01);
+        box-shadow: 0 8px 40px rgba(26, 74, 107, 0.08);
+    }
+
+    .drop-zone-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .drop-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 12px;
+        background: linear-gradient(135deg, rgba(26, 74, 107, 0.04), rgba(212, 168, 67, 0.04));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-light);
+        transition: all 0.4s ease;
+    }
+
+    .drop-icon-wrapper svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .gallery-drop-zone:hover .drop-icon-wrapper {
+        background: linear-gradient(135deg, rgba(26, 74, 107, 0.08), rgba(212, 168, 67, 0.08));
+        color: var(--primary-light);
+        transform: scale(1.05);
+    }
+
+    .gallery-drop-zone.dragover .drop-icon-wrapper {
+        background: var(--primary-light);
+        color: #ffffff;
+        transform: scale(1.1);
+    }
+
+    .drop-title {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-body);
+        margin: 0 0 4px;
+    }
+
+    .drop-subtitle {
+        font-size: 0.78rem;
+        color: var(--text-light);
+        margin: 0 0 14px;
+    }
+
+    .drop-browse-btn {
+        background: var(--primary-light);
+        color: #ffffff;
+        border: none;
+        padding: 8px 28px;
+        border-radius: 60px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: var(--font-sans);
+    }
+
+    .drop-browse-btn:hover {
+        background: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(26, 74, 107, 0.2);
+    }
+
+    /* ================================================================ */
+    /* GALLERY GRID                                                   */
+    /* ================================================================ */
+    .gallery-section-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+    }
+
+    .gallery-count-badge {
+        font-size: 0.6rem;
+        font-weight: 600;
+        background: var(--bg-white);
+        padding: 1px 12px;
+        border-radius: 40px;
+        border: 1px solid var(--border-light);
+        color: var(--text-muted);
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 14px;
+    }
+
+    /* ================================================================ */
+    /* GALLERY ITEM                                                   */
+    /* ================================================================ */
+    .gallery-item {
+        position: relative;
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+        background: var(--bg-white);
+        aspect-ratio: 1 / 1;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .gallery-item .gallery-item-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 0.55rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 12px;
+        border-radius: 40px;
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .gallery-item .gallery-item-badge.existing {
+        background: rgba(26, 74, 107, 0.7);
+    }
+
+    .gallery-item .gallery-item-badge.new {
+        background: rgba(212, 168, 67, 0.7);
+    }
+
+    .gallery-item .gallery-item-actions {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 10px 12px;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+    }
+
+    .gallery-item:hover .gallery-item-actions {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .gallery-item .caption-input {
+        flex: 1;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 0.7rem;
+        padding: 5px 10px;
+        font-family: var(--font-sans);
+        transition: all 0.3s ease;
+        min-width: 0;
+    }
+
+    .gallery-item .caption-input::placeholder {
+        color: rgba(255,255,255,0.4);
+    }
+
+    .gallery-item .caption-input:focus {
+        outline: none;
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+    .gallery-item .remove-btn {
+        background: rgba(220, 53, 69, 0.75);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-weight: 300;
+    }
+
+    .gallery-item .remove-btn:hover {
+        background: #dc3545;
+        transform: scale(1.1);
+    }
+
+    .gallery-item .remove-btn:active {
+        transform: scale(0.9);
+    }
+
+    /* ================================================================ */
+    /* RESPONSIVE                                                     */
+    /* ================================================================ */
+    @media (max-width: 768px) {
+        .gallery-upload-section {
+            padding: 14px 16px 18px;
+        }
+
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .gallery-drop-zone {
+            padding: 24px 16px;
+            min-height: 150px;
+        }
+
+        .drop-icon-wrapper {
+            width: 48px;
+            height: 48px;
+        }
+
+        .drop-icon-wrapper svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .drop-title {
+            font-size: 0.85rem;
+        }
+
+        .drop-browse-btn {
+            padding: 6px 20px;
+            font-size: 0.75rem;
+        }
+
+        .gallery-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .gallery-counter {
+            align-self: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .modal-wide .modal {
+            max-width: 100%;
+            width: 100%;
+            margin: 10px;
+            max-height: 95vh;
+        }
+
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+        }
+
+        .gallery-item .gallery-item-actions {
+            padding: 6px 6px 8px;
+        }
+
+        .gallery-item .caption-input {
+            font-size: 0.6rem;
+            padding: 3px 6px;
+        }
+
+        .gallery-item .remove-btn {
+            width: 22px;
+            height: 22px;
+            font-size: 0.6rem;
+        }
+
+        .gallery-upload-section {
+            padding: 10px 12px 14px;
+        }
+
+        .gallery-drop-zone {
+            padding: 16px 12px;
+            min-height: 120px;
+        }
+
+        .drop-icon-wrapper {
+            width: 40px;
+            height: 40px;
+        }
+
+        .drop-icon-wrapper svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .drop-title {
+            font-size: 0.75rem;
+        }
+
+        .drop-subtitle {
+            font-size: 0.65rem;
+        }
+
+        .drop-browse-btn {
+            padding: 4px 16px;
+            font-size: 0.7rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
     (function() {
@@ -224,7 +734,9 @@
 
         let activities = [];
         let editingId = null;
-        let selectedFile = null;
+        let selectedFeaturedFile = null;
+        let selectedGalleryFiles = [];
+        let existingGalleryImages = [];
         const API_URL = '/api/activities/';
 
         // ================================================================
@@ -232,28 +744,26 @@
         // ================================================================
 
         function loadActivities() {
-            console.log('🔄 Loading activities...');
+            console.log('Loading activities');
             fetch(API_URL, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(response => {
-                console.log('📥 Response status:', response.status);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error('HTTP error status ' + response.status);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('📥 Data received:', data);
                 activities = data || [];
                 renderTable(activities);
                 updateCounts(activities.length);
             })
             .catch(error => {
-                console.error('❌ Error loading activities:', error);
-                showToast('error', 'Failed to load activities: ' + error.message);
+                console.error('Error loading activities:', error);
+                showToast('error', 'Failed to load activities ' + error.message);
             });
         }
 
@@ -263,36 +773,40 @@
 
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
-            
+
             if (!data || data.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="table-empty">
-                            <span class="empty-icon">📭</span>
+                        <td colspan="8" class="table-empty">
+                            <span class="empty-icon">∅</span>
                             <h4>No activities found</h4>
-                            <p style="color: var(--text-light); font-size: 0.85rem;">Click "Add Activity" to create your first post.</p>
+                            <p style="color: var(--text-light); font-size: 0.85rem;">Click Add Activity to create your first post</p>
                         </td>
                     </tr>
                 `;
                 return;
             }
 
-            tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(item.wp_tag || '-')}</span></td>
-                    <td>${item.date ? formatDate(item.date) : '-'}</td>
-                    <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.activity_type || '-')}</span></td>
-                    <td>${escapeHtml(item.audience || '-')}</td>
-                    <td><span class="status-badge ${item.evidence_status || 'draft'}">${escapeHtml(item.evidence_status || 'draft')}</span></td>
-                    <td style="text-align:right;">
-                        <div class="actions-cell">
-                            <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
-                            <button class="action-icon delete" onclick="deleteActivity(${item.id})" title="Delete">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = data.map(function(item) {
+                var galleryCount = (item.gallery_images && item.gallery_images.length) || 0;
+                return `
+                    <tr>
+                        <td><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+                        <td><span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">${escapeHtml(item.wp_tag || '-')}</span></td>
+                        <td>${item.date ? formatDate(item.date) : '-'}</td>
+                        <td><span class="status-badge" style="background:rgba(26,74,107,0.06);color:var(--text-muted);">${escapeHtml(item.activity_type || '-')}</span></td>
+                        <td>${escapeHtml(item.audience || '-')}</td>
+                        <td>${galleryCount > 0 ? '<span class="status-badge" style="background:rgba(26,74,107,0.08);color:var(--primary-light);">' + galleryCount + ' image' + (galleryCount > 1 ? 's' : '') + '</span>' : '-'}</td>
+                        <td><span class="status-badge ${item.evidence_status || 'draft'}">${escapeHtml(item.evidence_status || 'draft')}</span></td>
+                        <td style="text-align:right;">
+                            <div class="actions-cell">
+                                <button class="action-icon edit" onclick="openEditModal(${item.id})" title="Edit">Edit</button>
+                                <button class="action-icon delete" onclick="deleteActivity(${item.id})" title="Delete">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
             updateCounts(data.length);
         }
@@ -302,15 +816,15 @@
         // ================================================================
 
         window.filterTable = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const wpFilter = document.getElementById('filterWp').value;
-            const statusFilter = document.getElementById('filterStatus').value;
+            var search = document.getElementById('searchInput').value.toLowerCase();
+            var wpFilter = document.getElementById('filterWp').value;
+            var statusFilter = document.getElementById('filterStatus').value;
 
-            let filtered = activities;
+            var filtered = activities;
 
             if (search) {
-                filtered = filtered.filter(item => {
-                    const searchable = [
+                filtered = filtered.filter(function(item) {
+                    var searchable = [
                         item.title,
                         item.summary,
                         item.body,
@@ -318,59 +832,237 @@
                         item.author,
                         item.audience
                     ].join(' ').toLowerCase();
-                    return searchable.includes(search);
+                    return searchable.indexOf(search) !== -1;
                 });
             }
 
             if (wpFilter) {
-                filtered = filtered.filter(item => item.wp_tag === wpFilter);
+                filtered = filtered.filter(function(item) { return item.wp_tag === wpFilter; });
             }
 
             if (statusFilter) {
-                filtered = filtered.filter(item => item.evidence_status === statusFilter);
+                filtered = filtered.filter(function(item) { return item.evidence_status === statusFilter; });
             }
 
             renderTable(filtered);
         };
 
         // ================================================================
-        // IMAGE PREVIEW FUNCTIONS
+        // FEATURED IMAGE FUNCTIONS
         // ================================================================
 
-        window.previewImage = function(event) {
-            const file = event.target.files[0];
+        window.previewFeaturedImage = function(event) {
+            var file = event.target.files[0];
             if (!file) return;
-            
-            selectedFile = file;
-            
-            const reader = new FileReader();
+
+            selectedFeaturedFile = file;
+
+            var reader = new FileReader();
             reader.onload = function(e) {
-                const previewContainer = document.getElementById('image-preview-container');
-                const preview = document.getElementById('image-preview');
+                var previewContainer = document.getElementById('featured-preview-container');
+                var preview = document.getElementById('featured-preview');
                 preview.src = e.target.result;
                 previewContainer.style.display = 'block';
-                
-                // Hide current image display
-                const currentDisplay = document.getElementById('current-image-display');
+
+                var currentDisplay = document.getElementById('current-featured-display');
                 if (currentDisplay) currentDisplay.style.display = 'none';
             };
             reader.readAsDataURL(file);
         };
 
-        window.removeImage = function() {
-            const fileInput = document.getElementById('form-featured-image');
+        window.removeFeaturedImage = function() {
+            var fileInput = document.getElementById('form-featured-image');
             fileInput.value = '';
-            selectedFile = null;
-            document.getElementById('image-preview-container').style.display = 'none';
-            document.getElementById('image-preview').src = '#';
-            
-            // Show current image if it exists
-            const existingImage = document.getElementById('form-existing-image');
-            if (existingImage && existingImage.value) {
-                const currentDisplay = document.getElementById('current-image-display');
+            selectedFeaturedFile = null;
+            document.getElementById('featured-preview-container').style.display = 'none';
+            document.getElementById('featured-preview').src = '#';
+
+            var existingFeatured = document.getElementById('form-existing-featured');
+            if (existingFeatured && existingFeatured.value) {
+                var currentDisplay = document.getElementById('current-featured-display');
                 if (currentDisplay) currentDisplay.style.display = 'block';
             }
         };
+
+        // ================================================================
+        // GALLERY IMAGE FUNCTIONS
+        // ================================================================
+
+        function setupGalleryDropZone() {
+            var dropZone = document.getElementById('galleryDropZone');
+            var fileInput = document.getElementById('form-gallery-images');
+
+            if (!dropZone) return;
+
+            dropZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    handleGalleryFiles(e.dataTransfer.files);
+                }
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleGalleryFiles(this.files);
+                }
+                this.value = '';
+            });
+        }
+
+        function handleGalleryFiles(files) {
+            var validFiles = [];
+            var validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (validTypes.indexOf(file.type) !== -1 && file.size <= 5 * 1024 * 1024) {
+                    validFiles.push(file);
+                }
+            }
+
+            if (validFiles.length === 0) {
+                showToast('warning', 'Please upload valid images (JPG, PNG, WebP) under 5MB');
+                return;
+            }
+
+            selectedGalleryFiles = selectedGalleryFiles.concat(validFiles);
+            renderGalleryPreviews();
+            updateGalleryCounter();
+        }
+
+        function renderGalleryPreviews() {
+            var container = document.getElementById('gallery-preview-container');
+            var grid = document.getElementById('gallery-preview-grid');
+
+            if (selectedGalleryFiles.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            grid.innerHTML = '';
+
+            selectedGalleryFiles.forEach(function(file, index) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.dataset.index = index;
+                    item.innerHTML = `
+                        <img src="${e.target.result}" alt="Gallery ${index + 1}">
+                        <span class="gallery-item-badge new">New</span>
+                        <div class="gallery-item-actions">
+                            <input type="text" class="caption-input" placeholder="Caption (optional)" data-index="${index}">
+                            <button class="remove-btn" onclick="removeGalleryPreview(${index})">×</button>
+                        </div>
+                    `;
+                    grid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            updateGalleryCounter();
+        }
+
+        window.removeGalleryPreview = function(index) {
+            selectedGalleryFiles.splice(index, 1);
+            renderGalleryPreviews();
+            renderExistingGallery();
+            updateGalleryCounter();
+        };
+
+        function renderExistingGallery() {
+            var container = document.getElementById('existing-gallery-container');
+            var grid = document.getElementById('existing-gallery-grid');
+
+            if (!existingGalleryImages || existingGalleryImages.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            grid.innerHTML = '';
+
+            existingGalleryImages.forEach(function(img) {
+                var item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.dataset.id = img.id;
+                item.innerHTML = `
+                    <img src="/${img.image_path}" alt="${img.caption || 'Gallery image'}">
+                    <span class="gallery-item-badge existing">Existing</span>
+                    <div class="gallery-item-actions">
+                        <input type="text" class="caption-input" placeholder="Caption" value="${escapeHtml(img.caption || '')}" data-id="${img.id}">
+                        <button class="remove-btn" onclick="removeExistingGalleryImage(${img.id})">×</button>
+                    </div>
+                `;
+                grid.appendChild(item);
+
+                var captionInput = item.querySelector('.caption-input');
+                captionInput.addEventListener('input', function() {
+                    var id = parseInt(this.dataset.id);
+                    var imgObj = existingGalleryImages.find(function(i) { return i.id === id; });
+                    if (imgObj) {
+                        imgObj.caption = this.value;
+                    }
+                });
+            });
+
+            updateGalleryCounter();
+        }
+
+        window.removeExistingGalleryImage = function(id) {
+            existingGalleryImages = existingGalleryImages.filter(function(img) { return img.id !== id; });
+            updateKeepGalleryIds();
+            renderExistingGallery();
+            updateGalleryCounter();
+        };
+
+        function updateKeepGalleryIds() {
+            var ids = existingGalleryImages.map(function(img) { return img.id; });
+            document.getElementById('form-keep-gallery-ids').value = ids.join(',');
+        }
+
+        function updateGalleryCounter() {
+            var total = selectedGalleryFiles.length + existingGalleryImages.length;
+            var counter = document.getElementById('galleryCounter');
+            if (counter) {
+                counter.textContent = total + ' image' + (total !== 1 ? 's' : '');
+            }
+
+            var existingCount = document.getElementById('existingGalleryCount');
+            if (existingCount) {
+                existingCount.textContent = existingGalleryImages.length;
+            }
+
+            var newCount = document.getElementById('newGalleryCount');
+            if (newCount) {
+                newCount.textContent = selectedGalleryFiles.length;
+            }
+        }
+
+        function getGalleryCaptions() {
+            var captions = {};
+            document.querySelectorAll('#existing-gallery-grid .gallery-item .caption-input').forEach(function(input) {
+                var id = parseInt(input.dataset.id);
+                captions[id] = input.value;
+            });
+            return captions;
+        }
 
         // ================================================================
         // MODAL FUNCTIONS
@@ -378,22 +1070,6 @@
 
         function getFormHtml() {
             return document.getElementById('createFormHtml').innerHTML;
-        }
-
-        function getFormData() {
-            return {
-                title: document.getElementById('form-title').value.trim(),
-                slug: document.getElementById('form-slug').value.trim(),
-                summary: document.getElementById('form-summary').value.trim(),
-                body: document.getElementById('form-body').value.trim(),
-                date: document.getElementById('form-date').value,
-                location: document.getElementById('form-location').value.trim(),
-                wp_tag: document.getElementById('form-wp').value,
-                activity_type: document.getElementById('form-activity-type').value,
-                audience: document.getElementById('form-audience').value,
-                author: document.getElementById('form-author').value.trim(),
-                evidence_status: document.getElementById('form-evidence-status').value
-            };
         }
 
         function populateForm(data) {
@@ -409,42 +1085,53 @@
             document.getElementById('form-author').value = data.author || '';
             document.getElementById('form-evidence-status').value = data.evidence_status || 'draft';
             document.getElementById('form-edit-id').value = data.id || '';
-            
-            // ✅ Show existing image if present
+
+            // Featured Image
             if (data.featured_image) {
-                const currentDisplay = document.getElementById('current-image-display');
-                const currentImage = document.getElementById('current-image');
+                var currentDisplay = document.getElementById('current-featured-display');
+                var currentImage = document.getElementById('current-featured');
                 currentImage.src = '/' + data.featured_image;
                 currentDisplay.style.display = 'block';
-                document.getElementById('form-existing-image').value = data.featured_image;
+                document.getElementById('form-existing-featured').value = data.featured_image;
             } else {
-                document.getElementById('current-image-display').style.display = 'none';
-                document.getElementById('form-existing-image').value = '';
+                document.getElementById('current-featured-display').style.display = 'none';
+                document.getElementById('form-existing-featured').value = '';
             }
-            
-            // Reset file input and preview
             document.getElementById('form-featured-image').value = '';
-            document.getElementById('image-preview-container').style.display = 'none';
-            document.getElementById('image-preview').src = '#';
-            selectedFile = null;
+            document.getElementById('featured-preview-container').style.display = 'none';
+            document.getElementById('featured-preview').src = '#';
+            selectedFeaturedFile = null;
+
+            // Gallery Images
+            existingGalleryImages = data.gallery_images ? JSON.parse(JSON.stringify(data.gallery_images)) : [];
+            selectedGalleryFiles = [];
+            renderExistingGallery();
+            renderGalleryPreviews();
+            updateKeepGalleryIds();
+            updateGalleryCounter();
+
+            document.getElementById('form-gallery-images').value = '';
         }
 
         function openActivityModal(title, editData) {
-            const modal = document.getElementById('activityModal');
-            const modalTitle = document.getElementById('activityModalTitle');
-            const modalBody = document.getElementById('activityModalBody');
-            const saveBtn = document.getElementById('activitySaveBtn');
+            var modal = document.getElementById('activityModal');
+            var modalTitle = document.getElementById('activityModalTitle');
+            var modalBody = document.getElementById('activityModalBody');
+            var saveBtn = document.getElementById('activitySaveBtn');
 
             modalTitle.textContent = title;
             modalBody.innerHTML = getFormHtml();
 
-            if (editData) {
-                populateForm(editData);
-                editingId = editData.id;
-            } else {
-                editingId = null;
-                populateForm({});
-            }
+            setTimeout(function() {
+                setupGalleryDropZone();
+                if (editData) {
+                    populateForm(editData);
+                    editingId = editData.id;
+                } else {
+                    editingId = null;
+                    populateForm({});
+                }
+            }, 50);
 
             saveBtn.onclick = saveActivity;
             modal.classList.add('active');
@@ -452,11 +1139,13 @@
         }
 
         window.closeActivityModal = function() {
-            const modal = document.getElementById('activityModal');
+            var modal = document.getElementById('activityModal');
             modal.classList.remove('active');
             document.body.style.overflow = '';
             editingId = null;
-            selectedFile = null;
+            selectedFeaturedFile = null;
+            selectedGalleryFiles = [];
+            existingGalleryImages = [];
         };
 
         window.openCreateModal = function() {
@@ -464,7 +1153,7 @@
         };
 
         window.openEditModal = function(id) {
-            const item = activities.find(a => a.id === id);
+            var item = activities.find(function(a) { return a.id === id; });
             if (!item) {
                 showToast('error', 'Activity not found');
                 return;
@@ -473,26 +1162,24 @@
         };
 
         // ================================================================
-        // SAVE ACTIVITY - ✅ FORM DATA FOR IMAGE UPLOAD
+        // SAVE ACTIVITY
         // ================================================================
 
         window.saveActivity = function() {
-            const isEdit = !!editingId;
-            
-            // Get form data
-            const title = document.getElementById('form-title').value.trim();
-            const body = document.getElementById('form-body').value.trim();
-            const slug = document.getElementById('form-slug').value.trim();
-            const summary = document.getElementById('form-summary').value.trim();
-            const date = document.getElementById('form-date').value;
-            const location = document.getElementById('form-location').value.trim();
-            const wp_tag = document.getElementById('form-wp').value;
-            const activity_type = document.getElementById('form-activity-type').value;
-            const audience = document.getElementById('form-audience').value;
-            const author = document.getElementById('form-author').value.trim();
-            const evidence_status = document.getElementById('form-evidence-status').value;
-            
-            // Validate
+            var isEdit = !!editingId;
+
+            var title = document.getElementById('form-title').value.trim();
+            var body = document.getElementById('form-body').value.trim();
+            var slug = document.getElementById('form-slug').value.trim();
+            var summary = document.getElementById('form-summary').value.trim();
+            var date = document.getElementById('form-date').value;
+            var location = document.getElementById('form-location').value.trim();
+            var wp_tag = document.getElementById('form-wp').value;
+            var activity_type = document.getElementById('form-activity-type').value;
+            var audience = document.getElementById('form-audience').value;
+            var author = document.getElementById('form-author').value.trim();
+            var evidence_status = document.getElementById('form-evidence-status').value;
+
             if (!title) {
                 showToast('warning', 'Title is required');
                 return;
@@ -502,14 +1189,12 @@
                 return;
             }
 
-            // ✅ Build FormData
-            const formData = new FormData();
+            var formData = new FormData();
             formData.append('title', title);
             formData.append('body', body);
             formData.append('date', date || new Date().toISOString().split('T')[0]);
             formData.append('evidence_status', evidence_status);
-            
-            // Optional fields
+
             if (slug) formData.append('slug', slug);
             if (summary) formData.append('summary', summary);
             if (location) formData.append('location', location);
@@ -517,83 +1202,95 @@
             if (activity_type) formData.append('activity_type', activity_type);
             if (audience) formData.append('audience', audience);
             if (author) formData.append('author', author);
-            
-            // ✅ Auto-generate slug if not provided
+
             if (!slug) {
-                const autoSlug = slugify(title);
+                var autoSlug = slugify(title);
                 if (autoSlug) {
                     formData.set('slug', autoSlug);
                 }
             }
-            
-            // ✅ Handle featured image upload
-            const fileInput = document.getElementById('form-featured-image');
-            if (fileInput && fileInput.files.length > 0) {
-                formData.append('featured_image', fileInput.files[0]);
+
+            var featuredInput = document.getElementById('form-featured-image');
+            if (featuredInput && featuredInput.files.length > 0) {
+                formData.append('featured_image', featuredInput.files[0]);
             }
-            
-            // ✅ Handle existing image (for edit - keep current if no new image)
-            const existingImage = document.getElementById('form-existing-image');
-            if (existingImage && existingImage.value) {
-                formData.append('existing_image', existingImage.value);
+            var existingFeatured = document.getElementById('form-existing-featured');
+            if (existingFeatured && existingFeatured.value) {
+                formData.append('existing_image', existingFeatured.value);
             }
 
-            const url = isEdit ? `${API_URL}${editingId}` : API_URL;
-            const method = isEdit ? 'PUT' : 'POST';
-
-            console.log(`📤 Sending ${method} request to ${url}`);
-            console.log('📤 FormData entries:');
-            for (let pair of formData.entries()) {
-                console.log('  ', pair[0] + ':', pair[1]);
+            if (selectedGalleryFiles.length > 0) {
+                selectedGalleryFiles.forEach(function(file, index) {
+                    formData.append('gallery_images', file);
+                    var captionInputs = document.querySelectorAll('#gallery-preview-grid .caption-input');
+                    var caption = '';
+                    captionInputs.forEach(function(input) {
+                        if (parseInt(input.dataset.index) === index) {
+                            caption = input.value;
+                        }
+                    });
+                    formData.append('gallery_caption_' + index, caption);
+                });
             }
 
-            // ✅ Get CSRF token from global function in layout
-            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
-            console.log('🔐 CSRF Token:', csrfToken);
+            var keepIds = document.getElementById('form-keep-gallery-ids').value;
+            if (keepIds) {
+                formData.append('keep_gallery_ids', keepIds);
+            }
 
-            // Disable save button
-            const saveBtn = document.getElementById('activitySaveBtn');
+            var existingCaptions = getGalleryCaptions();
+            Object.keys(existingCaptions).forEach(function(id) {
+                formData.append('existing_caption_' + id, existingCaptions[id]);
+            });
+
+            var url = isEdit ? API_URL + editingId : API_URL;
+            var method = isEdit ? 'PUT' : 'POST';
+
+            console.log('Sending ' + method + ' request to ' + url);
+
+            var csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+
+            var saveBtn = document.getElementById('activitySaveBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = '💾 Saving...';
+            saveBtn.textContent = 'Saving...';
 
-            // ✅ Send as FormData (not JSON)
             fetch(url, {
                 method: method,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRFToken': csrfToken
                 },
-                body: formData  // ✅ FormData automatically sets multipart/form-data
+                body: formData
             })
-            .then(response => {
-                console.log('📥 Response status:', response.status);
-                return response.text().then(text => {
-                    console.log('📥 Raw response:', text);
+            .then(function(response) {
+                console.log('Response status:', response.status);
+                return response.text().then(function(text) {
+                    console.log('Raw response:', text);
                     try {
                         return JSON.parse(text);
                     } catch (e) {
-                        console.error('❌ Failed to parse JSON:', text);
-                        throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+                        console.error('Failed to parse JSON:', text);
+                        throw new Error('Server returned invalid JSON');
                     }
                 });
             })
-            .then(result => {
-                console.log('📥 Parsed result:', result);
+            .then(function(result) {
+                console.log('Parsed result:', result);
                 if (result.success) {
-                    showToast('success', `Activity ${isEdit ? 'updated' : 'created'} successfully!`);
+                    showToast('success', 'Activity ' + (isEdit ? 'updated' : 'created') + ' successfully');
                     closeActivityModal();
                     loadActivities();
                 } else {
-                    showToast('error', result.error || `Failed to ${isEdit ? 'update' : 'create'} activity`);
+                    showToast('error', result.error || 'Failed to ' + (isEdit ? 'update' : 'create') + ' activity');
                 }
             })
-            .catch(error => {
-                console.error('❌ Fetch error:', error);
-                showToast('error', `Error: ${error.message}`);
+            .catch(function(error) {
+                console.error('Fetch error:', error);
+                showToast('error', 'Error ' + error.message);
             })
-            .finally(() => {
+            .finally(function() {
                 saveBtn.disabled = false;
-                saveBtn.textContent = '💾 Save';
+                saveBtn.textContent = 'Save';
             });
         };
 
@@ -602,41 +1299,41 @@
         // ================================================================
 
         window.deleteActivity = function(id) {
-            const item = activities.find(a => a.id === id);
+            var item = activities.find(function(a) { return a.id === id; });
             if (!item) return;
 
-            if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+            if (!confirm('Are you sure you want to delete "' + item.title + '"? This action cannot be undone')) {
                 return;
             }
 
-            console.log(`🗑️ Deleting activity ${id}`);
+            console.log('Deleting activity ' + id);
 
-            const csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
+            var csrfToken = window.getCsrfToken ? window.getCsrfToken() : '';
 
-            fetch(`${API_URL}${id}`, {
+            fetch(API_URL + id, {
                 method: 'DELETE',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRFToken': csrfToken
                 }
             })
-            .then(response => {
+            .then(function(response) {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error('HTTP error status ' + response.status);
                 }
                 return response.json();
             })
-            .then(result => {
+            .then(function(result) {
                 if (result.success) {
-                    showToast('success', 'Activity deleted successfully!');
+                    showToast('success', 'Activity deleted successfully');
                     loadActivities();
                 } else {
                     showToast('error', result.error || 'Failed to delete activity');
                 }
             })
-            .catch(error => {
-                console.error('❌ Delete error:', error);
-                showToast('error', `Error: ${error.message}`);
+            .catch(function(error) {
+                console.error('Delete error:', error);
+                showToast('error', 'Error ' + error.message);
             });
         };
 
@@ -662,7 +1359,7 @@
 
         function escapeHtml(text) {
             if (!text) return '';
-            const div = document.createElement('div');
+            var div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
@@ -670,7 +1367,7 @@
         function formatDate(dateStr) {
             if (!dateStr) return '-';
             try {
-                const date = new Date(dateStr);
+                var date = new Date(dateStr);
                 return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
             } catch {
                 return dateStr.substring(0, 10);
@@ -684,10 +1381,10 @@
         }
 
         function updateCounts(count) {
-            const countEl = document.getElementById('count-activities');
-            const tableCount = document.getElementById('tableCount');
-            if (countEl) countEl.textContent = `${count} items`;
-            if (tableCount) tableCount.textContent = `${count} items`;
+            var countEl = document.getElementById('count-activities');
+            var tableCount = document.getElementById('tableCount');
+            if (countEl) countEl.textContent = count + ' items';
+            if (tableCount) tableCount.textContent = count + ' items';
         }
 
         // ================================================================
@@ -695,8 +1392,7 @@
         // ================================================================
 
         loadActivities();
-
-        console.log('✅ BRIDGE-AI Kenya Admin Activities page initialized');
+        console.log('BRIDGE-AI Kenya Admin Activities page initialized');
 
     })();
 </script>

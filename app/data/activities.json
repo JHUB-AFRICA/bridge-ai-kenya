@@ -49,5 +49,42 @@
     "author": "BRIDGE-AI Field Operations Team",
     "featured_image": "uploads/activities/20260630_204023_precision-agriculture-technology-stockcake.jpg",
     "id": 4
+  },
+  {
+    "title": "AI-Powered Smart Mushroom Farming Training Workshop",
+    "slug": "ai-powered-smart-mushroom-farming-training-workshop",
+    "body": "BRIDGE-AI Kenya organized a one-day practical workshop at the JKUAT Smart Farm to demonstrate how Artificial Intelligence and Internet of Things technologies can improve mushroom production. Participants learned about smart environmental monitoring, automated humidity and temperature control, AI-assisted disease detection, and cloud-based farm management systems. Live demonstrations allowed attendees to configure sensors, visualize real-time data through dashboards, and understand predictive analytics for optimizing crop yields. The event also featured discussions on digital agriculture entrepreneurship, sustainability, and collaborative research opportunities within the BRIDGE-AI project.",
+    "date": "2026-08-15",
+    "created_at": "2026-07-02T02:06:22.562050",
+    "updated_at": "2026-07-02T02:06:22.562061",
+    "evidence_status": "published",
+    "summary": "A practical training workshop introducing farmers, students, and researchers to AI-enabled smart mushroom farming using IoT sensors, environmental monitoring, and predictive analytics.",
+    "location": "JKUAT Smart Farm Zone, Juja, Kenya",
+    "wp_tag": "WP5",
+    "activity_type": "training",
+    "audience": "students",
+    "author": "BRIDGE-AI Kenya Communications Team",
+    "featured_image": "uploads/activities/20260702_020622_WhatsApp_Image_2026-07-02_at_2.03.01_AM.jpeg",
+    "gallery_images": [
+      {
+        "id": 1,
+        "image_path": "uploads/activities/20260702_020622_WhatsApp_Image_2026-07-02_at_2.02.18_AM.jpeg",
+        "caption": "Facilitators demonstrate real-time environmental monitoring using smart sensors and digital dashboards, showing how data-driven insights support healthier mushroom cultivation.",
+        "display_order": 0
+      },
+      {
+        "id": 2,
+        "image_path": "uploads/activities/20260702_020622_WhatsApp_Image_2026-07-02_at_2.01.49_AM.jpeg",
+        "caption": "Workshop participants engage in hands-on activities and collaborative discussions, gaining practical skills in applying artificial intelligence and digital technologies to modern agriculture.",
+        "display_order": 1
+      },
+      {
+        "id": 3,
+        "image_path": "uploads/activities/20260702_020622_Jkuat-1.jpeg",
+        "caption": "Participants receive a practical introduction to AI-powered smart mushroom farming, exploring how IoT sensors and automated climate control systems improve productivity and sustainability.",
+        "display_order": 2
+      }
+    ],
+    "id": 5
   }
 ]
