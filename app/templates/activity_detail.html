@@ -266,6 +266,9 @@
             min-width: 100%;
             padding: 0 8px;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .gallery-slide img {
@@ -291,6 +294,8 @@
             font-weight: 400;
             line-height: 1.5;
             min-height: 36px;
+            width: 100%;
+            max-width: 600px;
         }
 
         /* Navigation Arrows */
@@ -1122,7 +1127,7 @@
                                              loading="lazy"
                                              decoding="async"
                                              data-index="{{ loop.index0 }}"
-                                             onclick="openLightbox({{ loop.index0 }})">
+                                             class="gallery-thumb">
                                         {% if image.caption %}
                                             <p class="slide-caption">{{ image.caption }}</p>
                                         {% endif %}
@@ -1174,7 +1179,7 @@
     <!-- ================================================================ -->
     <!-- LIGHTBOX - Full Screen Image Viewer                            -->
     <!-- ================================================================ -->
-    <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
+    <div class="lightbox-overlay" id="lightboxOverlay">
         <button class="lightbox-close" id="lightboxClose" aria-label="Close lightbox">✕</button>
 
         <button class="lightbox-arrow prev" id="lightboxPrev" aria-label="Previous image">‹</button>
@@ -1225,12 +1230,10 @@
 
                     track.style.transform = 'translateX(-' + (index * 100) + '%)';
 
-                    // Update dots
                     dots.forEach(function(dot, i) {
                         dot.classList.toggle('active', i === index);
                     });
 
-                    // Update arrows
                     if (prevBtn) {
                         prevBtn.classList.toggle('disabled', index === 0);
                     }
@@ -1255,7 +1258,6 @@
                     }
                 }
 
-                // Event listeners
                 if (prevBtn) {
                     prevBtn.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -1279,7 +1281,6 @@
                     });
                 });
 
-                // Keyboard navigation
                 document.addEventListener('keydown', function(e) {
                     var isGalleryFocused = document.activeElement &&
                         document.activeElement.closest('.gallery-section');
@@ -1321,12 +1322,11 @@
                     }, { passive: true });
                 }
 
-                // Set initial state
                 goToSlide(0);
             }
 
             // ================================================================
-            // LIGHTBOX
+            // LIGHTBOX - Event Delegation (No inline onclick)
             // ================================================================
 
             var lightboxOverlay = document.getElementById('lightboxOverlay');
@@ -1341,7 +1341,7 @@
             var lightboxCaptions = [];
             var isLightboxOpen = false;
 
-            // Collect gallery images for lightbox
+            // Collect gallery images from the DOM
             document.querySelectorAll('.gallery-slide img').forEach(function(img) {
                 lightboxImages.push(img.src);
                 var slide = img.closest('.gallery-slide');
@@ -1349,14 +1349,28 @@
                 lightboxCaptions.push(captionEl ? captionEl.textContent.trim() : '');
             });
 
-            window.openLightbox = function(index) {
+            // Event delegation for gallery thumbnails
+            var galleryTrack = document.getElementById('galleryTrack');
+            if (galleryTrack) {
+                galleryTrack.addEventListener('click', function(e) {
+                    var img = e.target.closest('img');
+                    if (img) {
+                        var index = parseInt(img.dataset.index);
+                        if (!isNaN(index)) {
+                            openLightbox(index);
+                        }
+                    }
+                });
+            }
+
+            function openLightbox(index) {
                 if (lightboxImages.length === 0) return;
                 lightboxIndex = index || 0;
                 updateLightbox();
                 lightboxOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
                 isLightboxOpen = true;
-            };
+            }
 
             function closeLightbox(e) {
                 if (e && e.target !== e.currentTarget && e.target !== lightboxClose &&
@@ -1374,28 +1388,11 @@
                 lightboxCaption.textContent = lightboxCaptions[lightboxIndex] || '';
                 lightboxCounter.textContent = (lightboxIndex + 1) + ' of ' + lightboxImages.length;
 
-                // Update arrows
                 if (lightboxPrev) {
                     lightboxPrev.style.display = lightboxImages.length > 1 ? 'flex' : 'none';
                 }
                 if (lightboxNext) {
                     lightboxNext.style.display = lightboxImages.length > 1 ? 'flex' : 'none';
-                }
-            }
-
-            function lightboxPrevSlide(e) {
-                if (e) e.stopPropagation();
-                if (lightboxIndex > 0) {
-                    lightboxIndex--;
-                    updateLightbox();
-                }
-            }
-
-            function lightboxNextSlide(e) {
-                if (e) e.stopPropagation();
-                if (lightboxIndex < lightboxImages.length - 1) {
-                    lightboxIndex++;
-                    updateLightbox();
                 }
             }
 
@@ -1412,11 +1409,23 @@
             }
 
             if (lightboxPrev) {
-                lightboxPrev.addEventListener('click', lightboxPrevSlide);
+                lightboxPrev.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (lightboxIndex > 0) {
+                        lightboxIndex--;
+                        updateLightbox();
+                    }
+                });
             }
 
             if (lightboxNext) {
-                lightboxNext.addEventListener('click', lightboxNextSlide);
+                lightboxNext.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (lightboxIndex < lightboxImages.length - 1) {
+                        lightboxIndex++;
+                        updateLightbox();
+                    }
+                });
             }
 
             // Lightbox keyboard navigation
@@ -1428,11 +1437,17 @@
                 }
                 if (e.key === 'ArrowLeft') {
                     e.preventDefault();
-                    lightboxPrevSlide(e);
+                    if (lightboxIndex > 0) {
+                        lightboxIndex--;
+                        updateLightbox();
+                    }
                 }
                 if (e.key === 'ArrowRight') {
                     e.preventDefault();
-                    lightboxNextSlide(e);
+                    if (lightboxIndex < lightboxImages.length - 1) {
+                        lightboxIndex++;
+                        updateLightbox();
+                    }
                 }
             });
 
@@ -1479,9 +1494,6 @@
                 yearElement.textContent = new Date().getFullYear();
             }
 
-            // ================================================================
-            // CONSOLE
-            // ================================================================
             console.log('BRIDGE-AI Kenya Activity Detail page initialized');
 
         })();
